@@ -1,23 +1,4 @@
-# INFO_Android_project
-Project of the 2nd year of engineering school
-=> TODO summary (functionnalities)
+# Projet Soundroid
 
-__CONFIGURATION__  
-AndroidManifest.xml, tree of directories,  Gradle...
-
-__DESIGN - LAYOUTS__  
-Style of app. ? (color, image asset, ...)
-Layouts ? RelativeLayout, ConstraintLayout ?
-To display items (tracks) : RecyclerView , Listview ??
-
-__MODELIZATION__  
-Android activity diagram ?
-
-__HTTP REQUESTS TO THE API ???__  
-=> With library Volley of Google ? Retrofit2 ?
-If database => Room ?
-
-__TO PLAY MEDIA__  
-MediaPlayer object ?
-
-
+Projet de seconde année de la matière Interface graphique à l'ESIPE filière Informatique.
+Le projet consiste à réaliser un lecteur musical agrémenté de différentes fonctionnalités.
