@@ -19,7 +19,7 @@
             android:id="@+id/iv_artwork"
             android:layout_width="71dp"
             android:layout_height="69dp"
-            android:contentDescription="TODO"
+            android:contentDescription="@string/pochette_piste"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
@@ -29,10 +29,10 @@
             app:srcCompat="@drawable/ic_launcher_background" />
 
         <TextView
-            android:id="@+id/tv_title_track"
+            android:id="@+id/tv_artist"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Artiste"
+            android:text="@string/artiste"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.035"
@@ -41,12 +41,12 @@
             app:layout_constraintVertical_bias="0.68" />
 
         <TextView
-            android:id="@+id/textView5"
+            android:id="@+id/tv_title_track"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="10dp"
             android:layout_marginEnd="256dp"
-            android:text="Titre"
+            android:text="@string/titre"
             android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -54,6 +54,46 @@
             app:layout_constraintStart_toEndOf="@+id/iv_artwork"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="0.14" />
+
+        <ImageView
+            android:id="@+id/iv_control_play"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="76dp"
+            android:contentDescription="@string/contr_le_pour_jouer_une_piste"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.971"
+            app:layout_constraintStart_toStartOf="@+id/iv_artwork"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.484"
+            app:srcCompat="@drawable/ic_toolbar_play" />
+
+        <ImageView
+            android:id="@+id/iv_control_skip_next"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:contentDescription="@string/contr_le_pour_passer_musique_suivante"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.896"
+            app:layout_constraintStart_toStartOf="@+id/iv_artwork"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.484"
+            app:srcCompat="@drawable/ic_toolbar_skip_next" />
+
+        <ImageView
+            android:id="@+id/iv_control_skip_previous"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:contentDescription="@string/contr_le_pour_passer_a_la_piste_pr_c_dente"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.637"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.484"
+            app:srcCompat="@drawable/ic_toolbar_previous" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 

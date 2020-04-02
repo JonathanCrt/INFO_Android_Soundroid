@@ -20,4 +20,10 @@
     <string name="param_tres">Paramètres</string>
     <string name="authors">Mélissa DA COSTA - Jonathan CRÉTÉ - Christelle NGUYEN</string>
     <string name="rechercher">Rechercher</string>
+    <string name="pochette_piste">Pochette piste</string>
+    <string name="artiste">Artiste</string>
+    <string name="titre">Titre</string>
+    <string name="contr_le_pour_passer_musique_suivante">Contrôle pour passer musique suivante</string>
+    <string name="contr_le_pour_jouer_une_piste">Contrôle pour jouer une piste</string>
+    <string name="contr_le_pour_passer_a_la_piste_pr_c_dente">Contrôle pour passer a la piste précédente</string>
 </resources>
