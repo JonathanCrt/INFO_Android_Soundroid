@@ -1,7 +1,72 @@
 package fr.crt.dc.ngn.soundroid.model;
 
+import android.media.Image;
+
 /**
  * Created by CRETE JONATHAN on 02/04/2020.
  */
 public class Song {
+    private final long id;
+    private final String title;
+    private final String artist;
+    private final long duration;
+    private final Image artwork;
+    private final String style;
+    private final String album;
+    private  int countSongPlayed;
+    private String tag;
+    private int rating;
+
+    public Song(long id, String title, String artist, long duration, Image artwork, String style, String album) {
+        this.id = id;
+        this.title = title;
+        this.artist = artist;
+        this.duration = duration;
+        this.artwork = artwork;
+        this.style = style;
+        this.album = album;
+        this.countSongPlayed = 0;
+        this.tag = null;
+        this.rating = 0;
+    }
+
+    public long getId() {
+        return id;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public String getArtist() {
+        return artist;
+    }
+
+    public long getDuration() {
+        return duration;
+    }
+
+    public Image getArtwork() {
+        return artwork;
+    }
+
+    public int getCountSongPlayed() {
+        return countSongPlayed;
+    }
+
+    public void setCountSongPlayed(int countSongPlayed) {
+        this.countSongPlayed = countSongPlayed;
+    }
+
+    public String getTag() {
+        return tag;
+    }
+
+    public int getRating() {
+        return rating;
+    }
+
+    public void setRating(int rating) {
+        this.rating = rating;
+    }
 }
