@@ -12,13 +12,10 @@ import android.view.ViewGroup;
 import fr.crt.dc.ngn.soundroid.R;
 
 /**
- * A simple {@link Fragment} subclass.
- * Use the {@link AllTracksFragment#newInstance} factory method to
- * create an instance of this fragment.
+ * Classe représentant le fragment contenant toutes les pistes
  */
 public class AllTracksFragment extends Fragment {
 
-    private OnFragmentInteractionListener mListener;
 
     public AllTracksFragment() {
         // Required empty public constructor
@@ -51,13 +48,4 @@ public class AllTracksFragment extends Fragment {
         return inflater.inflate(R.layout.fragment_all_tracks, container, false);
     }
 
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        mListener = null;
-    }
-
-    public interface OnFragmentInteractionListener {
-        void onFragmentInteraction(Uri uri);
-    }
 }

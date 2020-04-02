@@ -22,7 +22,7 @@
             android:contentDescription="@string/pochette_piste"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintHorizontal_bias="0.117"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="0.0"
@@ -35,7 +35,7 @@
             android:text="@string/artiste"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.035"
+            app:layout_constraintHorizontal_bias="0.04"
             app:layout_constraintStart_toEndOf="@+id/iv_artwork"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="0.68" />
@@ -53,7 +53,7 @@
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toEndOf="@+id/iv_artwork"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.14" />
+            app:layout_constraintVertical_bias="0.3" />
 
         <ImageView
             android:id="@+id/iv_control_play"
@@ -94,6 +94,19 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="0.484"
             app:srcCompat="@drawable/ic_toolbar_previous" />
+
+        <ImageView
+            android:id="@+id/iv_control_get_back_app"
+            android:layout_width="37dp"
+            android:layout_height="43dp"
+            android:layout_marginEnd="1dp"
+            android:contentDescription="Retour à l'app"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/iv_artwork"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/ic_arrow_toolbar" />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 
