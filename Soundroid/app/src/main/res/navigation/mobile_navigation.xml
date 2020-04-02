@@ -3,41 +3,48 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/mobile_navigation"
-    app:startDestination="@+id/nav_home">
+    app:startDestination="@+id/nav_all_tracks">
 
     <fragment
-        android:id="@+id/nav_home"
-        android:name="fr.crt.dc.ngn.soundroid.ui.home.HomeFragment"
-        android:label="@string/menu_home"
-        tools:layout="@layout/fragment_home">
-
-        <action
-            android:id="@+id/action_HomeFragment_to_HomeSecondFragment"
-            app:destination="@id/nav_home_second" />
-    </fragment>
-    <fragment
-        android:id="@+id/nav_home_second"
-        android:name="fr.crt.dc.ngn.soundroid.ui.home.HomeSecondFragment"
-        android:label="@string/home_second"
-        tools:layout="@layout/fragment_home_second">
-        <action
-            android:id="@+id/action_HomeSecondFragment_to_HomeFragment"
-            app:destination="@id/nav_home" />
-
-        <argument
-            android:name="myArg"
-            app:argType="string" />
+        android:id="@+id/nav_all_tracks"
+        android:name="fr.crt.dc.ngn.soundroid.fragment.AllTracksFragment"
+        android:label="Toutes les pistes"
+        tools:layout="@layout/fragment_all_tracks">
     </fragment>
 
     <fragment
-        android:id="@+id/nav_gallery"
-        android:name="fr.crt.dc.ngn.soundroid.ui.gallery.GalleryFragment"
-        android:label="@string/menu_gallery"
-        tools:layout="@layout/fragment_gallery" />
+        android:id="@+id/nav_playlists"
+        android:name="fr.crt.dc.ngn.soundroid.fragment.PlaylistFragment"
+        android:label="Listes de lecture"
+        tools:layout="@layout/fragment_playlist">
+    </fragment>
 
     <fragment
-        android:id="@+id/nav_slideshow"
-        android:name="fr.crt.dc.ngn.soundroid.ui.slideshow.SlideshowFragment"
-        android:label="@string/menu_slideshow"
-        tools:layout="@layout/fragment_slideshow" />
+        android:id="@+id/nav_history"
+        android:name="fr.crt.dc.ngn.soundroid.fragment.HistoryFragment"
+        android:label="Historique"
+        tools:layout="@layout/fragment_history">
+    </fragment>
+
+    <fragment
+        android:id="@+id/nav_share"
+        android:name="fr.crt.dc.ngn.soundroid.fragment.ShareFragment"
+        android:label="Partage musical"
+        tools:layout="@layout/fragment_history">
+    </fragment>
+
+    <fragment
+        android:id="@+id/nav_export"
+        android:name="fr.crt.dc.ngn.soundroid.fragment.ExportFragment"
+        android:label="Export de la base de données"
+        tools:layout="@layout/fragment_export">
+    </fragment>
+
+    <fragment
+        android:id="@+id/nav_settings"
+        android:name="fr.crt.dc.ngn.soundroid.fragment.SettingsFragment"
+        android:label="Paramètres"
+        tools:layout="@layout/fragment_settings">
+    </fragment>
+
 </navigation>
