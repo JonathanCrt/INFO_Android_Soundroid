@@ -25,4 +25,35 @@ public class Playlist {
         this.isAutomatic = true;
     }
 
+    public long getIdPlaylist() {
+        return idPlaylist;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public ArrayList<Song> getSongList() {
+        return songList;
+    }
+
+    public Search getSearch() {
+        return search;
+    }
+
+    public boolean isAutomatic() {
+        return isAutomatic;
+    }
+
+    public void setSongList(ArrayList<Song> songList) {
+        this.songList = songList;
+    }
+
+    public void setSearch(Search search) {
+        this.search = search;
+    }
+
+    public void setAutomatic(boolean automatic) {
+        isAutomatic = automatic;
+    }
 }

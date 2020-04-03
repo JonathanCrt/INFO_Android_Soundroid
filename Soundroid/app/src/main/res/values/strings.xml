@@ -23,4 +23,5 @@
     <string name="contr_le_pour_passer_a_la_piste_pr_c_dente">Contrôle pour passer a la piste précédente</string>
 
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="duration">Duration</string>
 </resources>

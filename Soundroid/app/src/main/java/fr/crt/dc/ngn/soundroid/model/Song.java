@@ -1,6 +1,9 @@
 package fr.crt.dc.ngn.soundroid.model;
 
+import android.graphics.Bitmap;
 import android.media.Image;
+
+import java.util.Locale;
 
 /**
  * Created by CRETE JONATHAN on 02/04/2020.
@@ -10,14 +13,14 @@ public class Song {
     private final String title;
     private final String artist;
     private final long duration;
-    private final Image artwork;
+    private final Bitmap artwork;
     private final String style;
     private final String album;
     private  int countSongPlayed;
     private String tag;
     private int rating;
 
-    public Song(long id, String title, String artist, long duration, Image artwork, String style, String album) {
+    public Song(long id, String title, String artist, long duration, Bitmap artwork, String style, String album) {
         this.id = id;
         this.title = title;
         this.artist = artist;
@@ -29,6 +32,18 @@ public class Song {
         this.tag = null;
         this.rating = 0;
     }
+
+
+    public String convertDuration(long duration){
+        long minutes = (duration / 1000 ) / 60;
+        long seconds = (duration / 1000 ) % 60;
+
+        // met en forme -> EX : 3:03
+        return String.format(Locale.getDefault(),"%d:%02d", minutes, seconds);
+    }
+
+
+
 
     public long getId() {
         return id;
@@ -46,7 +61,7 @@ public class Song {
         return duration;
     }
 
-    public Image getArtwork() {
+    public Bitmap getArtwork() {
         return artwork;
     }
 
