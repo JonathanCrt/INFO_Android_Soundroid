@@ -1,5 +1,6 @@
 package fr.crt.dc.ngn.soundroid.adapter;
 
+import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -8,6 +9,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.constraintlayout.widget.ConstraintLayout;
+
+import java.util.ArrayList;
+
 import fr.crt.dc.ngn.soundroid.R;
 import fr.crt.dc.ngn.soundroid.model.Playlist;
 import fr.crt.dc.ngn.soundroid.model.Song;
@@ -20,6 +24,11 @@ public class SongAdapter extends BaseAdapter {
     private Playlist playlist;
     private LayoutInflater songInflater;
 
+
+    public SongAdapter(Context context, ArrayList listSongs){
+        this.playlist.setSongList(listSongs);
+        this.songInflater = LayoutInflater.from(context);
+    }
 
     @Override
     public int getCount() {
@@ -52,7 +61,7 @@ public class SongAdapter extends BaseAdapter {
 
         tv_title.setText(currentSong.getTitle());
         tv_artist.setText(currentSong.getArtist());
-        tv_duration.setText(currentSong.convertDuration(currentSong.getDuration()));
+        tv_duration.setText(Song.convertDuration(currentSong.getDuration()));
 
         iv_artwork.setImageBitmap(currentSong.getArtwork());
 

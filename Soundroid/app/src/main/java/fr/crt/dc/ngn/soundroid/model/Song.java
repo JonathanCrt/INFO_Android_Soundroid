@@ -9,7 +9,6 @@ import java.util.Locale;
  * Created by CRETE JONATHAN on 02/04/2020.
  */
 public class Song {
-    private final long id;
     private final String title;
     private final String artist;
     private final long duration;
@@ -20,8 +19,7 @@ public class Song {
     private String tag;
     private int rating;
 
-    public Song(long id, String title, String artist, long duration, Bitmap artwork, String style, String album) {
-        this.id = id;
+    public Song(String title, String artist, long duration, Bitmap artwork, String style, String album) {
         this.title = title;
         this.artist = artist;
         this.duration = duration;
@@ -34,7 +32,7 @@ public class Song {
     }
 
 
-    public String convertDuration(long duration){
+    public static String convertDuration(long duration){
         long minutes = (duration / 1000 ) / 60;
         long seconds = (duration / 1000 ) % 60;
 
@@ -42,12 +40,6 @@ public class Song {
         return String.format(Locale.getDefault(),"%d:%02d", minutes, seconds);
     }
 
-
-
-
-    public long getId() {
-        return id;
-    }
 
     public String getTitle() {
         return title;
