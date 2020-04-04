@@ -29,6 +29,7 @@ import java.io.File;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Objects;
 
 import fr.crt.dc.ngn.soundroid.R;
@@ -78,10 +79,18 @@ public class AllTracksFragment extends Fragment {
         this.songFolder = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC);
         this.getMetaDataWithResolver();
         //this.getMetaData();
-        // create personal adapter
+
         Log.i("LOG", "size = " + this.playlistSongs.size());
+
+
+        // Permet de trier les données afin que les pistes soient listées par ordre alphabétique
+        Collections.sort(this.playlistSongs, (a, b) -> { // new Comparator<Song> compare()
+
+            return a.getTitle().compareTo(b.getTitle());
+        });
+        // create personal adapter
         SongAdapter adapter = new SongAdapter(this.getContext(), playlist);
-        //ArrayAdapter adapt = new ArrayAdapter<>(Objects.requireNonNull(getContext()), R.layout.fragment_all_tracks, this.playlistSongs);
+
         View v = inflater.inflate(R.layout.fragment_all_tracks, container, false);
         ListView listViewSongs = v.findViewById(R.id.list_songs);
         listViewSongs.setAdapter(adapter);
@@ -94,25 +103,23 @@ public class AllTracksFragment extends Fragment {
     private void getMetaDataWithResolver(){
         ContentResolver contentResolver = Objects.requireNonNull(this.getContext()).getContentResolver();
         Uri uri = android.provider.MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
-
-       // Uri uri = MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI;
-        Cursor cursor = contentResolver.query(uri, null, null, null, null);
-        Log.i("LOG", "cursor = " +cursor.getCount());
-        if(cursor != null){
-            int title = cursor.getColumnIndex(android.provider.MediaStore.Audio.Media.TITLE);
-            int artiste = cursor.getColumnIndex(android.provider.MediaStore.Audio.Media.ARTIST);
-            int duration = cursor.getColumnIndex(android.provider.MediaStore.Audio.Media.DURATION);
+        try (Cursor cursor = contentResolver.query(uri, null, null, null, null)) {
+            assert cursor != null;
+            Log.i("LOG", "cursor = " + cursor.getCount());
+            int title = cursor.getColumnIndex(MediaStore.Audio.Media.TITLE);
+            int artiste = cursor.getColumnIndex(MediaStore.Audio.Media.ARTIST);
+            int duration = cursor.getColumnIndex(MediaStore.Audio.Media.DURATION);
 
 
             //Long albumId = Long.valueOf(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.ALBUM_ID)));
             //Cursor cursorAlbum = getContext().getContentResolver().query(MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI,
-              //      new String[]{MediaStore.Audio.Albums._ID, MediaStore.Audio.Albums.ALBUM_ART},
-                //    MediaStore.Audio.Albums._ID + "=" + albumId, null, null);
+            //      new String[]{MediaStore.Audio.Albums._ID, MediaStore.Audio.Albums.ALBUM_ART},
+            //    MediaStore.Audio.Albums._ID + "=" + albumId, null, null);
 
-           // int artwork = cursorAlbum.getColumnIndex(MediaStore.Audio.Albums.ALBUM.)
+            // int artwork = cursorAlbum.getColumnIndex(MediaStore.Audio.Albums.ALBUM.)
             //int style = cursor.getColumnIndex(MediaStore.Audio.Media.);
 
-            while(cursor.moveToNext()){
+            while (cursor.moveToNext()) {
                 String myTitle = cursor.getString(title);
                 String myArtiste = cursor.getString(artiste);
                 String myDuration = cursor.getString(duration);
@@ -121,6 +128,9 @@ public class AllTracksFragment extends Fragment {
                 this.playlistSongs.add(song);
             }
         }
+
+
+
 
     }
 
