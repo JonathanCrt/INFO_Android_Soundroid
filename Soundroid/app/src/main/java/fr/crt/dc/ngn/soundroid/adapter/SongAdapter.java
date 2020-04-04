@@ -1,6 +1,7 @@
 package fr.crt.dc.ngn.soundroid.adapter;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,8 +26,9 @@ public class SongAdapter extends BaseAdapter {
     private LayoutInflater songInflater;
 
 
-    public SongAdapter(Context context, ArrayList listSongs){
-        this.playlist.setSongList(listSongs);
+    public SongAdapter(Context context, Playlist playlist){
+       // Log.i("LOG", "SONG ADAPTER size = " + listSongs.size());
+        this.playlist = playlist;
         this.songInflater = LayoutInflater.from(context);
     }
 

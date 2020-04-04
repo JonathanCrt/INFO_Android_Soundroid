@@ -1,5 +1,7 @@
 package fr.crt.dc.ngn.soundroid.model;
 
+import android.util.Log;
+
 import java.util.ArrayList;
 
 public class Playlist {
@@ -40,6 +42,7 @@ public class Playlist {
     }
 
     public void setSongList(ArrayList<Song> songList) {
+        Log.i("LOG", "PLAYLIST size = " + songList.size());
         this.songList = songList;
     }
 

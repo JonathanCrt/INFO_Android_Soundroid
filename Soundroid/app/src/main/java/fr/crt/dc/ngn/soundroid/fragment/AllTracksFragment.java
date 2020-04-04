@@ -2,8 +2,10 @@ package fr.crt.dc.ngn.soundroid.fragment;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.MediaMetadataRetriever;
@@ -15,13 +17,16 @@ import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
 
 import android.os.Environment;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 import java.io.File;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Objects;
@@ -60,18 +65,22 @@ public class AllTracksFragment extends Fragment {
                 return;
             }
         }
-        Playlist playlist = new Playlist("Root");
-        this.playlistSongs = playlist.getSongList();
-        this.songFolder = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC);
-        this.getMetaData();
+        //this.getMetaData();
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
+        Playlist playlist = new Playlist("Root");
+        this.playlistSongs = playlist.getSongList();
+        playlist.setSongList(this.playlistSongs);
+        this.songFolder = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC);
+        this.getMetaDataWithResolver();
         // create personal adapter
-        SongAdapter adapter = new SongAdapter(this.getContext(), this.playlistSongs);
+        Log.i("LOG", "size = " + this.playlistSongs.size());
+        SongAdapter adapter = new SongAdapter(this.getContext(), playlist);
+        //ArrayAdapter adapt = new ArrayAdapter<>(Objects.requireNonNull(getContext()), R.layout.fragment_all_tracks, this.playlistSongs);
         View v = inflater.inflate(R.layout.fragment_all_tracks, container, false);
         ListView listViewSongs = v.findViewById(R.id.list_songs);
         listViewSongs.setAdapter(adapter);
@@ -81,9 +90,34 @@ public class AllTracksFragment extends Fragment {
         return v;
     }
 
+    private void getMetaDataWithResolver(){
+        ContentResolver contentResolver = Objects.requireNonNull(this.getContext()).getContentResolver();
+        Uri uri = android.provider.MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
+        Cursor cursor = contentResolver.query(uri, null, null, null, null);
+        Log.i("LOG", "cursor = " +cursor.getCount());
+        if(cursor != null){
+            int title = cursor.getColumnIndex(android.provider.MediaStore.Audio.Media.TITLE);
+            int artiste = cursor.getColumnIndex(android.provider.MediaStore.Audio.Media.ARTIST);
+            int duration = cursor.getColumnIndex(android.provider.MediaStore.Audio.Media.DURATION);
+            //int style = cursor.getColumnIndex(MediaStore.Audio.Media.);
+
+            while(cursor.moveToNext()){
+                String myTitle = cursor.getString(title);
+                String myArtiste = cursor.getString(artiste);
+                String myDuration = cursor.getString(duration);
+
+                Song song = new Song(myTitle, myArtiste, Long.parseLong(myDuration), null, null, null);
+                this.playlistSongs.add(song);
+            }
+        }
+
+    }
+
     private void getMetaData() {
 
         Uri uri = android.provider.MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
+
+
         Context ctx = getContext();
         Log.i("IN FOR", "BEFORE FOR");
         // for each music file
@@ -118,6 +152,4 @@ public class AllTracksFragment extends Fragment {
         }
 
     }
-
-
 }
