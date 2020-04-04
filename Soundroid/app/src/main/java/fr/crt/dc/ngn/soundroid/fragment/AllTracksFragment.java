@@ -77,6 +77,7 @@ public class AllTracksFragment extends Fragment {
         playlist.setSongList(this.playlistSongs);
         this.songFolder = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC);
         this.getMetaDataWithResolver();
+        //this.getMetaData();
         // create personal adapter
         Log.i("LOG", "size = " + this.playlistSongs.size());
         SongAdapter adapter = new SongAdapter(this.getContext(), playlist);
@@ -93,12 +94,22 @@ public class AllTracksFragment extends Fragment {
     private void getMetaDataWithResolver(){
         ContentResolver contentResolver = Objects.requireNonNull(this.getContext()).getContentResolver();
         Uri uri = android.provider.MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
+
+       // Uri uri = MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI;
         Cursor cursor = contentResolver.query(uri, null, null, null, null);
         Log.i("LOG", "cursor = " +cursor.getCount());
         if(cursor != null){
             int title = cursor.getColumnIndex(android.provider.MediaStore.Audio.Media.TITLE);
             int artiste = cursor.getColumnIndex(android.provider.MediaStore.Audio.Media.ARTIST);
             int duration = cursor.getColumnIndex(android.provider.MediaStore.Audio.Media.DURATION);
+
+
+            //Long albumId = Long.valueOf(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.ALBUM_ID)));
+            //Cursor cursorAlbum = getContext().getContentResolver().query(MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI,
+              //      new String[]{MediaStore.Audio.Albums._ID, MediaStore.Audio.Albums.ALBUM_ART},
+                //    MediaStore.Audio.Albums._ID + "=" + albumId, null, null);
+
+           // int artwork = cursorAlbum.getColumnIndex(MediaStore.Audio.Albums.ALBUM.)
             //int style = cursor.getColumnIndex(MediaStore.Audio.Media.);
 
             while(cursor.moveToNext()){
@@ -123,6 +134,7 @@ public class AllTracksFragment extends Fragment {
         // for each music file
         Log.i("IN FOR", "SONFOLDER = " + Arrays.toString(songFolder.listFiles()));
 
+
         File[] files = songFolder.listFiles();
 
         if (files != null) {
@@ -140,10 +152,10 @@ public class AllTracksFragment extends Fragment {
 
                 long songLongDuration = Long.parseLong(songDuration);
 
-                byte[] arrayBytesImg = mediaMetadataRetriever.getEmbeddedPicture();
-                Bitmap songArtwork = BitmapFactory.decodeByteArray(arrayBytesImg, 0, arrayBytesImg.length);
+                //byte[] arrayBytesImg = mediaMetadataRetriever.getEmbeddedPicture();
+                //Bitmap songArtwork = BitmapFactory.decodeByteArray(arrayBytesImg, 0, arrayBytesImg.length);
 
-                Song song = new Song(songTitle, songArtist, songLongDuration, songArtwork, songAlbum, songStyle);
+                Song song = new Song(songTitle, songArtist, songLongDuration, null, songAlbum, songStyle);
 
                 // fill playlist
                 this.playlistSongs.add(song);
