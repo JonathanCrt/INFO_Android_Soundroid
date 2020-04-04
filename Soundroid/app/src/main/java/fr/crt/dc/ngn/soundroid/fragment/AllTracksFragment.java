@@ -23,6 +23,7 @@ import android.widget.ListView;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Objects;
 
 import fr.crt.dc.ngn.soundroid.R;
@@ -39,28 +40,12 @@ public class AllTracksFragment extends Fragment {
 
 
     private File songFolder;
-    private Playlist playlist;
     private ArrayList<Song> playlistSongs;
-    private ListView listViewSongs;
 
     public AllTracksFragment() {
         // Required empty public constructor
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment AllTracksFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static AllTracksFragment newInstance(String param1, String param2) {
-        AllTracksFragment fragment = new AllTracksFragment();
-        Bundle args = new Bundle();
-        return fragment;
-    }
 
     @SuppressLint("WrongConstant")
     @Override
@@ -71,12 +56,12 @@ public class AllTracksFragment extends Fragment {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (checkSelfPermission(this.getContext(), Manifest.permission.READ_EXTERNAL_STORAGE)
                     != PackageManager.PERMISSION_GRANTED) {
-                requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},1);
+                requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
                 return;
             }
         }
-        this.playlist = new Playlist("Root");
-        this.playlistSongs = this.playlist.getSongList();
+        Playlist playlist = new Playlist("Root");
+        this.playlistSongs = playlist.getSongList();
         this.songFolder = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC);
         this.getMetaData();
     }
@@ -86,52 +71,53 @@ public class AllTracksFragment extends Fragment {
                              Bundle savedInstanceState) {
 
         // create personal adapter
-        SongAdapter adapter = new SongAdapter(this.getContext(),this.playlistSongs);
+        SongAdapter adapter = new SongAdapter(this.getContext(), this.playlistSongs);
         View v = inflater.inflate(R.layout.fragment_all_tracks, container, false);
-        this.listViewSongs = v.findViewById(R.id.list_songs);
-        this.listViewSongs.setAdapter(adapter);
+        ListView listViewSongs = v.findViewById(R.id.list_songs);
+        listViewSongs.setAdapter(adapter);
         //this.listViewSongs.setOnClickListener(this);
 
         // Inflate the layout for this fragment
         return v;
     }
 
-
-
-    public void getMetaData () {
+    private void getMetaData() {
 
         Uri uri = android.provider.MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
         Context ctx = getContext();
         Log.i("IN FOR", "BEFORE FOR");
         // for each music file
-        Log.i("IN FOR", "SONFOLDER = " + songFolder.listFiles());
-        for(File songFile: songFolder.listFiles()) {
-            Log.i("IN FOR", "IN FOR");
-            MediaMetadataRetriever mediaMetadataRetriever = new MediaMetadataRetriever();
-            mediaMetadataRetriever.setDataSource(songFolder + "/" + songFile.getName());
+        Log.i("IN FOR", "SONFOLDER = " + Arrays.toString(songFolder.listFiles()));
 
-            // get song's data
-            String songTitle = mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE);
-            String songArtist = mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST);
-            String songDuration = mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);
-            String songAlbum = mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUM);
-            String songStyle = mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_GENRE);
+        File[] files = songFolder.listFiles();
 
-            long songLongDuration= Long.parseLong(songDuration);
+        if (files != null) {
+            for (File songFile : files) {
+                Log.i("IN FOR", "IN FOR");
+                MediaMetadataRetriever mediaMetadataRetriever = new MediaMetadataRetriever();
+                mediaMetadataRetriever.setDataSource(songFolder + "/" + songFile.getName());
 
-            byte[] arrayBytesImg = mediaMetadataRetriever.getEmbeddedPicture();
-            Bitmap songArtwork = BitmapFactory.decodeByteArray(arrayBytesImg, 0, arrayBytesImg.length);
+                // get song's data
+                String songTitle = mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE);
+                String songArtist = mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST);
+                String songDuration = mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);
+                String songAlbum = mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUM);
+                String songStyle = mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_GENRE);
 
-            Song song = new Song(songTitle, songArtist, songLongDuration, songArtwork, songAlbum, songStyle);
+                long songLongDuration = Long.parseLong(songDuration);
 
-            // fill playlist
-            this.playlistSongs.add(song);
+                byte[] arrayBytesImg = mediaMetadataRetriever.getEmbeddedPicture();
+                Bitmap songArtwork = BitmapFactory.decodeByteArray(arrayBytesImg, 0, arrayBytesImg.length);
+
+                Song song = new Song(songTitle, songArtist, songLongDuration, songArtwork, songAlbum, songStyle);
+
+                // fill playlist
+                this.playlistSongs.add(song);
+            }
 
         }
+
     }
-
-
-
 
 
 }
