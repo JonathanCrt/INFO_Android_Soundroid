@@ -44,7 +44,6 @@ import static androidx.core.content.PermissionChecker.checkSelfPermission;
  */
 public class AllTracksFragment extends Fragment {
 
-
     private File songFolder;
     private ArrayList<Song> playlistSongs;
 
@@ -60,10 +59,9 @@ public class AllTracksFragment extends Fragment {
         super.onCreate(savedInstanceState);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (checkSelfPermission(this.getContext(), Manifest.permission.READ_EXTERNAL_STORAGE)
+            if (checkSelfPermission(Objects.requireNonNull(this.getContext()), Manifest.permission.READ_EXTERNAL_STORAGE)
                     != PackageManager.PERMISSION_GRANTED) {
                 requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
-                return;
             }
         }
         //this.getMetaData();
@@ -81,7 +79,6 @@ public class AllTracksFragment extends Fragment {
         //this.getMetaData();
 
         Log.i("LOG", "size = " + this.playlistSongs.size());
-
 
         // Permet de trier les données afin que les pistes soient listées par ordre alphabétique
         Collections.sort(this.playlistSongs, (a, b) -> { // new Comparator<Song> compare()
