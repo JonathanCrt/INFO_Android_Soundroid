@@ -35,7 +35,6 @@ public class Song {
     public static String convertDuration(long duration){
         long minutes = (duration / 1000 ) / 60;
         long seconds = (duration / 1000 ) % 60;
-
         // met en forme -> EX : 3:03
         return String.format(Locale.getDefault(),"%d:%02d", minutes, seconds);
     }

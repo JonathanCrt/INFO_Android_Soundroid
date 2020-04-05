@@ -14,7 +14,7 @@ public class Playlist {
     public Playlist(String name) {
         this.name = name;
         this.songList = new ArrayList<>();
-        this.isAutomatic = false;
+        this.isAutomatic = false;   // playlist made with a search
     }
 
     public Playlist(String name, Search search) {

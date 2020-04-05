@@ -19,6 +19,7 @@ import androidx.fragment.app.Fragment;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.Log;
+import android.util.Size;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,6 +27,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -37,6 +39,7 @@ import fr.crt.dc.ngn.soundroid.adapter.SongAdapter;
 import fr.crt.dc.ngn.soundroid.model.Playlist;
 import fr.crt.dc.ngn.soundroid.model.Song;
 
+import static android.provider.MediaStore.Audio.AlbumColumns.ALBUM_ART;
 import static androidx.core.content.PermissionChecker.checkSelfPermission;
 
 /**
@@ -64,7 +67,6 @@ public class AllTracksFragment extends Fragment {
                 requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
             }
         }
-        //this.getMetaData();
     }
 
     @Override
@@ -72,13 +74,9 @@ public class AllTracksFragment extends Fragment {
                              Bundle savedInstanceState) {
 
         Playlist playlist = new Playlist("Root");
-        this.playlistSongs = playlist.getSongList();
-        playlist.setSongList(this.playlistSongs);
+        this.playlistSongs = new ArrayList<>();
         this.songFolder = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC);
         this.getMetaDataWithResolver();
-        //this.getMetaData();
-
-        Log.i("LOG", "size = " + this.playlistSongs.size());
 
         // Permet de trier les données afin que les pistes soient listées par ordre alphabétique
         Collections.sort(this.playlistSongs, (a, b) -> { // new Comparator<Song> compare()
@@ -86,15 +84,24 @@ public class AllTracksFragment extends Fragment {
             return a.getTitle().compareTo(b.getTitle());
         });
         // create personal adapter
+        playlist.setSongList(this.playlistSongs);
         SongAdapter adapter = new SongAdapter(this.getContext(), playlist);
 
+        // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_all_tracks, container, false);
         ListView listViewSongs = v.findViewById(R.id.list_songs);
         listViewSongs.setAdapter(adapter);
         //this.listViewSongs.setOnClickListener(this);
 
-        // Inflate the layout for this fragment
         return v;
+    }
+
+    private Bitmap getAlbumImage(String path) {
+        android.media.MediaMetadataRetriever mmr = new MediaMetadataRetriever();
+        mmr.setDataSource(path);
+        byte[] data = mmr.getEmbeddedPicture();
+        if (data != null) return BitmapFactory.decodeByteArray(data, 0, data.length);
+        return null;
     }
 
     private void getMetaDataWithResolver(){
@@ -107,16 +114,20 @@ public class AllTracksFragment extends Fragment {
             int artiste = cursor.getColumnIndex(MediaStore.Audio.Media.ARTIST);
             int duration = cursor.getColumnIndex(MediaStore.Audio.Media.DURATION);
 
+            //Bitmap img = contentResolver.loadThumbnail(uri, Size.parseSize(contentResolver.EXTRA_SIZE), null);
 
-            //Long albumId = Long.valueOf(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.ALBUM_ID)));
-            //Cursor cursorAlbum = getContext().getContentResolver().query(MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI,
-            //      new String[]{MediaStore.Audio.Albums._ID, MediaStore.Audio.Albums.ALBUM_ART},
-            //    MediaStore.Audio.Albums._ID + "=" + albumId, null, null);
+            Long albumId = Long.valueOf(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.ALBUM_ID)));
+            Cursor cursorAlbum = getContext().getContentResolver().query(MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI,
+                  new String[]{MediaStore.Audio.Albums._ID, ALBUM_ART},
+                MediaStore.Audio.Albums._ID + "=" + albumId, null, null);
 
-            // int artwork = cursorAlbum.getColumnIndex(MediaStore.Audio.Albums.ALBUM.)
+
+
+            assert cursorAlbum != null;
+            int artwork = cursorAlbum.getColumnIndex(ALBUM_ART);
             //int style = cursor.getColumnIndex(MediaStore.Audio.Media.);
 
-            while (cursor.moveToNext()) {
+             while (cursor.moveToNext()) {
                 String myTitle = cursor.getString(title);
                 String myArtiste = cursor.getString(artiste);
                 String myDuration = cursor.getString(duration);
@@ -125,50 +136,5 @@ public class AllTracksFragment extends Fragment {
                 this.playlistSongs.add(song);
             }
         }
-
-
-
-
-    }
-
-    private void getMetaData() {
-
-        Uri uri = android.provider.MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
-
-
-        Context ctx = getContext();
-        Log.i("IN FOR", "BEFORE FOR");
-        // for each music file
-        Log.i("IN FOR", "SONFOLDER = " + Arrays.toString(songFolder.listFiles()));
-
-
-        File[] files = songFolder.listFiles();
-
-        if (files != null) {
-            for (File songFile : files) {
-                Log.i("IN FOR", "IN FOR");
-                MediaMetadataRetriever mediaMetadataRetriever = new MediaMetadataRetriever();
-                mediaMetadataRetriever.setDataSource(songFolder + "/" + songFile.getName());
-
-                // get song's data
-                String songTitle = mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE);
-                String songArtist = mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST);
-                String songDuration = mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);
-                String songAlbum = mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUM);
-                String songStyle = mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_GENRE);
-
-                long songLongDuration = Long.parseLong(songDuration);
-
-                //byte[] arrayBytesImg = mediaMetadataRetriever.getEmbeddedPicture();
-                //Bitmap songArtwork = BitmapFactory.decodeByteArray(arrayBytesImg, 0, arrayBytesImg.length);
-
-                Song song = new Song(songTitle, songArtist, songLongDuration, null, songAlbum, songStyle);
-
-                // fill playlist
-                this.playlistSongs.add(song);
-            }
-
-        }
-
     }
 }
