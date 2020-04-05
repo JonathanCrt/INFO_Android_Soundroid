@@ -3,6 +3,7 @@ package fr.crt.dc.ngn.soundroid.fragment;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.ContentResolver;
+import android.content.ContentUris;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
@@ -13,24 +14,19 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 
-import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
 
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.Log;
-import android.util.Size;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 import java.io.File;
-import java.io.IOException;
-import java.net.URI;
+
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Objects;
 
@@ -39,7 +35,6 @@ import fr.crt.dc.ngn.soundroid.adapter.SongAdapter;
 import fr.crt.dc.ngn.soundroid.model.Playlist;
 import fr.crt.dc.ngn.soundroid.model.Song;
 
-import static android.provider.MediaStore.Audio.AlbumColumns.ALBUM_ART;
 import static androidx.core.content.PermissionChecker.checkSelfPermission;
 
 /**
@@ -104,7 +99,7 @@ public class AllTracksFragment extends Fragment {
         return null;
     }
 
-    private void getMetaDataWithResolver(){
+    private void getMetaDataWithResolver() {
         ContentResolver contentResolver = Objects.requireNonNull(this.getContext()).getContentResolver();
         Uri uri = android.provider.MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
         try (Cursor cursor = contentResolver.query(uri, null, null, null, null)) {
@@ -113,26 +108,47 @@ public class AllTracksFragment extends Fragment {
             int title = cursor.getColumnIndex(MediaStore.Audio.Media.TITLE);
             int artiste = cursor.getColumnIndex(MediaStore.Audio.Media.ARTIST);
             int duration = cursor.getColumnIndex(MediaStore.Audio.Media.DURATION);
+            int ID = cursor.getColumnIndex(MediaStore.Audio.Media._ID);
+            int albumID = cursor.getColumnIndex(MediaStore.Audio.Media.ALBUM_ID);
+
+            /*
+            Cursor cursorArt = contentResolver.query(MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI,
+                    new String[]{MediaStore.Audio.Albums._ID, MediaStore.Audio.Albums.ALBUM_ART},
+                    MediaStore.Audio.Albums._ID + "=?",
+                    new String[]{String.valueOf(albumID)},
+                    null);
 
             //Bitmap img = contentResolver.loadThumbnail(uri, Size.parseSize(contentResolver.EXTRA_SIZE), null);
 
+            Uri artworkUri  = Uri.parse("content://media/external/audio/album");
+            Uri albumArtUri = ContentUris.withAppendedId(artworkUri, albumID);
+            Bitmap bitmap;
             Long albumId = Long.valueOf(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.ALBUM_ID)));
             Cursor cursorAlbum = getContext().getContentResolver().query(MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI,
                   new String[]{MediaStore.Audio.Albums._ID, ALBUM_ART},
                 MediaStore.Audio.Albums._ID + "=" + albumId, null, null);
-
-
-
             assert cursorAlbum != null;
+
             int artwork = cursorAlbum.getColumnIndex(ALBUM_ART);
             //int style = cursor.getColumnIndex(MediaStore.Audio.Media.);
 
-             while (cursor.moveToNext()) {
+             */
+
+
+            while (cursor.moveToNext()) {
                 String myTitle = cursor.getString(title);
                 String myArtiste = cursor.getString(artiste);
                 String myDuration = cursor.getString(duration);
 
-                Song song = new Song(myTitle, myArtiste, Long.parseLong(myDuration), null, null, null);
+                /*
+                Bitmap bm = null;
+                if (cursorArt.moveToNext()) {
+                    String path = cursorArt.getString(cursorArt.getColumnIndex(MediaStore.Audio.Albums.ALBUM_ART));
+                    bm = BitmapFactory.decodeFile(path);
+                }
+                 */
+
+                Song song = new Song(ID, myTitle, myArtiste, Long.parseLong(myDuration), null, null, null);
                 this.playlistSongs.add(song);
             }
         }
