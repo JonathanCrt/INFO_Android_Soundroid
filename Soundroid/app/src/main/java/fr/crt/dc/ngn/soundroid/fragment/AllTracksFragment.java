@@ -48,17 +48,34 @@ public class AllTracksFragment extends Fragment {
     private File songFolder;
     private ArrayList<Song> playlistSongs;
     private ContentResolver contentResolver;
+    private Bitmap defaultBitmap;
+
+    private static final int MAX_ARTWORK_SIZE= 100;
+
 
     public AllTracksFragment() {
         // Required empty public constructor
     }
 
+    /**
+     * initialize the fields
+     */
+    private void initialization(){
+        // get the default artwork one time
+        Bitmap tmp = BitmapFactory.decodeResource(getContext().getResources(),
+                R.drawable.artwork_default);
+        this.defaultBitmap = Bitmap.createScaledBitmap(tmp, MAX_ARTWORK_SIZE, MAX_ARTWORK_SIZE, false);
+
+        this.playlistSongs = new ArrayList<>();
+        this.songFolder = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC);
+    }
 
     @SuppressLint("WrongConstant")
     @Override
     public void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
+        initialization();
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (checkSelfPermission(Objects.requireNonNull(this.getContext()), Manifest.permission.READ_EXTERNAL_STORAGE)
@@ -77,9 +94,6 @@ public class AllTracksFragment extends Fragment {
                              Bundle savedInstanceState) {
 
         Playlist playlist = new Playlist("Root");
-        this.playlistSongs = new ArrayList<>();
-        this.songFolder = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC);
-
         // TODO : call this method when the app is launched
         this.getMetaDataWithResolver();
 
@@ -111,26 +125,25 @@ public class AllTracksFragment extends Fragment {
     private Bitmap getBitmapFromURI(Uri albumArtUri) throws IOException {
         Bitmap myBitmap = MediaStore.Images.Media.getBitmap(
                 this.contentResolver, albumArtUri);
-        int maxSize = 100;
         int outWidth;
         int outHeight;
         int inWidth = myBitmap.getWidth();
         int inHeight = myBitmap.getHeight();
         if (inWidth > inHeight) {
-            outWidth = maxSize;
-            outHeight = (inHeight * maxSize) / inWidth;
+            outWidth = MAX_ARTWORK_SIZE;
+            outHeight = (inHeight * MAX_ARTWORK_SIZE) / inWidth;
         } else {
-            outHeight = maxSize;
-            outWidth = (inWidth * maxSize) / inHeight;
+            outHeight = MAX_ARTWORK_SIZE;
+            outWidth = (inWidth * MAX_ARTWORK_SIZE) / inHeight;
         }
         // filter = false to privilege the performance and not the quality of the image
         return Bitmap.createScaledBitmap(myBitmap, outWidth, outHeight, false);
     }
 
-
     private void getMetaDataWithResolver() {
         this.contentResolver = Objects.requireNonNull(this.getContext()).getContentResolver();
         Uri uri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
+        // TODO: uri to get the genre
         //Uri uri = MediaStore.Audio.Genres.EXTERNAL_CONTENT_URI;
         String[] cursor_cols = {MediaStore.Audio.Media._ID,
                 MediaStore.Audio.Media.ARTIST, MediaStore.Audio.Media.ALBUM,
@@ -178,12 +191,8 @@ public class AllTracksFragment extends Fragment {
 
                 } catch (FileNotFoundException e) {
                     Log.i("AllTracksFragment", "No album art");
-                    // put a default artwork
-                    /*
-                    TODO: to improve this portion of code because too much time
-                    bitmap = BitmapFactory.decodeResource(getContext().getResources(),
-                            R.drawable.artwork_default);
-                            */
+                    // put the default artwork
+                    bitmap = this.defaultBitmap;
 
                 } catch (IOException e) {
                     Log.e("AllTracksFragment", "IOException", e);
