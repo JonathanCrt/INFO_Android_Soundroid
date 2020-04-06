@@ -80,6 +80,7 @@ public class AllTracksFragment extends Fragment {
         this.playlistSongs = new ArrayList<>();
         this.songFolder = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC);
 
+        // TODO : call this method when the app is launched
         this.getMetaDataWithResolver();
 
         // Permet de trier les données afin que les pistes soient listées par ordre alphabétique
@@ -100,11 +101,17 @@ public class AllTracksFragment extends Fragment {
         return v;
     }
 
+    /**
+     * Get the bitmap from an uri
+     *
+     * @param albumArtUri
+     * @return create a bitmap with an adapted size
+     * @throws IOException
+     */
     private Bitmap getBitmapFromURI(Uri albumArtUri) throws IOException {
         Bitmap myBitmap = MediaStore.Images.Media.getBitmap(
                 this.contentResolver, albumArtUri);
-        //bitmap = Bitmap.createScaledBitmap(bitmap, 60, 60, false);
-        int maxSize = 960;
+        int maxSize = 100;
         int outWidth;
         int outHeight;
         int inWidth = myBitmap.getWidth();
@@ -116,70 +123,19 @@ public class AllTracksFragment extends Fragment {
             outHeight = maxSize;
             outWidth = (inWidth * maxSize) / inHeight;
         }
-
+        // filter = false to privilege the performance and not the quality of the image
         return Bitmap.createScaledBitmap(myBitmap, outWidth, outHeight, false);
-
     }
 
 
     private void getMetaDataWithResolver() {
         this.contentResolver = Objects.requireNonNull(this.getContext()).getContentResolver();
-        /*
-        Uri uri = android.provider.MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
-        try (Cursor cursor = contentResolver.query(uri, null, null, null, null)) {
-            assert cursor != null;
-            Log.i("LOG", "cursor = " + cursor.getCount());
-            int title = cursor.getColumnIndex(MediaStore.Audio.Media.TITLE);
-            int artiste = cursor.getColumnIndex(MediaStore.Audio.Media.ARTIST);
-            int duration = cursor.getColumnIndex(MediaStore.Audio.Media.DURATION);
-            int ID = cursor.getColumnIndex(MediaStore.Audio.Media._ID);
-            int albumID = cursor.getColumnIndex(MediaStore.Audio.Media.ALBUM_ID);
-
-            /*
-            Cursor cursorArt = contentResolver.query(MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI,
-                    new String[]{MediaStore.Audio.Albums._ID, MediaStore.Audio.Albums.ALBUM_ART},
-                    MediaStore.Audio.Albums._ID + "=?",
-                    new String[]{String.valueOf(albumID)},
-                    null);
-
-            //Bitmap img = contentResolver.loadThumbnail(uri, Size.parseSize(contentResolver.EXTRA_SIZE), null);
-
-            Uri artworkUri  = Uri.parse("content://media/external/audio/album");
-            Uri albumArtUri = ContentUris.withAppendedId(artworkUri, albumID);
-            Bitmap bitmap;
-            Long albumId = Long.valueOf(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.ALBUM_ID)));
-            Cursor cursorAlbum = getContext().getContentResolver().query(MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI,
-                  new String[]{MediaStore.Audio.Albums._ID, ALBUM_ART},
-                MediaStore.Audio.Albums._ID + "=" + albumId, null, null);
-            assert cursorAlbum != null;
-
-            int artwork = cursorAlbum.getColumnIndex(ALBUM_ART);
-            //int style = cursor.getColumnIndex(MediaStore.Audio.Media.);
-
-
-
-            while (cursor.moveToNext()) {
-                String myTitle = cursor.getString(title);
-                String myArtiste = cursor.getString(artiste);
-                String myDuration = cursor.getString(duration);
-
-                /*
-                Bitmap bm = null;
-                if (cursorArt.moveToNext()) {
-                    String path = cursorArt.getString(cursorArt.getColumnIndex(MediaStore.Audio.Albums.ALBUM_ART));
-                    bm = BitmapFactory.decodeFile(path);
-                }
-
-                Song song = new Song(ID, myTitle, myArtiste, Long.parseLong(myDuration), null, null, null);
-                this.playlistSongs.add(song);
-            }
-        }
-                 */
-
         Uri uri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
+        //Uri uri = MediaStore.Audio.Genres.EXTERNAL_CONTENT_URI;
         String[] cursor_cols = {MediaStore.Audio.Media._ID,
                 MediaStore.Audio.Media.ARTIST, MediaStore.Audio.Media.ALBUM,
                 MediaStore.Audio.Media.TITLE, MediaStore.Audio.Media.DATA,
+             //   MediaStore.Audio.Genres.NAME,
                 MediaStore.Audio.Media.ALBUM_ID,
                 MediaStore.Audio.Media.DURATION};
         String where = MediaStore.Audio.Media.IS_MUSIC + "=1";
@@ -192,10 +148,15 @@ public class AllTracksFragment extends Fragment {
                         .getColumnIndexOrThrow(MediaStore.Audio.Media.ARTIST));
                 String album = cursor.getString(cursor
                         .getColumnIndexOrThrow(MediaStore.Audio.Media.ALBUM));
-                String track = cursor.getString(cursor
+                String title = cursor.getString(cursor
                         .getColumnIndexOrThrow(MediaStore.Audio.Media.TITLE));
+                // all the path of the song : /././.title.mp3
                 String data = cursor.getString(cursor
                         .getColumnIndexOrThrow(MediaStore.Audio.Media.DATA));
+                /*
+                String style = cursor.getString(cursor
+                        .getColumnIndex(MediaStore.Audio.Genres.NAME));
+                 */
                 long albumId = cursor.getLong(cursor
                         .getColumnIndexOrThrow(MediaStore.Audio.Media.ALBUM_ID));
                 int ID = cursor.getColumnIndex(MediaStore.Audio.Media._ID);
@@ -207,26 +168,29 @@ public class AllTracksFragment extends Fragment {
                         .parse("content://media/external/audio/albumart");
                 Uri albumArtUri = ContentUris.withAppendedId(sArtworkUri, albumId);
 
-                Log.i("LOG", "albumur = " + albumArtUri.toString());
+                Log.i("LOG", "album = " + albumArtUri.toString());
+                //Log.i("LOG", "style = " + style);
 
                 Bitmap bitmap = null;
                 try {
-                    bitmap = MediaStore.Images.Media.getBitmap(
-                            this.contentResolver, albumArtUri);
+                    //TODO: stock bitmap : if already run through an album can get the existing bitmap and not recalculate
+                    bitmap = getBitmapFromURI(albumArtUri);
 
                 } catch (FileNotFoundException e) {
-                    Log.e("AllTracksFragment", "Error no album art", e);
+                    Log.i("AllTracksFragment", "No album art");
                     // put a default artwork
-                    //   bitmap = BitmapFactory.decodeResource(getContext().getResources(),
-                    //         R.drawable.artwork_default);
+                    /*
+                    TODO: to improve this portion of code because too much time
+                    bitmap = BitmapFactory.decodeResource(getContext().getResources(),
+                            R.drawable.artwork_default);
+                            */
 
                 } catch (IOException e) {
                     Log.e("AllTracksFragment", "IOException", e);
                 }
-                Song song = new Song(ID, track, artist, Long.parseLong(String.valueOf(duration)), bitmap, null, null);
+                Song song = new Song(ID, title, artist, Long.parseLong(String.valueOf(duration)), bitmap, null, album);
                 this.playlistSongs.add(song);
             }
-
         }
     }
 }
