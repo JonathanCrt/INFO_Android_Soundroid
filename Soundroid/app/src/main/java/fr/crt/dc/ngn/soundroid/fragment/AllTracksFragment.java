@@ -27,7 +27,9 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.Toast;
 import android.widget.Toolbar;
 
 import java.io.File;
@@ -39,6 +41,7 @@ import java.util.Collections;
 import java.util.Objects;
 import java.util.logging.Logger;
 
+import fr.crt.dc.ngn.soundroid.MainActivity;
 import fr.crt.dc.ngn.soundroid.R;
 import fr.crt.dc.ngn.soundroid.adapter.SongAdapter;
 import fr.crt.dc.ngn.soundroid.model.Playlist;
@@ -63,7 +66,8 @@ public class AllTracksFragment extends Fragment {
     private boolean isOnBackground;
     private Toolbar toolbar;
 
-    private static final int MAX_ARTWORK_SIZE= 100;
+
+    private static final int MAX_ARTWORK_SIZE = 100;
 
 
     public AllTracksFragment() {// Required empty public constructor
@@ -72,7 +76,7 @@ public class AllTracksFragment extends Fragment {
     /**
      * initialize the fields
      */
-    private void initialization(){
+    private void initialization() {
         // get the default artwork one time
         Bitmap tmp = BitmapFactory.decodeResource(getContext().getResources(),
                 R.drawable.artwork_default);
@@ -104,6 +108,8 @@ public class AllTracksFragment extends Fragment {
                 requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
             }
         }
+
+
     }
 
     @Override
@@ -130,6 +136,12 @@ public class AllTracksFragment extends Fragment {
         //this.listViewSongs.setOnClickListener(this);
 
 
+        listViewSongs.setOnItemClickListener((parent, view, position, id) -> {
+            Toast.makeText(getContext(), playlistSongs.get(position) + "", Toast.LENGTH_SHORT).show();
+            Log.i("click on music", playlistSongs.get(position) + "");
+        });
+
+
         return v;
     }
 
@@ -141,13 +153,6 @@ public class AllTracksFragment extends Fragment {
     public void onStart() {
         Log.d("cycle life of fragment", "i'm inside onStart");
         super.onStart();
-        //lorsque l'instance débute le fragment,
-        // nous créeons l'objet intent, qui si n'existe pas encore, se lie au fragment et démarre
-        if(intent == null){
-            intent = new Intent(this.getContext(), SongService.class);
-            songService.bindService(intent, serviceConnection,Context.BIND_AUTO_CREATE);
-            songService.startService(intent); //demarrage du service;
-        }
 
     }
 
@@ -167,7 +172,7 @@ public class AllTracksFragment extends Fragment {
     public void onResume() {
         Log.d("cycle life of fragment", "i'm inside onResume");
         super.onResume();
-        if(isOnBackground)
+        if (isOnBackground)
             isOnBackground = false;
     }
 
@@ -185,7 +190,7 @@ public class AllTracksFragment extends Fragment {
     public void onDestroy() {
         Log.d("cycle life of fragment", "i'm inside onDestroy");
         super.onDestroy();
-        if(connectionEstablished){
+        if (connectionEstablished) {
             songService.unbindService(serviceConnection); //destruction connexion
         }
         this.songService.stopService(intent);
@@ -193,18 +198,18 @@ public class AllTracksFragment extends Fragment {
 
     }
 
-    public boolean isPlaying(){
-        if(songService != null && connectionEstablished){
+    public boolean isPlaying() {
+        if (songService != null && connectionEstablished) {
             return songService.playerIsPlaying();
         }
         return false;
     }
 
-    private void playNext(){
+    private void playNext() {
         songService.playNextSong();
     }
 
-    private void playPrevious(){
+    private void playPrevious() {
         songService.playPreviousSong();
     }
 
@@ -213,16 +218,15 @@ public class AllTracksFragment extends Fragment {
      * set the song position
      * as a flag for each element of view from the list
      * it is associated with the tag onclick from the layout
-     *
-     * @param view
      */
-    public void songOnTap(View view){
+    public void songOnTap() {
         //ConstraintLayout line = v.findViewById(R.id.ctrLay_list);
         //line.setOnClickListener(view -> {
-            songService.setCurrentSong(Integer.parseInt(view.getTag().toString()));
-            songService.playOneSong();
+        songService.setCurrentSong(Integer.parseInt(getTag()));
+        songService.playOneSong();
         //});
     }
+
     /**
      * Connexion au service
      * ServiceConnection =  Interface pour gérer l'etat du service
@@ -238,7 +242,16 @@ public class AllTracksFragment extends Fragment {
             songService = songBinder.getService();
             // Permet de passer au service l'ArrayList
             songService.setPlaylistSongs(playlistSongs);
-            connectionEstablished  = true;
+            connectionEstablished = true;
+
+            //lorsque l'instance débute le fragment,
+            // nous créeons l'objet intent, qui si n'existe pas encore, se lie au fragment et démarre
+            if (intent == null) {
+                intent = new Intent(getContext(), SongService.class);
+                songService.bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
+                songService.startService(intent); //demarrage du service;
+            }
+
         }
 
         @Override
@@ -286,7 +299,7 @@ public class AllTracksFragment extends Fragment {
         String[] cursor_cols = {MediaStore.Audio.Media._ID,
                 MediaStore.Audio.Media.ARTIST, MediaStore.Audio.Media.ALBUM,
                 MediaStore.Audio.Media.TITLE, MediaStore.Audio.Media.DATA,
-             //   MediaStore.Audio.Genres.NAME,
+                //   MediaStore.Audio.Genres.NAME,
                 MediaStore.Audio.Media.ALBUM_ID,
                 MediaStore.Audio.Media.DURATION};
         String where = MediaStore.Audio.Media.IS_MUSIC + "=1";
