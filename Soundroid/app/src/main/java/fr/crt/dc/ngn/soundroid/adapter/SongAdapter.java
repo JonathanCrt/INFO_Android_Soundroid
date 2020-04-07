@@ -5,13 +5,16 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.LayoutRes;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import fr.crt.dc.ngn.soundroid.R;
 import fr.crt.dc.ngn.soundroid.model.Playlist;
@@ -20,18 +23,20 @@ import fr.crt.dc.ngn.soundroid.model.Song;
 /**
  * Created by CRETE JONATHAN on 03/04/2020.
  */
-public class SongAdapter extends BaseAdapter {
+public class SongAdapter extends ArrayAdapter<Song> {
 
     private Playlist playlist;
     private LayoutInflater songInflater;
 
 
     public SongAdapter(Context context, Playlist playlist){
-       // Log.i("LOG", "SONG ADAPTER size = " + listSongs.size());
+        super(context, 0, playlist.getSongList());
+        // Log.i("LOG", "SONG ADAPTER size = " + listSongs.size());
         this.playlist = playlist;
         this.songInflater = LayoutInflater.from(context);
     }
 
+    /*
     @Override
     public int getCount() {
         return playlist.getSongList().size();
@@ -46,7 +51,7 @@ public class SongAdapter extends BaseAdapter {
     public long getItemId(int position) {
         return 0;
     }
-
+    */
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
 
@@ -72,8 +77,4 @@ public class SongAdapter extends BaseAdapter {
         songRowLayout.setTag(position);
         return songRowLayout;
     }
-
-
-
-
 }

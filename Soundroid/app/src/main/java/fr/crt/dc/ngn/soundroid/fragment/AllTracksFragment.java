@@ -28,6 +28,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 import android.widget.Toolbar;
@@ -53,7 +54,7 @@ import static androidx.core.content.PermissionChecker.checkSelfPermission;
 /**
  * Classe représentant le fragment contenant toutes les pistes
  */
-public class AllTracksFragment extends Fragment {
+public class AllTracksFragment extends Fragment implements AdapterView.OnItemClickListener {
 
     private File songFolder;
     private ArrayList<Song> playlistSongs;
@@ -65,6 +66,7 @@ public class AllTracksFragment extends Fragment {
     private boolean isPlaying;
     private boolean isOnBackground;
     private Toolbar toolbar;
+    private ListView lv;
 
 
     private static final int MAX_ARTWORK_SIZE = 100;
@@ -131,15 +133,20 @@ public class AllTracksFragment extends Fragment {
 
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_all_tracks, container, false);
-        ListView listViewSongs = v.findViewById(R.id.list_songs);
-        listViewSongs.setAdapter(adapter);
-        //this.listViewSongs.setOnClickListener(this);
+        //ArrayAdapter adtr = new ArrayAdapter<>(getActivity(), R.layout.testlist, playlistSongs);
 
 
-        listViewSongs.setOnItemClickListener((parent, view, position, id) -> {
+        lv = v.findViewById(R.id.list_songs);
+        lv.setAdapter(adapter);
+        lv.setOnItemClickListener(this);
+
+        /*
+        lv.setOnItemClickListener((parent, view, position, id) -> {
             Toast.makeText(getContext(), playlistSongs.get(position) + "", Toast.LENGTH_SHORT).show();
             Log.i("click on music", playlistSongs.get(position) + "");
         });
+
+         */
 
 
         return v;
@@ -352,5 +359,11 @@ public class AllTracksFragment extends Fragment {
                 this.playlistSongs.add(song);
             }
         }
+    }
+
+    @Override
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        Toast.makeText(getContext(), playlistSongs.get(position) + "", Toast.LENGTH_SHORT).show();
+        Log.i("click on music", playlistSongs.get(position) + "");
     }
 }

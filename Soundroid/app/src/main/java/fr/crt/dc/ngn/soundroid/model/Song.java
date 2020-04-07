@@ -81,4 +81,20 @@ public class Song {
     public void setRating(int rating) {
         this.rating = rating;
     }
+
+    @Override
+    public String toString() {
+        return "Song{" +
+                "ID=" + ID +
+                ", title='" + title + '\'' +
+                ", artist='" + artist + '\'' +
+                ", duration=" + duration +
+                ", artwork=" + artwork +
+                ", style='" + style + '\'' +
+                ", album='" + album + '\'' +
+                ", countSongPlayed=" + countSongPlayed +
+                ", tag='" + tag + '\'' +
+                ", rating=" + rating +
+                '}';
+    }
 }

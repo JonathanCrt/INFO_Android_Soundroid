@@ -53,4 +53,5 @@ public class Playlist {
     public void setAutomatic(boolean automatic) {
         isAutomatic = automatic;
     }
+
 }
