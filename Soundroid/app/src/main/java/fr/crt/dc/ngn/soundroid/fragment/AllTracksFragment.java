@@ -17,6 +17,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 
 import android.os.Environment;
@@ -27,6 +28,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
+import android.widget.Toolbar;
 
 import java.io.File;
 
@@ -57,7 +59,9 @@ public class AllTracksFragment extends Fragment {
     private SongService songService;
     private Intent intent;
     private boolean connectionEstablished;
-
+    private boolean isPlaying;
+    private boolean isOnBackground;
+    private Toolbar toolbar;
 
     private static final int MAX_ARTWORK_SIZE= 100;
 
@@ -77,6 +81,10 @@ public class AllTracksFragment extends Fragment {
         this.playlistSongs = new ArrayList<>();
         this.songFolder = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC);
         this.connectionEstablished = false;
+        this.isPlaying = false;
+        this.isOnBackground = false;
+
+
     }
 
     @SuppressLint("WrongConstant")
@@ -97,7 +105,6 @@ public class AllTracksFragment extends Fragment {
             }
         }
     }
-
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -122,9 +129,100 @@ public class AllTracksFragment extends Fragment {
         listViewSongs.setAdapter(adapter);
         //this.listViewSongs.setOnClickListener(this);
 
+
         return v;
     }
 
+    /**
+     * on démarre l'instance du service
+     * lorsque le fragment commence
+     */
+    @Override
+    public void onStart() {
+        Log.d("cycle life of fragment", "i'm inside onStart");
+        super.onStart();
+        //lorsque l'instance débute le fragment,
+        // nous créeons l'objet intent, qui si n'existe pas encore, se lie au fragment et démarre
+        if(intent == null){
+            intent = new Intent(this.getContext(), SongService.class);
+            songService.bindService(intent, serviceConnection,Context.BIND_AUTO_CREATE);
+            songService.startService(intent); //demarrage du service;
+        }
+
+    }
+
+    /**
+     * permet dès que l'utilisateur revient à l'application après l'avoir mis en background
+     * d'interargir avec les commandes,
+     * lorsque la lecture elle-même est en pause
+     */
+    @Override
+    public void onPause() {
+        Log.d("cycle life of fragment", "i'm inside onPause");
+        super.onPause();
+        this.isOnBackground = true;
+    }
+
+    @Override
+    public void onResume() {
+        Log.d("cycle life of fragment", "i'm inside onResume");
+        super.onResume();
+        if(isOnBackground)
+            isOnBackground = false;
+    }
+
+    /**
+     * lorsque l'activité n'est plus présentée à l'utilisateur
+     */
+    @Override
+    public void onStop() {
+        Log.d("cycle life of fragment", "i'm inside onStop");
+        super.onStop();
+
+    }
+
+    @Override
+    public void onDestroy() {
+        Log.d("cycle life of fragment", "i'm inside onDestroy");
+        super.onDestroy();
+        if(connectionEstablished){
+            songService.unbindService(serviceConnection); //destruction connexion
+        }
+        this.songService.stopService(intent);
+        this.songService = null;
+
+    }
+
+    public boolean isPlaying(){
+        if(songService != null && connectionEstablished){
+            return songService.playerIsPlaying();
+        }
+        return false;
+    }
+
+    private void playNext(){
+        songService.playNextSong();
+    }
+
+    private void playPrevious(){
+        songService.playPreviousSong();
+    }
+
+
+    /**
+     * set the song position
+     * as a flag for each element of view from the list
+     * it is associated with the tag onclick from the layout
+     *
+     * @param view
+     */
+    public void songOnTap(View view){
+        //ConstraintLayout line = v.findViewById(R.id.ctrLay_list);
+        //line.setOnClickListener(view -> {
+            songService.setCurrentSong(Integer.parseInt(view.getTag().toString()));
+            songService.playOneSong();
+        //});
+    }
     /**
      * Connexion au service
      * ServiceConnection =  Interface pour gérer l'etat du service
@@ -175,6 +273,11 @@ public class AllTracksFragment extends Fragment {
         return Bitmap.createScaledBitmap(myBitmap, outWidth, outHeight, false);
     }
 
+    /**
+     * get all the song's metadata
+     * create a cursor instance with contentResolver instance
+     * in order to obtain information from audio files
+     */
     private void getMetaDataWithResolver() {
         this.contentResolver = Objects.requireNonNull(this.getContext()).getContentResolver();
         Uri uri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
