@@ -8,6 +8,7 @@
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.INTERNET" />
 
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -26,7 +27,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".MainActivity" />
-
+        <service android:name="fr.crt.dc.ngn.soundroid.service.SongService" />
     </application>
 
 </manifest>

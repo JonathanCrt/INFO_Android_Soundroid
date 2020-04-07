@@ -13,6 +13,7 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.MediaMetadataRetriever;
+import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -145,10 +146,7 @@ public class AllTracksFragment extends Fragment implements AdapterView.OnItemCli
             Toast.makeText(getContext(), playlistSongs.get(position) + "", Toast.LENGTH_SHORT).show();
             Log.i("click on music", playlistSongs.get(position) + "");
         });
-
          */
-
-
         return v;
     }
 
@@ -160,7 +158,6 @@ public class AllTracksFragment extends Fragment implements AdapterView.OnItemCli
     public void onStart() {
         Log.d("cycle life of fragment", "i'm inside onStart");
         super.onStart();
-
     }
 
     /**
@@ -251,8 +248,6 @@ public class AllTracksFragment extends Fragment implements AdapterView.OnItemCli
             songService.setPlaylistSongs(playlistSongs);
             connectionEstablished = true;
 
-            //lorsque l'instance débute le fragment,
-            // nous créeons l'objet intent, qui si n'existe pas encore, se lie au fragment et démarre
             if (intent == null) {
                 intent = new Intent(getContext(), SongService.class);
                 songService.bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
@@ -365,5 +360,16 @@ public class AllTracksFragment extends Fragment implements AdapterView.OnItemCli
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         Toast.makeText(getContext(), playlistSongs.get(position) + "", Toast.LENGTH_SHORT).show();
         Log.i("click on music", playlistSongs.get(position) + "");
+        Log.i("position : ", ""+ position );
+        Log.i("id: ", ""+ id);
+        Log.i("service value: ", ""+ songService);
+        //this.songService.setCurrentSong(position);
+        //songService.playOneSong();
+
     }
+
+
+
 }
+
+

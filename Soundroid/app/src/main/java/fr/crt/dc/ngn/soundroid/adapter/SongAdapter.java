@@ -9,6 +9,7 @@ import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.LayoutRes;
 import androidx.constraintlayout.widget.ConstraintLayout;
@@ -29,7 +30,7 @@ public class SongAdapter extends ArrayAdapter<Song> {
     private LayoutInflater songInflater;
 
 
-    public SongAdapter(Context context, Playlist playlist){
+    public SongAdapter(Context context,  Playlist playlist){
         super(context, 0, playlist.getSongList());
         // Log.i("LOG", "SONG ADAPTER size = " + listSongs.size());
         this.playlist = playlist;
