@@ -31,7 +31,7 @@ public class SongService extends Service implements MediaPlayer.OnPreparedListen
     private ArrayList<Song> playlistSongs;
 
     /**
-     * Classe qui permet le lien entre le MainActivity et le service (instance)
+     * Classe qui permet le lien entre le Fragment et le service (instance)
      */
     public class SongBinder extends Binder {
         public SongService getService() {
@@ -133,10 +133,6 @@ public class SongService extends Service implements MediaPlayer.OnPreparedListen
         }
         this.playOneSong();
     }
-
-
-
-
 
 
     @Override

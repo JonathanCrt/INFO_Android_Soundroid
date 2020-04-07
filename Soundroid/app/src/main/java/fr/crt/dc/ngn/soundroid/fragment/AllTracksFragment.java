@@ -2,9 +2,12 @@ package fr.crt.dc.ngn.soundroid.fragment;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.content.ComponentName;
 import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.Context;
+import android.content.Intent;
+import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -17,6 +20,7 @@ import android.os.Bundle;
 import androidx.fragment.app.Fragment;
 
 import android.os.Environment;
+import android.os.IBinder;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -37,6 +41,7 @@ import fr.crt.dc.ngn.soundroid.R;
 import fr.crt.dc.ngn.soundroid.adapter.SongAdapter;
 import fr.crt.dc.ngn.soundroid.model.Playlist;
 import fr.crt.dc.ngn.soundroid.model.Song;
+import fr.crt.dc.ngn.soundroid.service.SongService;
 
 import static androidx.core.content.PermissionChecker.checkSelfPermission;
 
@@ -49,12 +54,15 @@ public class AllTracksFragment extends Fragment {
     private ArrayList<Song> playlistSongs;
     private ContentResolver contentResolver;
     private Bitmap defaultBitmap;
+    private SongService songService;
+    private Intent intent;
+    private boolean connectionEstablished;
+
 
     private static final int MAX_ARTWORK_SIZE= 100;
 
 
-    public AllTracksFragment() {
-        // Required empty public constructor
+    public AllTracksFragment() {// Required empty public constructor
     }
 
     /**
@@ -68,6 +76,7 @@ public class AllTracksFragment extends Fragment {
 
         this.playlistSongs = new ArrayList<>();
         this.songFolder = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC);
+        this.connectionEstablished = false;
     }
 
     @SuppressLint("WrongConstant")
@@ -88,6 +97,7 @@ public class AllTracksFragment extends Fragment {
             }
         }
     }
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -114,6 +124,31 @@ public class AllTracksFragment extends Fragment {
 
         return v;
     }
+
+    /**
+     * Connexion au service
+     * ServiceConnection =  Interface pour gérer l'etat du service
+     * Ces méthodes de rappel informeront la classe lorsque l'instance du fragment
+     * est connecté avec succès à l'instance du service
+     */
+    private ServiceConnection serviceConnection = new ServiceConnection() {
+
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            SongService.SongBinder songBinder = (SongService.SongBinder) service;
+            // Permet de récupérer le service
+            songService = songBinder.getService();
+            // Permet de passer au service l'ArrayList
+            songService.setPlaylistSongs(playlistSongs);
+            connectionEstablished  = true;
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+            connectionEstablished = false;
+        }
+    };
+
 
     /**
      * Get the bitmap from an uri
