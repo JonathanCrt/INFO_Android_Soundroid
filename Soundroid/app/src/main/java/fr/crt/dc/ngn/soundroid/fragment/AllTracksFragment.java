@@ -91,13 +91,11 @@ public class AllTracksFragment extends Fragment implements AdapterView.OnItemCli
         this.isPlaying = false;
         this.isOnBackground = false;
 
-
     }
 
     @SuppressLint("WrongConstant")
     @Override
     public void onCreate(Bundle savedInstanceState) {
-
         super.onCreate(savedInstanceState);
         initialization();
 
@@ -111,7 +109,6 @@ public class AllTracksFragment extends Fragment implements AdapterView.OnItemCli
                 requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
             }
         }
-
 
     }
 
@@ -136,7 +133,6 @@ public class AllTracksFragment extends Fragment implements AdapterView.OnItemCli
         View v = inflater.inflate(R.layout.fragment_all_tracks, container, false);
         //ArrayAdapter adtr = new ArrayAdapter<>(getActivity(), R.layout.testlist, playlistSongs);
 
-
         lv = v.findViewById(R.id.list_songs);
         lv.setAdapter(adapter);
         lv.setOnItemClickListener(this);
@@ -145,8 +141,9 @@ public class AllTracksFragment extends Fragment implements AdapterView.OnItemCli
         lv.setOnItemClickListener((parent, view, position, id) -> {
             Toast.makeText(getContext(), playlistSongs.get(position) + "", Toast.LENGTH_SHORT).show();
             Log.i("click on music", playlistSongs.get(position) + "");
+            Log.i("service value: ", ""+ songService);
         });
-         */
+        */
         return v;
     }
 
@@ -158,6 +155,16 @@ public class AllTracksFragment extends Fragment implements AdapterView.OnItemCli
     public void onStart() {
         Log.d("cycle life of fragment", "i'm inside onStart");
         super.onStart();
+        Log.i("intent value: ", "" + intent);
+
+        if (intent == null) {
+            intent = new Intent(getActivity(), SongService.class);
+            Log.i("intent value: ", "" + intent);
+            Log.i("serviceCon value: ", "" + serviceConnection);
+            getContext().bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
+            Objects.requireNonNull(getActivity()).startService(intent); //demarrage du service;
+            //songService.startService(intent);
+        }
     }
 
     /**
@@ -248,11 +255,6 @@ public class AllTracksFragment extends Fragment implements AdapterView.OnItemCli
             songService.setPlaylistSongs(playlistSongs);
             connectionEstablished = true;
 
-            if (intent == null) {
-                intent = new Intent(getContext(), SongService.class);
-                songService.bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
-                songService.startService(intent); //demarrage du service;
-            }
 
         }
 
@@ -360,14 +362,15 @@ public class AllTracksFragment extends Fragment implements AdapterView.OnItemCli
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         Toast.makeText(getContext(), playlistSongs.get(position) + "", Toast.LENGTH_SHORT).show();
         Log.i("click on music", playlistSongs.get(position) + "");
-        Log.i("position : ", ""+ position );
-        Log.i("id: ", ""+ id);
-        Log.i("service value: ", ""+ songService);
+        Log.i("position : ", "" + position);
+        Log.i("id: ", "" + id);
+        Log.i("service value: ", "" + songService);
+
+        this.songService.setCurrentSong(position);
+        this.songService.playOneSong();
         //this.songService.setCurrentSong(position);
         //songService.playOneSong();
-
     }
-
 
 
 }

@@ -30,6 +30,8 @@ public class SongService extends Service implements MediaPlayer.OnPreparedListen
     private final IBinder songBinder = new SongBinder();
     private ArrayList<Song> playlistSongs;
 
+    // We can put constants to represent actions
+
     /**
      * Classe qui permet le lien entre le Fragment et le service (instance)
      */
@@ -56,6 +58,14 @@ public class SongService extends Service implements MediaPlayer.OnPreparedListen
     public IBinder onBind(Intent intent) {
         return songBinder;
     }
+
+    // Appeler lorsque le service est appelée --> startService(...) à chaque fois, on reçoit l'Intent
+    /*
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        return super.onStartCommand(intent, flags, startId);
+    }
+     */
 
     /**
      * Permet libérer des ressources lorsque l'instance du service est non liée
