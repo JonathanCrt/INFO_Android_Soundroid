@@ -19,15 +19,15 @@ public class MainActivity extends AppCompatActivity {
 
     private AppBarConfiguration mAppBarConfiguration;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_main);
 
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-
+        Toolbar toolbarHead = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbarHead);
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         NavigationView navigationView = findViewById(R.id.nav_view);
@@ -39,6 +39,15 @@ public class MainActivity extends AppCompatActivity {
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
         NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
         NavigationUI.setupWithNavController(navigationView, navController);
+
+        /*
+        Toolbar toolbarPlayer = findViewById(R.id.toolbar_player);
+        toolbarPlayer.setOnClickListener(view -> {
+            Toast.makeText(getApplicationContext(), "Click on toolbar", Toast.LENGTH_SHORT).show();
+            Log.i("MainActivity", "Click on toolbar");
+        });
+
+         */
     }
 
     @Override
