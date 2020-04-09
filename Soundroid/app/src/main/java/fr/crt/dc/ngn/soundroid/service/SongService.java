@@ -100,12 +100,10 @@ public class SongService extends Service implements MediaPlayer.OnPreparedListen
 
     public void playOneSong()  {
         this.player.reset();
-        Song newSong = playlistSongs.get(songIndex);
-        long currentSong = newSong.getID();
-        Log.i("Current song value ", "" + currentSong);
-
-        Uri songUri = ContentUris.withAppendedId(android.provider.MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, currentSong);
-
+        Song currentSong = playlistSongs.get(songIndex);
+        long currentSongID = currentSong.getID();
+        Log.i("SongService", "Current song to play = " + currentSong);
+        Uri songUri = Uri.parse(currentSong.getLink());
         try {
             this.player.setDataSource(getApplicationContext(), songUri);
 
@@ -121,9 +119,7 @@ public class SongService extends Service implements MediaPlayer.OnPreparedListen
             Log.e("SongService", "Error to prepare player", e);
             e.getMessage();
         }
-
     }
-
 
     public void playNextSong() {
         this.songIndex++;

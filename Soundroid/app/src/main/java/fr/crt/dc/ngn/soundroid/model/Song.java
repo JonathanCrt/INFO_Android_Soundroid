@@ -19,8 +19,9 @@ public class Song {
     private  int countSongPlayed;
     private String tag;
     private int rating;
+    private String link;
 
-    public Song(long ID, String title, String artist, long duration, Bitmap artwork, String style, String album) {
+    public Song(long ID, String title, String artist, long duration, Bitmap artwork, String style, String album, String link) {
         this.ID = ID;
         this.title = title;
         this.artist = artist;
@@ -31,6 +32,7 @@ public class Song {
         this.countSongPlayed = 0;
         this.tag = null;
         this.rating = 0;
+        this.link = link;
     }
 
 
@@ -41,6 +43,9 @@ public class Song {
         return String.format(Locale.getDefault(),"%d:%02d", minutes, seconds);
     }
 
+    public String getLink() {
+        return link;
+    }
 
     public long getID() {
         return ID;

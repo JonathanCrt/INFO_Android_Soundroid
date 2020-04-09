@@ -339,13 +339,17 @@ public class AllTracksFragment extends Fragment implements AdapterView.OnItemCli
                 int idColumn = cursor.getColumnIndex
                         (android.provider.MediaStore.Audio.Media._ID);
 
+                int linkColumn = cursor.getColumnIndex
+                        (MediaStore.Audio.Media.DATA);
+
 
                 /*
                 String style = cursor.getString(cursor
                         .getColumnIndex(MediaStore.Audio.Genres.NAME));
                  */
                 //Log.i("LOG", "style = " + style);
-                // Ajout des chansons à la liste (itération sur les résultats)
+
+
                 do {
                     long thisId = cursor.getLong(idColumn);
                     Log.i("LOG", "ID SONG " + thisId);
@@ -355,6 +359,7 @@ public class AllTracksFragment extends Fragment implements AdapterView.OnItemCli
                     long albumId = cursor.getLong(albumIdColumn);
                     String albumSong = cursor.getString(albumColumn);
                     int durationSong = cursor.getInt(durationColumn);
+                    String songLink = Uri.parse(cursor.getString(linkColumn)).toString();
 
 
                     Bitmap bitmap = null;
@@ -382,7 +387,7 @@ public class AllTracksFragment extends Fragment implements AdapterView.OnItemCli
                         Log.e("AllTracksFragment", "IOException", e);
                     }
 
-                    Song song = new Song(idSong, titleSong, artistSong, Long.parseLong(String.valueOf(durationSong)), bitmap, null, albumSong);
+                    Song song = new Song(idSong, titleSong, artistSong, Long.parseLong(String.valueOf(durationSong)), bitmap, null, albumSong, songLink);
                     this.playlistSongs.add(song);
                     idSong++;
                     //Log.i("PlaylistSongs", "" + playlistSongs);
