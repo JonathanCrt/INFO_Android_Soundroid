@@ -2,14 +2,13 @@
 <Toolbar xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/toolbar"
+    android:id="@+id/toolbar_player"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@color/colorPrimary"
-    android:clickable="true"
-    android:focusable="true"
-    android:minHeight="50dp"
-    >
+    android:clickable="false"
+    android:focusable="false"
+    android:minHeight="50dp">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/crt_layout"
@@ -24,7 +23,7 @@
             android:contentDescription="@string/pochette_piste"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.117"
+            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="0.0"
@@ -35,10 +34,11 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/artiste"
+            android:textColor="#FFFFFF"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.04"
-            app:layout_constraintStart_toEndOf="@+id/iv_artwork"
+            app:layout_constraintHorizontal_bias="0.229"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="0.68" />
 
@@ -46,14 +46,13 @@
             android:id="@+id/tv_title_track"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="10dp"
-            android:layout_marginEnd="256dp"
             android:text="@string/titre"
+            android:textColor="#FFFFFF"
             android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toEndOf="@+id/iv_artwork"
+            app:layout_constraintHorizontal_bias="0.221"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="0.3" />
 
@@ -61,15 +60,14 @@
             android:id="@+id/iv_control_play"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="76dp"
             android:contentDescription="@string/contr_le_pour_jouer_une_piste"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.971"
-            app:layout_constraintStart_toStartOf="@+id/iv_artwork"
+            app:layout_constraintHorizontal_bias="0.771"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="0.484"
-            app:srcCompat="@drawable/ic_toolbar_play" />
+            app:srcCompat="@drawable/ic_play_white" />
 
         <ImageView
             android:id="@+id/iv_control_skip_next"
@@ -78,11 +76,11 @@
             android:contentDescription="@string/contr_le_pour_passer_musique_suivante"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.896"
-            app:layout_constraintStart_toStartOf="@+id/iv_artwork"
+            app:layout_constraintHorizontal_bias="0.91"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.484"
-            app:srcCompat="@drawable/ic_toolbar_skip_next" />
+            app:layout_constraintVertical_bias="0.454"
+            app:srcCompat="@drawable/ic_next_white" />
 
         <ImageView
             android:id="@+id/iv_control_skip_previous"
@@ -95,19 +93,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="0.484"
-            app:srcCompat="@drawable/ic_toolbar_previous" />
-
-        <ImageView
-            android:id="@+id/iv_control_get_back_app"
-            android:layout_width="37dp"
-            android:layout_height="43dp"
-            android:layout_marginEnd="1dp"
-            android:contentDescription="Retour à l'app"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/iv_artwork"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/ic_arrow_toolbar" />
+            app:srcCompat="@drawable/ic_previous_white" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
