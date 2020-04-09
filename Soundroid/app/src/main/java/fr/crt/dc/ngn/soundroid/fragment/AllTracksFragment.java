@@ -56,9 +56,8 @@ import static androidx.core.content.PermissionChecker.checkSelfPermission;
 /**
  * Classe représentant le fragment contenant toutes les pistes
  */
-public class AllTracksFragment extends Fragment implements AdapterView.OnItemClickListener {
+public class AllTracksFragment extends Fragment {
 
-    private File songFolder;
     private ArrayList<Song> playlistSongs;
     private ContentResolver contentResolver;
     private Bitmap defaultBitmap;
@@ -70,6 +69,7 @@ public class AllTracksFragment extends Fragment implements AdapterView.OnItemCli
     private Toolbar toolbar;
     private ListView lv;
     private HashMap<Long, Bitmap> artworkMap;
+
 
 
     private static final int MAX_ARTWORK_SIZE = 100;
@@ -86,15 +86,11 @@ public class AllTracksFragment extends Fragment implements AdapterView.OnItemCli
         Bitmap tmp = BitmapFactory.decodeResource(getContext().getResources(),
                 R.drawable.artwork_default);
         this.defaultBitmap = Bitmap.createScaledBitmap(tmp, MAX_ARTWORK_SIZE, MAX_ARTWORK_SIZE, false);
-
         this.playlistSongs = new ArrayList<>();
-        this.songFolder = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC);
         this.connectionEstablished = false;
         this.isPlaying = false;
         this.isOnBackground = false;
-
         this.artworkMap = new HashMap<>();
-
     }
 
     @SuppressLint("WrongConstant")
@@ -124,7 +120,7 @@ public class AllTracksFragment extends Fragment implements AdapterView.OnItemCli
         // TODO : call this method when the app is launched
         this.getMetaDataWithResolver();
 
-        // Permet de trier les données afin que les pistes soient listées par ordre alphabétique
+        // will sort the data so that the tracks are listed in alphabetical order
         Collections.sort(this.playlistSongs, (a, b) -> { // new Comparator<Song> compare()
 
             return a.getTitle().compareTo(b.getTitle());
@@ -135,25 +131,23 @@ public class AllTracksFragment extends Fragment implements AdapterView.OnItemCli
 
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_all_tracks, container, false);
-        //ArrayAdapter adtr = new ArrayAdapter<>(getActivity(), R.layout.testlist, playlistSongs);
 
         lv = v.findViewById(R.id.list_songs);
         lv.setAdapter(adapter);
-        lv.setOnItemClickListener(this);
 
-        /*
         lv.setOnItemClickListener((parent, view, position, id) -> {
             Toast.makeText(getContext(), playlistSongs.get(position) + "", Toast.LENGTH_SHORT).show();
-            Log.i("click on music", playlistSongs.get(position) + "");
-            Log.i("service value: ", ""+ songService);
+            Log.i("position : ", "" + position);
+
+            this.songService.setCurrentSong(position);
+            this.songService.playOneSong();
         });
-        */
+
         return v;
     }
 
     /**
-     * on démarre l'instance du service
-     * lorsque le fragment commence
+     * Allow initialization of service's intance when fragment begin
      */
     @Override
     public void onStart() {
@@ -172,9 +166,8 @@ public class AllTracksFragment extends Fragment implements AdapterView.OnItemCli
     }
 
     /**
-     * permet dès que l'utilisateur revient à l'application après l'avoir mis en background
-     * d'interargir avec les commandes,
-     * lorsque la lecture elle-même est en pause
+     * Allow once the user returns to the application after you set the background
+     * to interact with the controls when the reading itself is paused
      */
     @Override
     public void onPause() {
@@ -192,7 +185,7 @@ public class AllTracksFragment extends Fragment implements AdapterView.OnItemCli
     }
 
     /**
-     * lorsque l'activité n'est plus présentée à l'utilisateur
+     * When the activity is not presented to the user
      */
     @Override
     public void onStop() {
@@ -234,19 +227,13 @@ public class AllTracksFragment extends Fragment implements AdapterView.OnItemCli
      * as a flag for each element of view from the list
      * it is associated with the tag onclick from the layout
      */
-    public void songOnTap() {
-        //ConstraintLayout line = v.findViewById(R.id.ctrLay_list);
-        //line.setOnClickListener(view -> {
-        songService.setCurrentSong(Integer.parseInt(getTag()));
-        songService.playOneSong();
-        //});
-    }
+
 
     /**
-     * Connexion au service
-     * ServiceConnection =  Interface pour gérer l'etat du service
-     * Ces méthodes de rappel informeront la classe lorsque l'instance du fragment
-     * est connecté avec succès à l'instance du service
+     * Connection to service
+     * ServiceConnection =  interface to manage the state of the service
+     * These callback methods notify the class when the instance of the fragment
+     * is successfully connected to the service instance
      */
     private ServiceConnection serviceConnection = new ServiceConnection() {
 
@@ -375,17 +362,7 @@ public class AllTracksFragment extends Fragment implements AdapterView.OnItemCli
         }
     }
 
-    @Override
-    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        Toast.makeText(getContext(), playlistSongs.get(position) + "", Toast.LENGTH_SHORT).show();
-        Log.i("click on music", playlistSongs.get(position) + "");
-        Log.i("position : ", "" + position);
-        Log.i("id: ", "" + id);
-        Log.i("service value: ", "" + songService);
 
-        this.songService.setCurrentSong(position);
-        this.songService.playOneSong();
-    }
 }
 
 
