@@ -40,6 +40,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Objects;
 import java.util.logging.Logger;
 
@@ -68,6 +69,7 @@ public class AllTracksFragment extends Fragment implements AdapterView.OnItemCli
     private boolean isOnBackground;
     private Toolbar toolbar;
     private ListView lv;
+    private HashMap<Long, Bitmap> artworkMap;
 
 
     private static final int MAX_ARTWORK_SIZE = 100;
@@ -90,6 +92,8 @@ public class AllTracksFragment extends Fragment implements AdapterView.OnItemCli
         this.connectionEstablished = false;
         this.isPlaying = false;
         this.isOnBackground = false;
+
+        this.artworkMap = new HashMap<>();
 
     }
 
@@ -332,7 +336,10 @@ public class AllTracksFragment extends Fragment implements AdapterView.OnItemCli
                 int albumIdColumn = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.ALBUM_ID);
                 int durationColumn = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DURATION);
 
-                Log.i("Cursor before do/while", "" + cursor.getString(0));
+                int idColumn = cursor.getColumnIndex
+                        (android.provider.MediaStore.Audio.Media._ID);
+
+
                 /*
                 String style = cursor.getString(cursor
                         .getColumnIndex(MediaStore.Audio.Genres.NAME));
@@ -340,6 +347,8 @@ public class AllTracksFragment extends Fragment implements AdapterView.OnItemCli
                 //Log.i("LOG", "style = " + style);
                 // Ajout des chansons à la liste (itération sur les résultats)
                 do {
+                    long thisId = cursor.getLong(idColumn);
+                    Log.i("LOG", "ID SONG " + thisId);
                     //long idSong = cursor.getLong(idColumn);
                     String titleSong = cursor.getString(titleColumn);
                     String artistSong = cursor.getString(artistColumn);
@@ -347,15 +356,22 @@ public class AllTracksFragment extends Fragment implements AdapterView.OnItemCli
                     String albumSong = cursor.getString(albumColumn);
                     int durationSong = cursor.getInt(durationColumn);
 
-                    Uri sArtworkUri = Uri
-                            .parse("content://media/external/audio/albumart");
-                    Uri albumArtUri = ContentUris.withAppendedId(sArtworkUri, albumId);
-                    Log.i("LOG", "album = " + albumArtUri.toString());
 
                     Bitmap bitmap = null;
                     try {
-                        //TODO: stock bitmap : if already run through an album can get the existing bitmap and not recalculate
-                        bitmap = getBitmapFromURI(albumArtUri);
+                        // artwork bitmap already get
+                        if(artworkMap.containsKey(albumId)){
+                            bitmap = artworkMap.get(albumId);
+                        }else{
+                            // get the bitmap
+                            Uri sArtworkUri = Uri
+                                    .parse("content://media/external/audio/albumart");
+                            Uri albumArtUri = ContentUris.withAppendedId(sArtworkUri, albumId);
+                           // Log.i("LOG", "album = " + albumArtUri.toString());
+                            bitmap = getBitmapFromURI(albumArtUri);
+                            this.artworkMap.put(albumId, bitmap);
+
+                        }
 
                     } catch (FileNotFoundException e) {
                         Log.i("AllTracksFragment", "No album art");
@@ -365,10 +381,11 @@ public class AllTracksFragment extends Fragment implements AdapterView.OnItemCli
                     } catch (IOException e) {
                         Log.e("AllTracksFragment", "IOException", e);
                     }
+
                     Song song = new Song(idSong, titleSong, artistSong, Long.parseLong(String.valueOf(durationSong)), bitmap, null, albumSong);
                     this.playlistSongs.add(song);
                     idSong++;
-                    Log.i("PlaylistSongs", "" + playlistSongs);
+                    //Log.i("PlaylistSongs", "" + playlistSongs);
                     Log.i("Cursor", "" + cursor.getString(0));
                 }
                 while (cursor.moveToNext());
