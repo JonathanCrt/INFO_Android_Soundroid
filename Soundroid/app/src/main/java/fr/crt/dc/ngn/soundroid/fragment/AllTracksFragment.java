@@ -314,22 +314,6 @@ public class AllTracksFragment extends Fragment implements AdapterView.OnItemCli
             long idSong = 0L;
 
             if (cursor != null && cursor.moveToFirst()) {
-                //while (cursor.moveToNext()) {
-                //int ID = cursor.getColumnIndex(MediaStore.Audio.Media._ID);
-                /*
-                long ID = cursor.getLong(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media._ID));
-                Log.i("ID cursor", "" + ID);
-                String artist = cursor.getString(cursor
-                        .getColumnIndexOrThrow(MediaStore.Audio.Media.ARTIST));
-                String album = cursor.getString(cursor
-                        .getColumnIndexOrThrow(MediaStore.Audio.Media.ALBUM));
-                String title = cursor.getString(cursor
-                        .getColumnIndexOrThrow(MediaStore.Audio.Media.TITLE));
-                // all the path of the song : /././.title.mp3
-                String data = cursor.getString(cursor
-                        .getColumnIndexOrThrow(MediaStore.Audio.Media.DATA));
-                 */
-
                 int titleColumn = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.TITLE);
                 int artistColumn  = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.ARTIST);
                 int albumColumn = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.ALBUM);
@@ -341,14 +325,11 @@ public class AllTracksFragment extends Fragment implements AdapterView.OnItemCli
 
                 int linkColumn = cursor.getColumnIndex
                         (MediaStore.Audio.Media.DATA);
-
-
                 /*
                 String style = cursor.getString(cursor
                         .getColumnIndex(MediaStore.Audio.Genres.NAME));
                  */
                 //Log.i("LOG", "style = " + style);
-
 
                 do {
                     long thisId = cursor.getLong(idColumn);
@@ -361,7 +342,6 @@ public class AllTracksFragment extends Fragment implements AdapterView.OnItemCli
                     int durationSong = cursor.getInt(durationColumn);
                     String songLink = Uri.parse(cursor.getString(linkColumn)).toString();
 
-
                     Bitmap bitmap = null;
                     try {
                         // artwork bitmap already get
@@ -372,12 +352,9 @@ public class AllTracksFragment extends Fragment implements AdapterView.OnItemCli
                             Uri sArtworkUri = Uri
                                     .parse("content://media/external/audio/albumart");
                             Uri albumArtUri = ContentUris.withAppendedId(sArtworkUri, albumId);
-                           // Log.i("LOG", "album = " + albumArtUri.toString());
                             bitmap = getBitmapFromURI(albumArtUri);
                             this.artworkMap.put(albumId, bitmap);
-
                         }
-
                     } catch (FileNotFoundException e) {
                         Log.i("AllTracksFragment", "No album art");
                         // put the default artwork
@@ -394,7 +371,6 @@ public class AllTracksFragment extends Fragment implements AdapterView.OnItemCli
                     Log.i("Cursor", "" + cursor.getString(0));
                 }
                 while (cursor.moveToNext());
-
             }
         }
     }
@@ -409,10 +385,7 @@ public class AllTracksFragment extends Fragment implements AdapterView.OnItemCli
 
         this.songService.setCurrentSong(position);
         this.songService.playOneSong();
-
     }
-
-
 }
 
 
