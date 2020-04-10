@@ -29,6 +29,7 @@ public class SongService extends Service implements MediaPlayer.OnPreparedListen
     private int songIndex;
     private final IBinder songBinder = new SongBinder();
     private ArrayList<Song> playlistSongs;
+    private boolean isPlayByToolbar;
 
     // We can put constants to represent actions
 
@@ -98,12 +99,23 @@ public class SongService extends Service implements MediaPlayer.OnPreparedListen
         return false;
     }
 
-    public void playOneSong()  {
+    public boolean playOrPauseSong()  {
         this.player.reset();
         Song currentSong = playlistSongs.get(songIndex);
         long currentSongID = currentSong.getID();
         Log.i("SongService", "Current song to play = " + currentSong);
         Uri songUri = Uri.parse(currentSong.getLink());
+
+        Log.i("SongService", "isPlayByToolbar" + this.isPlayByToolbar);
+        Log.i("SongService", "mp isPlaying" + this.player.isPlaying());
+        if(this.isPlayByToolbar) {
+            if(this.player.isPlaying()) {
+                this.player.pause();
+            }
+            this.isPlayByToolbar = false;
+            return false;
+        }
+
         try {
             this.player.setDataSource(getApplicationContext(), songUri);
 
@@ -119,6 +131,7 @@ public class SongService extends Service implements MediaPlayer.OnPreparedListen
             Log.e("SongService", "Error to prepare player", e);
             e.getMessage();
         }
+        return true;
     }
 
     public void playNextSong() {
@@ -126,7 +139,7 @@ public class SongService extends Service implements MediaPlayer.OnPreparedListen
         if(songIndex >= playlistSongs.size()){
             this.songIndex = 0;
         }
-        this.playOneSong();
+        this.playOrPauseSong();
     }
 
     /**
@@ -140,7 +153,7 @@ public class SongService extends Service implements MediaPlayer.OnPreparedListen
         if (this.songIndex < 0) {
             this.songIndex = this.playlistSongs.size() - 1;
         }
-        this.playOneSong();
+        this.playOrPauseSong();
     }
 
 
@@ -183,6 +196,10 @@ public class SongService extends Service implements MediaPlayer.OnPreparedListen
 
     public void setPlaylistSongs(ArrayList<Song> playlistSongs) {
         this.playlistSongs = playlistSongs;
+    }
+
+    public void setPlayByToolbar(boolean b) {
+        this.isPlayByToolbar = b;
     }
 
     public boolean playerIsPlaying() {

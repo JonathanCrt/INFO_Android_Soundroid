@@ -64,7 +64,6 @@ public class AllTracksFragment extends Fragment {
     private SongService songService;
     private Intent intent;
     private boolean connectionEstablished;
-    private boolean isPlaying;
     private boolean isOnBackground;
     private Toolbar toolbar;
     private ListView lv;
@@ -88,7 +87,6 @@ public class AllTracksFragment extends Fragment {
         this.defaultBitmap = Bitmap.createScaledBitmap(tmp, MAX_ARTWORK_SIZE, MAX_ARTWORK_SIZE, false);
         this.playlistSongs = new ArrayList<>();
         this.connectionEstablished = false;
-        this.isPlaying = false;
         this.isOnBackground = false;
         this.artworkMap = new HashMap<>();
     }
@@ -140,7 +138,7 @@ public class AllTracksFragment extends Fragment {
             Log.i("position : ", "" + position);
 
             this.songService.setCurrentSong(position);
-            this.songService.playOneSong();
+            this.songService.playOrPauseSong();
         });
 
         return v;
