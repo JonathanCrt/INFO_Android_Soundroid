@@ -44,8 +44,6 @@ public class MainActivity extends AppCompatActivity {
     private Intent intent;
     public static final int TOOLBAR_CONTROLLER_REQUEST_CODE = 1;
 
-
-
     public void initializeViews () {
         this.toolbar = findViewById(R.id.toolbar_player);
         this.artwork = findViewById(R.id.iv_artwork);
@@ -83,6 +81,10 @@ public class MainActivity extends AppCompatActivity {
         });
         this.initializeViews();
 
+
+        ToolbarController toolbarController = new ToolbarController(getApplicationContext(), this.ivPlayControl);
+
+        /*
         this.ivPlayControl.setOnClickListener(v -> {
 
             Intent toolbarController = new Intent(MainActivity.this, ToolbarController.class);
@@ -91,22 +93,8 @@ public class MainActivity extends AppCompatActivity {
           //  this.pushPlayControl();
 
         });
-    }
 
-
-
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        if (intent == null) {
-            intent = new Intent(this, SongService.class);
-            Log.i("intent value: ", "" + intent);
-            Log.i("serviceCon value: ", "" + serviceConnection);
-            this.bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
-            Objects.requireNonNull(this).startService(intent); //demarrage du service;
-            //songService.startService(intent);
-        }
+         */
     }
 
     @Override
@@ -121,43 +109,4 @@ public class MainActivity extends AppCompatActivity {
         return NavigationUI.navigateUp(navController, mAppBarConfiguration)
                 || super.onSupportNavigateUp();
     }
-
-    /**
-     * Manage play control
-     */
-    public void pushPlayControl() {
-        this.songService.setToolbarPushed(true);
-        if(!songService.playOrPauseSong()) {
-            Toast.makeText(getApplicationContext(), "State : Pause", Toast.LENGTH_SHORT).show();
-            this.ivPlayControl.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_play_white));
-        } else {
-            Toast.makeText(getApplicationContext(), "State : Play", Toast.LENGTH_SHORT).show();
-            this.ivPlayControl.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_pause_white));
-        }
-    }
-
-    /**
-     * Connection to service
-     * ServiceConnection =  interface to manage the state of the service
-     * These callback methods notify the class when the instance of the fragment
-     * is successfully connected to the service instance
-     */
-    private ServiceConnection serviceConnection = new ServiceConnection() {
-
-        @Override
-        public void onServiceConnected(ComponentName name, IBinder service) {
-            SongService.SongBinder songBinder = (SongService.SongBinder) service;
-            // Permet de récupérer le service
-            songService = songBinder.getService();
-            // Permet de passer au service l'ArrayList
-            connectionEstablished = true;
-        }
-
-        @Override
-        public void onServiceDisconnected(ComponentName name) {
-            connectionEstablished = false;
-        }
-    };
-
-
 }
