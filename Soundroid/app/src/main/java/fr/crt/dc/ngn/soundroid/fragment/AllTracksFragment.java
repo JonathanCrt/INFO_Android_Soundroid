@@ -47,6 +47,7 @@ import java.util.logging.Logger;
 import fr.crt.dc.ngn.soundroid.MainActivity;
 import fr.crt.dc.ngn.soundroid.R;
 import fr.crt.dc.ngn.soundroid.adapter.SongAdapter;
+import fr.crt.dc.ngn.soundroid.controller.ToolbarController;
 import fr.crt.dc.ngn.soundroid.model.Playlist;
 import fr.crt.dc.ngn.soundroid.model.Song;
 import fr.crt.dc.ngn.soundroid.service.SongService;
@@ -133,12 +134,15 @@ public class AllTracksFragment extends Fragment {
         lv = v.findViewById(R.id.list_songs);
         lv.setAdapter(adapter);
 
+        ConstraintLayout constraintLayout = Objects.requireNonNull(getActivity()).findViewById(R.id.crt_layout);
+        ToolbarController toolbarController = new ToolbarController(getActivity(), constraintLayout);
+
         lv.setOnItemClickListener((parent, view, position, id) -> {
             Toast.makeText(getContext(), playlistSongs.get(position) + "", Toast.LENGTH_SHORT).show();
             Log.i("position : ", "" + position);
-
             this.songService.setCurrentSong(position);
             this.songService.playOrPauseSong();
+            toolbarController.setImagePause();
         });
 
         return v;

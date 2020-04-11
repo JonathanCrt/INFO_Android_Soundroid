@@ -97,6 +97,15 @@ public class ToolbarController  {
         });
     }
 
+    public void setImagePlay(){
+        this.ivPlayControl.setImageDrawable(ContextCompat.getDrawable(this.context, R.drawable.ic_play_white));
+
+    }
+
+    public void setImagePause(){
+        this.ivPlayControl.setImageDrawable(ContextCompat.getDrawable(this.context, R.drawable.ic_pause_white));
+    }
+
     /**
      * Manage play control
      */
@@ -104,10 +113,10 @@ public class ToolbarController  {
         this.songService.setToolbarPushed(true);
         if(!songService.playOrPauseSong()) {
             Toast.makeText(this.context, "State : Pause", Toast.LENGTH_SHORT).show();
-            this.ivPlayControl.setImageDrawable(ContextCompat.getDrawable(this.context, R.drawable.ic_play_white));
+            setImagePlay();
         } else {
             Toast.makeText(this.context, "State : Play", Toast.LENGTH_SHORT).show();
-            this.ivPlayControl.setImageDrawable(ContextCompat.getDrawable(this.context, R.drawable.ic_pause_white));
+            setImagePause();
         }
     }
 
