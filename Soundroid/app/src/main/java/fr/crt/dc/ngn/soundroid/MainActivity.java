@@ -116,14 +116,13 @@ public class MainActivity extends AppCompatActivity {
      * Manage play control
      */
     public void pushPlayControl() {
-
+        this.songService.setToolbarPushed(true);
         if(!songService.playOrPauseSong()) {
             Toast.makeText(getApplicationContext(), "State : Pause", Toast.LENGTH_SHORT).show();
             this.ivPlayControl.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_play_white));
         } else {
             Toast.makeText(getApplicationContext(), "State : Play", Toast.LENGTH_SHORT).show();
             this.ivPlayControl.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_pause_white));
-            this.songService.setPlayByToolbar(true);
         }
     }
 

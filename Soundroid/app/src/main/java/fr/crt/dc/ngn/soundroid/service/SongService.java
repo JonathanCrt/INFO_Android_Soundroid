@@ -29,7 +29,10 @@ public class SongService extends Service implements MediaPlayer.OnPreparedListen
     private int songIndex;
     private final IBinder songBinder = new SongBinder();
     private ArrayList<Song> playlistSongs;
-    private boolean isPlayByToolbar;
+    private boolean isToolbarPushed;
+    private boolean initializeSong;
+
+
 
     // We can put constants to represent actions
 
@@ -99,22 +102,15 @@ public class SongService extends Service implements MediaPlayer.OnPreparedListen
         return false;
     }
 
-    public boolean playOrPauseSong()  {
+    private void initializeSong(){
         this.player.reset();
         Song currentSong = playlistSongs.get(songIndex);
         long currentSongID = currentSong.getID();
         Log.i("SongService", "Current song to play = " + currentSong);
         Uri songUri = Uri.parse(currentSong.getLink());
 
-        Log.i("SongService", "isPlayByToolbar" + this.isPlayByToolbar);
+        Log.i("SongService", "isPlayByToolbar" + this.isToolbarPushed);
         Log.i("SongService", "mp isPlaying" + this.player.isPlaying());
-        if(this.isPlayByToolbar) {
-            if(this.player.isPlaying()) {
-                this.player.pause();
-            }
-            this.isPlayByToolbar = false;
-            return false;
-        }
 
         try {
             this.player.setDataSource(getApplicationContext(), songUri);
@@ -131,7 +127,32 @@ public class SongService extends Service implements MediaPlayer.OnPreparedListen
             Log.e("SongService", "Error to prepare player", e);
             e.getMessage();
         }
-        return true;
+
+        this.initializeSong = true;
+    }
+
+    private boolean endPlayOrPauseSong(boolean isPlaying){
+        this.isToolbarPushed = false;
+        return isPlaying;
+    }
+
+    public boolean playOrPauseSong()  {
+        // music is paused so user want to restart it or to start a new song
+        if (!this.player.isPlaying()  && this.isToolbarPushed) {
+            if (!initializeSong) {  // no music yet
+                initializeSong();
+            } else {    // already a music so just restart it
+                startPlayBack();
+            }
+            return endPlayOrPauseSong(true); // music is playing
+        }else if (this.player.isPlaying() && this.isToolbarPushed) {  // music is playing so user want to pause
+            this.player.pause();
+            return endPlayOrPauseSong(false); // music is paused
+        }else{
+            // user click on a music on the list
+            initializeSong();
+            return endPlayOrPauseSong(true); // music is playing
+        }
     }
 
     public void playNextSong() {
@@ -198,8 +219,8 @@ public class SongService extends Service implements MediaPlayer.OnPreparedListen
         this.playlistSongs = playlistSongs;
     }
 
-    public void setPlayByToolbar(boolean b) {
-        this.isPlayByToolbar = b;
+    public void setToolbarPushed(boolean b) {
+        this.isToolbarPushed = b;
     }
 
     public boolean playerIsPlaying() {
