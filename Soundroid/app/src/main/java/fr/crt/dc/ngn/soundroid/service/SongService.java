@@ -155,6 +155,12 @@ public class SongService extends Service implements MediaPlayer.OnPreparedListen
         }
     }
 
+    /**
+     * Permet de gérer le contrôle suivant
+     * On incrémente  l'index de la chanson,
+     * vérifier que nous ne sommes pas allés en dehors de la plage de la liste,
+     * et on appelle la méthode playSong()
+     */
     public void playNextSong() {
         this.songIndex++;
         if(songIndex >= playlistSongs.size()){

@@ -16,6 +16,7 @@ import com.google.android.material.navigation.NavigationView;
 
 import java.util.Objects;
 
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
@@ -81,20 +82,8 @@ public class MainActivity extends AppCompatActivity {
         });
         this.initializeViews();
 
-
-        ToolbarController toolbarController = new ToolbarController(getApplicationContext(), this.ivPlayControl);
-
-        /*
-        this.ivPlayControl.setOnClickListener(v -> {
-
-            Intent toolbarController = new Intent(MainActivity.this, ToolbarController.class);
-            startActivityForResult(toolbarController, TOOLBAR_CONTROLLER_REQUEST_CODE);
-           // Toast.makeText(getApplicationContext(), "Click on start button", Toast.LENGTH_SHORT).show();
-          //  this.pushPlayControl();
-
-        });
-
-         */
+        ConstraintLayout constraintLayout = findViewById(R.id.crt_layout);
+        ToolbarController toolbarController = new ToolbarController(getApplicationContext(), constraintLayout);
     }
 
     @Override
