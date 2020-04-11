@@ -24,6 +24,8 @@ import androidx.navigation.ui.NavigationUI;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+
+import fr.crt.dc.ngn.soundroid.controller.ToolbarController;
 import fr.crt.dc.ngn.soundroid.service.SongService;
 
 
@@ -40,6 +42,8 @@ public class MainActivity extends AppCompatActivity {
     private boolean connectionEstablished;
     private SongService songService;
     private Intent intent;
+    public static final int TOOLBAR_CONTROLLER_REQUEST_CODE = 1;
+
 
 
     public void initializeViews () {
@@ -80,11 +84,17 @@ public class MainActivity extends AppCompatActivity {
         this.initializeViews();
 
         this.ivPlayControl.setOnClickListener(v -> {
-            Toast.makeText(getApplicationContext(), "Click on start button", Toast.LENGTH_SHORT).show();
-            this.pushPlayControl();
-        });
 
+            Intent toolbarController = new Intent(MainActivity.this, ToolbarController.class);
+            startActivityForResult(toolbarController, TOOLBAR_CONTROLLER_REQUEST_CODE);
+           // Toast.makeText(getApplicationContext(), "Click on start button", Toast.LENGTH_SHORT).show();
+          //  this.pushPlayControl();
+
+        });
     }
+
+
+
 
     @Override
     protected void onStart() {

@@ -9,6 +9,7 @@ import android.os.IBinder;
 import android.util.Log;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 import android.widget.Toolbar;
 
 import java.util.ArrayList;
@@ -36,8 +37,8 @@ public class ToolbarController extends AppCompatActivity  {
     private ArrayList<Song> playlistSongs;
     private SongService songService;
     private Intent intent;
-
-
+    public static final int RESULT_OK = 1;
+    public static final int TOOLBAR_CONTROLLER_REQUEST_CODE = 1;
 
     public void initializeViews () {
         this.toolbar = findViewById(R.id.toolbar_player);
@@ -53,13 +54,25 @@ public class ToolbarController extends AppCompatActivity  {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Log.i("ToolbarController", "on cREATE");
         this.initializeViews();
         this.connectionEstablished = false;
 
         this.ivPlayControl.setOnClickListener (v -> {
+            Log.i("ToolbarController", "on click");
+            Toast.makeText(getApplicationContext(), "Click on start button", Toast.LENGTH_SHORT).show();
             this.pushPlayControl();
         });
 
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (TOOLBAR_CONTROLLER_REQUEST_CODE == requestCode && RESULT_OK == resultCode) {
+            // Fetch the score from the Intent
+            //int score = data.getIntExtra(ToolbarController.BUNDLE_EXTRA_SCORE, 0);
+        }
     }
 
     @Override
