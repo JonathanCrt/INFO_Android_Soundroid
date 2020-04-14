@@ -8,12 +8,15 @@ import android.net.Uri;
 import android.os.Binder;
 import android.os.IBinder;
 import android.util.Log;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.IOException;
 import java.util.ArrayList;
 
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
+import fr.crt.dc.ngn.soundroid.controller.ToolbarController;
 import fr.crt.dc.ngn.soundroid.model.Song;
 
 /**
@@ -29,7 +32,7 @@ public class SongService extends Service implements MediaPlayer.OnPreparedListen
     private boolean isToolbarPushed;
     private boolean initializeSong;
 
-
+    private ToolbarController toolbarController;
 
     // We can put constants to represent actions
 
@@ -47,7 +50,6 @@ public class SongService extends Service implements MediaPlayer.OnPreparedListen
         super.onCreate();
         this.songIndex = 0;
         this.player = new MediaPlayer();
-
         this.player.setAudioAttributes(new AudioAttributes.Builder()
                 .setUsage(AudioAttributes.USAGE_MEDIA)
                 .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
@@ -99,7 +101,7 @@ public class SongService extends Service implements MediaPlayer.OnPreparedListen
         return false;
     }
 
-    private void initializeSong(){
+    private void initializeSong() {
         this.player.reset();
         Song currentSong = playlistSongs.get(songIndex);
         long currentSongID = currentSong.getID();
@@ -128,24 +130,24 @@ public class SongService extends Service implements MediaPlayer.OnPreparedListen
         this.initializeSong = true;
     }
 
-    private boolean endPlayOrPauseSong(boolean isPlaying){
+    private boolean endPlayOrPauseSong(boolean isPlaying) {
         this.isToolbarPushed = false;
         return isPlaying;
     }
 
-    public boolean playOrPauseSong()  {
+    public boolean playOrPauseSong() {
         // music is paused so user want to restart it or to start a new song
-        if (!this.player.isPlaying()  && this.isToolbarPushed) {
+        if (!this.player.isPlaying() && this.isToolbarPushed) {
             if (!initializeSong) {  // no music yet
                 initializeSong();
             } else {    // already a music so just restart it
                 startPlayBack();
             }
             return endPlayOrPauseSong(true); // music is playing
-        }else if (this.player.isPlaying() && this.isToolbarPushed) {  // music is playing so user want to pause
+        } else if (this.player.isPlaying() && this.isToolbarPushed) {  // music is playing so user want to pause
             this.player.pause();
             return endPlayOrPauseSong(false); // music is paused
-        }else{
+        } else {
             // user click on a music on the list
             initializeSong();
             return endPlayOrPauseSong(true); // music is playing
@@ -160,7 +162,7 @@ public class SongService extends Service implements MediaPlayer.OnPreparedListen
      */
     public void playNextSong() {
         this.songIndex++;
-        if(songIndex >= playlistSongs.size()){
+        if (songIndex >= playlistSongs.size()) {
             this.songIndex = 0;
         }
         this.playOrPauseSong();
@@ -183,8 +185,11 @@ public class SongService extends Service implements MediaPlayer.OnPreparedListen
 
     @Override
     public void onDestroy() {
+        /*
         this.player.stop();
         this.player.release();
+         */
+        this.stopForeground(true);
     }
 
 
