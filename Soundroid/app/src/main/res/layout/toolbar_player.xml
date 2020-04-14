@@ -17,7 +17,7 @@
 
 
         <ImageView
-            android:id="@+id/iv_artwork"
+            android:id="@+id/iv_toolbar_artwork"
             android:layout_width="71dp"
             android:layout_height="69dp"
             android:contentDescription="@string/pochette_piste"
@@ -30,7 +30,7 @@
             app:srcCompat="@drawable/artwork_default" />
 
         <TextView
-            android:id="@+id/tv_artist"
+            android:id="@+id/tv_toolbar_artist"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/artiste"
@@ -38,12 +38,12 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/iv_control_skip_previous"
             app:layout_constraintHorizontal_bias="0.086"
-            app:layout_constraintStart_toEndOf="@+id/iv_artwork"
+            app:layout_constraintStart_toEndOf="@+id/iv_toolbar_artwork"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="0.7" />
 
         <TextView
-            android:id="@+id/tv_title_track"
+            android:id="@+id/tv_toolbar_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/titre"
@@ -52,7 +52,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/iv_control_skip_previous"
             app:layout_constraintHorizontal_bias="0.078"
-            app:layout_constraintStart_toEndOf="@+id/iv_artwork"
+            app:layout_constraintStart_toEndOf="@+id/iv_toolbar_artwork"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="0.32" />
 

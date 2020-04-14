@@ -32,12 +32,12 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.025"
-        app:layout_constraintStart_toEndOf="@+id/iv_artwork"
+        app:layout_constraintStart_toEndOf="@+id/iv_list_artwork"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.853" />
 
     <ImageView
-        android:id="@+id/iv_artwork"
+        android:id="@+id/iv_list_artwork"
         android:layout_width="60dp"
         android:layout_height="60dp"
         android:contentDescription="@string/pochette_piste"
@@ -50,7 +50,7 @@
         app:srcCompat="@drawable/artwork_default" />
 
     <TextView
-        android:id="@+id/tv__list_title"
+        android:id="@+id/tv_list_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:maxLength="30"
