@@ -47,4 +47,13 @@
         tools:layout="@layout/fragment_settings">
     </fragment>
 
+    <fragment
+        android:id="@+id/nav_player_song"
+        android:name="fr.crt.dc.ngn.soundroid.fragment.PlayerFragment"
+        android:label="Lecture de la musique"
+        tools:layout="@layout/fragment_player">
+    </fragment>
+
+
+
 </navigation>
