@@ -36,11 +36,11 @@
             android:text="@string/artiste"
             android:textColor="#FFFFFF"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.229"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/iv_control_skip_previous"
+            app:layout_constraintHorizontal_bias="0.086"
+            app:layout_constraintStart_toEndOf="@+id/iv_artwork"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.68" />
+            app:layout_constraintVertical_bias="0.7" />
 
         <TextView
             android:id="@+id/tv_title_track"
@@ -50,11 +50,11 @@
             android:textColor="#FFFFFF"
             android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.221"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/iv_control_skip_previous"
+            app:layout_constraintHorizontal_bias="0.078"
+            app:layout_constraintStart_toEndOf="@+id/iv_artwork"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.3" />
+            app:layout_constraintVertical_bias="0.32" />
 
         <ImageView
             android:id="@+id/iv_control_play"

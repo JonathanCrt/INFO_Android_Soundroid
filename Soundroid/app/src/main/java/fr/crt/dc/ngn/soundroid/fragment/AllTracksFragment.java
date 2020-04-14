@@ -141,8 +141,11 @@ public class AllTracksFragment extends Fragment {
             Toast.makeText(getContext(), playlistSongs.get(position) + "", Toast.LENGTH_SHORT).show();
             Log.i("position : ", "" + position);
             this.songService.setCurrentSong(position);
+
             this.songService.playOrPauseSong();
             toolbarController.setImagePause();
+            toolbarController.setTextViewTitleSong(playlistSongs.get(position).getTitle());
+            toolbarController.setTextViewArtistSong(playlistSongs.get(position).getArtist());
         });
 
         return v;

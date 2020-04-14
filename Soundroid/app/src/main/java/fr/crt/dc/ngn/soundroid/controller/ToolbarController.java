@@ -11,6 +11,9 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import org.w3c.dom.Text;
+
 import androidx.appcompat.widget.Toolbar;
 
 import java.util.ArrayList;
@@ -30,8 +33,8 @@ public class ToolbarController  {
 
     private Toolbar toolbar;
     private ImageView artwork;
-    private TextView titleSong;
-    private TextView artistSong;
+    private TextView tvTitleSong;
+    private TextView tvArtistSong;
     private ImageView ivPlayControl;
     private ImageView ivNextControl;
     private ImageView ivPrevControl;
@@ -45,6 +48,8 @@ public class ToolbarController  {
     private ConstraintLayout constraintLayout;
 
     private void initialization(){
+        this.tvTitleSong = (TextView) constraintLayout.getViewById(R.id.tv_title_track);
+        this.tvArtistSong = (TextView) constraintLayout.getViewById(R.id.tv_artist);
         this.ivPlayControl = (ImageView) constraintLayout.getViewById(R.id.iv_control_play);
         this.ivPrevControl = (ImageView) constraintLayout.getViewById(R.id.iv_control_skip_previous);
         this.ivNextControl = (ImageView) constraintLayout.getViewById(R.id.iv_control_skip_next);
@@ -55,16 +60,8 @@ public class ToolbarController  {
         this.constraintLayout = mainActivity;
         this.initialization();
         intent = new Intent(this.context, SongService.class);
-        /**
-         * Connection to service
-         * ServiceConnection =  interface to manage the state of the service
-         * These callback methods notify the class when the instance of the fragment
-         * is successfully connected to the service instance
-         */
-        // Permet de récupérer le service
-        // Permet de passer au service l'ArrayList
-        ServiceConnection serviceConnection = new ServiceConnection() {
 
+        ServiceConnection serviceConnection = new ServiceConnection() {
             @Override
             public void onServiceConnected(ComponentName name, IBinder service) {
                 SongService.SongBinder songBinder = (SongService.SongBinder) service;
@@ -86,15 +83,9 @@ public class ToolbarController  {
     }
 
     private void installListener(){
-        this.ivPlayControl.setOnClickListener(v->{
-            pushPlayControl();
-        });
-        this.ivPrevControl.setOnClickListener(v->{
-            pushPreviousControl();
-        });
-        this.ivNextControl.setOnClickListener(v->{
-            pushNextControl();
-        });
+        this.ivPlayControl.setOnClickListener(v-> pushPlayControl());
+        this.ivPrevControl.setOnClickListener(v-> pushPreviousControl());
+        this.ivNextControl.setOnClickListener(v-> pushNextControl());
     }
 
     public void setImagePlay(){
@@ -104,6 +95,14 @@ public class ToolbarController  {
 
     public void setImagePause(){
         this.ivPlayControl.setImageDrawable(ContextCompat.getDrawable(this.context, R.drawable.ic_pause_white));
+    }
+
+    public void setTextViewTitleSong(String title) {
+        this.tvTitleSong.setText(title);
+    }
+
+    public void setTextViewArtistSong(String artist) {
+        this.tvArtistSong.setText(artist);
     }
 
     /**

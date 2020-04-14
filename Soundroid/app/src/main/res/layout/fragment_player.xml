@@ -14,7 +14,7 @@
         android:background="@drawable/side_nav_bar">
 
         <TextView
-            android:id="@+id/tv__list_title"
+            android:id="@+id/tv_player_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/titre"
@@ -28,7 +28,7 @@
             app:layout_constraintVertical_bias="0.135" />
 
         <TextView
-            android:id="@+id/tv_artist"
+            android:id="@+id/tv_player_artist"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/artiste"
@@ -42,7 +42,7 @@
             app:layout_constraintVertical_bias="0.201" />
 
         <ImageView
-            android:id="@+id/iv_artwork"
+            android:id="@+id/iv_player_artwork"
             android:layout_width="253dp"
             android:layout_height="248dp"
             android:contentDescription="@string/pochette_piste"
@@ -64,7 +64,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/iv_artwork"
+            app:layout_constraintTop_toBottomOf="@+id/iv_player_artwork"
             app:layout_constraintVertical_bias="0.223" />
 
         <ImageView
