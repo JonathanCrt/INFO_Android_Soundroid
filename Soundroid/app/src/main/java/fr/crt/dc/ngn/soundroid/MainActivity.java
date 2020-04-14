@@ -1,25 +1,17 @@
 package fr.crt.dc.ngn.soundroid;
 
-import android.content.ComponentName;
-import android.content.Context;
 import android.content.Intent;
-import android.content.ServiceConnection;
-import android.icu.util.ICUUncheckedIOException;
 import android.os.Bundle;
-import android.os.IBinder;
 import android.util.Log;
 import android.view.Menu;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.android.material.navigation.NavigationView;
 
 import java.util.Objects;
 
 import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.core.content.ContextCompat;
-import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.navigation.NavController;
@@ -31,8 +23,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
 import fr.crt.dc.ngn.soundroid.controller.ToolbarController;
-import fr.crt.dc.ngn.soundroid.fragment.AllTracksFragment;
-import fr.crt.dc.ngn.soundroid.fragment.HistoryFragment;
 import fr.crt.dc.ngn.soundroid.fragment.PlayerFragment;
 import fr.crt.dc.ngn.soundroid.service.SongService;
 
@@ -55,9 +45,9 @@ public class MainActivity extends AppCompatActivity {
 
     public void initializeViews() {
         this.toolbar = findViewById(R.id.toolbar_player);
-        this.artwork = findViewById(R.id.iv_artwork);
-        this.titleSong = findViewById(R.id.tv_title_track);
-        this.artistSong = findViewById(R.id.tv_artist);
+        this.artwork = findViewById(R.id.iv_list_artwork);
+        this.titleSong = findViewById(R.id.tv_toolbar_title);
+        this.artistSong = findViewById(R.id.tv_toolbar_artist);
         this.ivPlayControl = findViewById(R.id.iv_control_play);
         this.ivNextControl = findViewById(R.id.iv_control_player_next);
         this.ivPrevControl = findViewById(R.id.iv_control_player_previous);
@@ -116,7 +106,6 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-
     /*
     public void toogleFragments() {
         AllTracksFragment allTracksFragment = (AllTracksFragment) getSupportFragmentManager().findFragmentById(R.id.nav_all_tracks);
@@ -138,7 +127,6 @@ public class MainActivity extends AppCompatActivity {
         getSupportFragmentManager().executePendingTransactions();
 
     }
-
      */
 
 
