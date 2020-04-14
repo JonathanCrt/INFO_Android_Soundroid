@@ -83,7 +83,7 @@ public class AllTracksFragment extends Fragment {
      */
     private void initialization() {
         // get the default artwork one time
-        Bitmap tmp = BitmapFactory.decodeResource(getContext().getResources(),
+        Bitmap tmp = BitmapFactory.decodeResource(Objects.requireNonNull(getContext()).getResources(),
                 R.drawable.artwork_default);
         this.defaultBitmap = Bitmap.createScaledBitmap(tmp, MAX_ARTWORK_SIZE, MAX_ARTWORK_SIZE, false);
         this.playlistSongs = new ArrayList<>();

@@ -112,10 +112,11 @@ public class ToolbarController  {
         this.songService.setToolbarPushed(true);
         if(!songService.playOrPauseSong()) {
             Toast.makeText(this.context, "State : Pause", Toast.LENGTH_SHORT).show();
-            setImagePlay();
+            this.setImagePlay();
+
         } else {
             Toast.makeText(this.context, "State : Play", Toast.LENGTH_SHORT).show();
-            setImagePause();
+            this.setImagePause();
         }
     }
 

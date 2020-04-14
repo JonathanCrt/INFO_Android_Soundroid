@@ -4,6 +4,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.icu.util.ICUUncheckedIOException;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
@@ -18,6 +19,9 @@ import java.util.Objects;
 
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
@@ -27,6 +31,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
 import fr.crt.dc.ngn.soundroid.controller.ToolbarController;
+import fr.crt.dc.ngn.soundroid.fragment.AllTracksFragment;
+import fr.crt.dc.ngn.soundroid.fragment.HistoryFragment;
+import fr.crt.dc.ngn.soundroid.fragment.PlayerFragment;
 import fr.crt.dc.ngn.soundroid.service.SongService;
 
 
@@ -44,8 +51,9 @@ public class MainActivity extends AppCompatActivity {
     private SongService songService;
     private Intent intent;
     public static final int TOOLBAR_CONTROLLER_REQUEST_CODE = 1;
+    private boolean isPlayerVisible;
 
-    public void initializeViews () {
+    public void initializeViews() {
         this.toolbar = findViewById(R.id.toolbar_player);
         this.artwork = findViewById(R.id.iv_artwork);
         this.titleSong = findViewById(R.id.tv_title_track);
@@ -60,10 +68,8 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_main);
-
         Toolbar toolbarHead = findViewById(R.id.toolbar);
         setSupportActionBar(toolbarHead);
-
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         NavigationView navigationView = findViewById(R.id.nav_view);
 
@@ -76,15 +82,65 @@ public class MainActivity extends AppCompatActivity {
         NavigationUI.setupWithNavController(navigationView, navController);
 
         Toolbar toolbarPlayer = findViewById(R.id.inc_toolbar_player);
+
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+
+        PlayerFragment playerFragment = new PlayerFragment();
         toolbarPlayer.setOnClickListener(view -> {
-            Toast.makeText(getApplicationContext(), "Click on toolbar", Toast.LENGTH_SHORT).show();
-            Log.i("MainActivity", "Click on toolbar");
+            if (!isPlayerVisible) {
+                fragmentTransaction.replace(R.id.nav_host_fragment, playerFragment).commit();
+                //this.switchToPlayer();
+                this.isPlayerVisible = true;
+            } else {
+                isPlayerVisible = false;
+            }
+            Log.i("MainActivity", "Player is Visible ? " + isPlayerVisible);
+
         });
         this.initializeViews();
 
         ConstraintLayout constraintLayout = findViewById(R.id.crt_layout);
         ToolbarController toolbarController = new ToolbarController(getApplicationContext(), constraintLayout);
     }
+
+    private void switchToPlayer() {
+        PlayerFragment playerFragment = (PlayerFragment) getSupportFragmentManager().findFragmentByTag("PLAYER_FRAG");
+        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+        fragmentTransaction.detach(Objects.requireNonNull(getSupportFragmentManager().findFragmentByTag("ALL_TRACKS")));
+        assert playerFragment != null;
+        fragmentTransaction.attach(playerFragment);
+        fragmentTransaction.addToBackStack(null);
+        fragmentTransaction.commitAllowingStateLoss();
+        getSupportFragmentManager().executePendingTransactions();
+
+    }
+
+
+    /*
+    public void toogleFragments() {
+        AllTracksFragment allTracksFragment = (AllTracksFragment) getSupportFragmentManager().findFragmentById(R.id.nav_all_tracks);
+        PlayerFragment playerFragment = (PlayerFragment) getSupportFragmentManager().findFragmentById(R.id.nav_player_song);
+
+        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+        if(!isPlayerVisible) {
+            fragmentTransaction.detach(allTracksFragment);
+            fragmentTransaction.attach(playerFragment);
+            fragmentTransaction.addToBackStack(null);
+            this.isPlayerVisible = true;
+        } else {
+            fragmentTransaction.detach(playerFragment);
+            fragmentTransaction.attach(allTracksFragment);
+            this.isPlayerVisible = false;
+        }
+
+        fragmentTransaction.commitAllowingStateLoss();
+        getSupportFragmentManager().executePendingTransactions();
+
+    }
+
+     */
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
