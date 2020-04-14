@@ -134,9 +134,14 @@ public class AllTracksFragment extends Fragment {
         lv = v.findViewById(R.id.list_songs);
         lv.setAdapter(adapter);
 
+        this.installOnItemClickListener();
+
+        return v;
+    }
+
+    private void installOnItemClickListener () {
         ConstraintLayout constraintLayout = Objects.requireNonNull(getActivity()).findViewById(R.id.crt_layout);
         ToolbarController toolbarController = new ToolbarController(getActivity(), constraintLayout);
-
         lv.setOnItemClickListener((parent, view, position, id) -> {
             Toast.makeText(getContext(), playlistSongs.get(position) + "", Toast.LENGTH_SHORT).show();
             Log.i("position : ", "" + position);
@@ -144,11 +149,8 @@ public class AllTracksFragment extends Fragment {
 
             this.songService.playOrPauseSong();
             toolbarController.setImagePause();
-            toolbarController.setTextViewTitleSong(playlistSongs.get(position).getTitle());
-            toolbarController.setTextViewArtistSong(playlistSongs.get(position).getArtist());
+            toolbarController.setWidgetsValues();
         });
-
-        return v;
     }
 
     /**
@@ -162,8 +164,6 @@ public class AllTracksFragment extends Fragment {
 
         if (intent == null) {
             intent = new Intent(getActivity(), SongService.class);
-            Log.i("intent value: ", "" + intent);
-            Log.i("serviceCon value: ", "" + serviceConnection);
             getContext().bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
             Objects.requireNonNull(getActivity()).startService(intent); //demarrage du service;
             //songService.startService(intent);
@@ -202,13 +202,13 @@ public class AllTracksFragment extends Fragment {
     @Override
     public void onDestroy() {
         Log.d("cycle life of fragment", "i'm inside onDestroy");
-        super.onDestroy();
+
         if (connectionEstablished) {
             songService.unbindService(serviceConnection); //destruction connexion
         }
         this.songService.stopService(intent);
         this.songService = null;
-
+        super.onDestroy();
     }
 
     public boolean isPlaying() {

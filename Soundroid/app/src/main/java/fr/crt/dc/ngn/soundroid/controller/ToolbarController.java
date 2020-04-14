@@ -4,15 +4,11 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.graphics.Bitmap;
 import android.os.IBinder;
-import android.text.Layout;
-import android.util.Log;
-import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import org.w3c.dom.Text;
 
 import androidx.appcompat.widget.Toolbar;
 
@@ -48,11 +44,12 @@ public class ToolbarController  {
     private ConstraintLayout constraintLayout;
 
     private void initialization(){
-        this.tvTitleSong = (TextView) constraintLayout.getViewById(R.id.tv_title_track);
-        this.tvArtistSong = (TextView) constraintLayout.getViewById(R.id.tv_artist);
+        this.tvTitleSong = (TextView) constraintLayout.getViewById(R.id.tv_toolbar_title);
+        this.tvArtistSong = (TextView) constraintLayout.getViewById(R.id.tv_toolbar_artist);
         this.ivPlayControl = (ImageView) constraintLayout.getViewById(R.id.iv_control_play);
         this.ivPrevControl = (ImageView) constraintLayout.getViewById(R.id.iv_control_skip_previous);
         this.ivNextControl = (ImageView) constraintLayout.getViewById(R.id.iv_control_skip_next);
+        this.artwork = (ImageView) constraintLayout.getViewById(R.id.iv_toolbar_artwork);
     }
 
     public ToolbarController(Context context, ConstraintLayout mainActivity){
@@ -92,17 +89,27 @@ public class ToolbarController  {
         this.ivPlayControl.setImageDrawable(ContextCompat.getDrawable(this.context, R.drawable.ic_play_white));
 
     }
-
     public void setImagePause(){
         this.ivPlayControl.setImageDrawable(ContextCompat.getDrawable(this.context, R.drawable.ic_pause_white));
     }
 
-    public void setTextViewTitleSong(String title) {
+
+    public void setWidgetsValues() {
+        this.setTextViewTitleSong(this.songService.getPlaylistSongs().get(this.songService.getSongIndex()).getTitle());
+        this.setTextViewArtistSong(this.songService.getPlaylistSongs().get(this.songService.getSongIndex()).getArtist());
+        this.setArtworkSong(this.songService.getPlaylistSongs().get(this.songService.getSongIndex()).getArtwork());
+    }
+
+    private void setTextViewTitleSong(String title) {
         this.tvTitleSong.setText(title);
     }
 
-    public void setTextViewArtistSong(String artist) {
+    private void setTextViewArtistSong(String artist) {
         this.tvArtistSong.setText(artist);
+    }
+
+    private void setArtworkSong(Bitmap artwork) {
+        this.artwork.setImageBitmap(artwork);
     }
 
     /**
@@ -113,18 +120,22 @@ public class ToolbarController  {
         if(!songService.playOrPauseSong()) {
             Toast.makeText(this.context, "State : Pause", Toast.LENGTH_SHORT).show();
             this.setImagePlay();
-
         } else {
             Toast.makeText(this.context, "State : Play", Toast.LENGTH_SHORT).show();
             this.setImagePause();
+            this.setWidgetsValues();
         }
     }
 
     private void pushNextControl() {
         this.songService.playNextSong();
+        this.setImagePause();
+        this.setWidgetsValues();
     }
 
     private void pushPreviousControl() {
         this.songService.playPreviousSong();
+        this.setImagePause();
+        this.setWidgetsValues();
     }
 }
