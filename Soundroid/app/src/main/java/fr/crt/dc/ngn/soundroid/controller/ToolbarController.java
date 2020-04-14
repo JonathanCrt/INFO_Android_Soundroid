@@ -35,7 +35,6 @@ public class ToolbarController  {
     private ImageView ivNextControl;
     private ImageView ivPrevControl;
     private boolean connectionEstablished;
-    private ArrayList<Song> playlistSongs;
     private SongService songService;
     private Intent intent;
     public static final int RESULT_OK = 1;
@@ -56,6 +55,7 @@ public class ToolbarController  {
         this.context = context;
         this.constraintLayout = mainActivity;
         this.initialization();
+
         intent = new Intent(this.context, SongService.class);
 
         ServiceConnection serviceConnection = new ServiceConnection() {
@@ -64,8 +64,6 @@ public class ToolbarController  {
                 SongService.SongBinder songBinder = (SongService.SongBinder) service;
                 // Permet de récupérer le service
                 songService = songBinder.getService();
-                // Permet de passer au service l'ArrayList
-                songService.setPlaylistSongs(playlistSongs);
                 connectionEstablished = true;
             }
 
@@ -76,6 +74,7 @@ public class ToolbarController  {
         };
         this.context.bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
         Objects.requireNonNull(this.context).startService(intent); //demarrage du service;
+
         installListener();
     }
 
