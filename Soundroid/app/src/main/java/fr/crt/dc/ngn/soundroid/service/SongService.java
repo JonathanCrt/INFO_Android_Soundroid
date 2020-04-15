@@ -1,11 +1,18 @@
 package fr.crt.dc.ngn.soundroid.service;
 
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.media.AudioAttributes;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Binder;
+import android.os.Build;
 import android.os.IBinder;
 import android.util.Log;
 import android.widget.TextView;
@@ -15,7 +22,11 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
+import androidx.core.app.NotificationCompat;
 import androidx.core.content.ContextCompat;
+import fr.crt.dc.ngn.soundroid.MainActivity;
+import fr.crt.dc.ngn.soundroid.R;
 import fr.crt.dc.ngn.soundroid.controller.ToolbarController;
 import fr.crt.dc.ngn.soundroid.model.Song;
 
@@ -32,13 +43,15 @@ public class SongService extends Service implements MediaPlayer.OnPreparedListen
     private boolean isToolbarPushed;
     private boolean initializeSong;
 
-    private ToolbarController toolbarController;
+    // Arbitrary ID for the notification (with different IDs a service can manage several notifications)
+    public static final int NOTIFICATION_ID = 1;
 
-    // We can put constants to represent actions
+    //Identifier of the channel used for notification (required since API 26)
+    public static final String CHANNEL_ID = SongService.class.getName() + ".SOUNDROID_CHANNEL";
 
     /**
-     * Classe qui permet le lien entre le Fragment et le service (instance)
-     */
+     * Class that returns an instance of service
+      */
     public class SongBinder extends Binder {
         public SongService getService() {
             return SongService.this;
@@ -54,6 +67,7 @@ public class SongService extends Service implements MediaPlayer.OnPreparedListen
                 .setUsage(AudioAttributes.USAGE_MEDIA)
                 .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
                 .build());
+        this.createNotificationChannel();
     }
 
     @Nullable
@@ -61,14 +75,6 @@ public class SongService extends Service implements MediaPlayer.OnPreparedListen
     public IBinder onBind(Intent intent) {
         return songBinder;
     }
-
-    // Appeler lorsque le service est appelée --> startService(...) à chaque fois, on reçoit l'Intent
-    /*
-    @Override
-    public int onStartCommand(Intent intent, int flags, int startId) {
-        return super.onStartCommand(intent, flags, startId);
-    }
-     */
 
     /**
      * Permet libérer des ressources lorsque l'instance du service est non liée
@@ -84,10 +90,65 @@ public class SongService extends Service implements MediaPlayer.OnPreparedListen
     }
 
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public void onPrepared(MediaPlayer mp) {
         this.player.start();
+        Log.i("SongService", playlistSongs.get(songIndex).getTitle());
+        this.startForeground(NOTIFICATION_ID, this.createNotification(playlistSongs.get(songIndex).getTitle(), true));
     }
+
+    /**
+     * to create a NotificationChannel, but only on API 26+ because
+     * the NotificationChannel class is new and not in the support library
+     */
+    private void createNotificationChannel() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            int importance =   NotificationManager.IMPORTANCE_DEFAULT;
+            String description = "Channel for notifications of the song service";
+
+            // Channel which represents notification (see the system notification options)
+            NotificationChannel channel = new NotificationChannel(CHANNEL_ID, "Lecture en cours", importance);
+            channel.setDescription(description);
+            channel.setLightColor(R.color.colorAccent);
+            channel.setLockscreenVisibility(Notification.VISIBILITY_PRIVATE);
+
+            // Register the channel with the system;
+            NotificationManager notificationManager = getSystemService(NotificationManager.class);
+            assert notificationManager != null;
+            notificationManager.createNotificationChannel(channel);
+        }
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    private Notification createNotification(String text, boolean highPriority) {
+
+        // Create intent for notification
+        Intent notificationIntent = new Intent(this, MainActivity.class);
+        notificationIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+
+        // PendingIntent makes the return of the user when selecting the notification MainActivity
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        // build a read notification to display it in the notifications panel
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID)
+                .setSmallIcon(R.drawable.soundroid_logo)
+                .setContentTitle(getString(R.string.app_name))
+                .setTicker(text)
+                .setPriority(Notification.PRIORITY_DEFAULT)
+                .setOngoing(true)
+                .setContentIntent(pendingIntent);
+
+        if (highPriority) {
+            builder.setPriority(Notification.PRIORITY_HIGH);
+            builder.setDefaults(Notification.DEFAULT_LIGHTS);
+        }
+
+        return builder.build();
+
+    }
+
+
 
     @Override
     public void onCompletion(MediaPlayer mp) {
@@ -100,6 +161,9 @@ public class SongService extends Service implements MediaPlayer.OnPreparedListen
         this.player.reset();
         return false;
     }
+
+
+
 
     private void initializeSong() {
         this.player.reset();

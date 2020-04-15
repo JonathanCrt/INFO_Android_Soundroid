@@ -89,9 +89,6 @@ public class MainActivity extends AppCompatActivity {
 
         });
         this.initializeViews();
-
-        ConstraintLayout constraintLayout = findViewById(R.id.crt_layout);
-        ToolbarController toolbarController = new ToolbarController(getApplicationContext(), constraintLayout);
     }
 
     private void switchToPlayer() {

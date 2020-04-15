@@ -31,6 +31,7 @@ public class ToolbarController  {
     private ImageView artwork;
     private TextView tvTitleSong;
     private TextView tvArtistSong;
+    private TextView tvDuration;
     private ImageView ivPlayControl;
     private ImageView ivNextControl;
     private ImageView ivPrevControl;
