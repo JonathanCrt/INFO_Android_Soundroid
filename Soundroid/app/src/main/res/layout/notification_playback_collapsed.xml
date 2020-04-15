@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="64dp"
+    android:padding="10dp"
+    android:background="@drawable/side_nav_bar">
+
+    <TextView
+        android:id="@+id/tv_panel_notif_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/titre"
+        android:textColor="#FFFFFF"
+        android:textStyle="bold" />
+
+    <ImageView
+        android:id="@+id/iv_panel_notif_artwork"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_marginStart="300dp"
+        android:layout_toEndOf="@+id/tv_panel_notif_title"
+        android:contentDescription="@string/pochette_piste"
+        app:srcCompat="@drawable/artwork_default" />
+
+    <TextView
+        android:id="@+id/tv_panel_notif_artist"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/iv_panel_notif_artwork"
+        android:layout_marginTop="26dp"
+        android:text="@string/artiste"
+        android:textColor="#FFFFFF" />
+
+    <ImageView
+        android:id="@+id/iv_panel_notif_control_play"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignEnd="@+id/iv_panel_notif_artwork"
+        android:layout_marginStart="211dp"
+        android:layout_marginEnd="115dp"
+        android:layout_toStartOf="@+id/iv_panel_notif_artwork"
+        android:layout_toEndOf="@+id/tv_panel_notif_title"
+        android:contentDescription="@string/contr_le_pour_jouer_une_piste"
+        app:srcCompat="@drawable/ic_play_white" />
+
+    <ImageView
+        android:id="@+id/iv_control_skip_next"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="280dp"
+        android:contentDescription="@string/contr_le_pour_passer_musique_suivante"
+        app:srcCompat="@drawable/ic_next_white" />
+
+    <ImageView
+        android:id="@+id/iv_control_skip_previous"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:contentDescription="@string/contr_le_pour_passer_a_la_piste_pr_c_dente"
+        android:layout_marginStart="200dp"
+        app:srcCompat="@drawable/ic_previous_white" />
+
+</RelativeLayout>

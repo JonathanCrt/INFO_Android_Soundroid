@@ -98,6 +98,7 @@ public class MainActivity extends AppCompatActivity {
         toolbarPlayer.setOnClickListener(view -> {
             if (!isPlayerVisible) {
                 fragmentTransaction.replace(R.id.nav_host_fragment, playerFragment).commit();
+                fragmentTransaction.addToBackStack(null);
                 //this.switchToPlayer();
                 this.isPlayerVisible = true;
             } else {
@@ -117,8 +118,6 @@ public class MainActivity extends AppCompatActivity {
         } catch (InterruptedException e) {
             Log.e("MainActivity", e.getMessage());
         }
-
-        Log.i("TASK", "main rootlist = " + rootList );
 
         RootList.setRootList(rootList);
 
