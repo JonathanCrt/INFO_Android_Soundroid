@@ -131,6 +131,11 @@ public class CursorAsyncTask extends AsyncTask<Void, Void, ArrayList<Song>> {
         return rootSongs;
     }
 
+    @Override
+    protected void onProgressUpdate(Void... values) {
+        super.onProgressUpdate(values);
+    }
+
     /**
      * Get the bitmap from an uri
      *

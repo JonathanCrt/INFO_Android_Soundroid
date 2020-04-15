@@ -2,6 +2,7 @@ package fr.crt.dc.ngn.soundroid;
 
 import android.app.Application;
 import android.content.Context;
+import android.os.AsyncTask;
 import android.util.Log;
 
 import java.lang.reflect.Array;
@@ -24,7 +25,7 @@ public class RootList {
             this.rootList = rootPlaylist;
             Log.i("TASK", "ROOOOT  SSIZE " + this.rootList.size());
             return rootPlaylist;
-        }).execute();
+        }).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 
         return c.get();
     }
