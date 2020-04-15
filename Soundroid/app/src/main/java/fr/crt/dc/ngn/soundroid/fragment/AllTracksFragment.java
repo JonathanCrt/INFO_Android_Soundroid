@@ -12,8 +12,6 @@ import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.media.MediaMetadataRetriever;
-import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -21,20 +19,14 @@ import android.os.Bundle;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 
-import android.os.Environment;
 import android.os.IBinder;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import android.widget.Toast;
 import android.widget.Toolbar;
-
-import java.io.File;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -42,10 +34,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Objects;
-import java.util.logging.Logger;
 
-import fr.crt.dc.ngn.soundroid.MainActivity;
 import fr.crt.dc.ngn.soundroid.R;
+import fr.crt.dc.ngn.soundroid.RootList;
 import fr.crt.dc.ngn.soundroid.adapter.SongAdapter;
 import fr.crt.dc.ngn.soundroid.controller.ToolbarController;
 import fr.crt.dc.ngn.soundroid.model.Playlist;
@@ -86,7 +77,7 @@ public class AllTracksFragment extends Fragment {
         Bitmap tmp = BitmapFactory.decodeResource(Objects.requireNonNull(getContext()).getResources(),
                 R.drawable.artwork_default);
         this.defaultBitmap = Bitmap.createScaledBitmap(tmp, MAX_ARTWORK_SIZE, MAX_ARTWORK_SIZE, false);
-        this.playlistSongs = new ArrayList<>();
+
         this.connectionEstablished = false;
         this.isOnBackground = false;
         this.artworkMap = new HashMap<>();
@@ -114,11 +105,13 @@ public class AllTracksFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-
+        Log.i("TASK", "rootlist = " + RootList.getRootList());
+        this.playlistSongs = RootList.getRootList();
+        Log.i("TASK", "size " +this.playlistSongs.size());
         Playlist playlist = new Playlist("Root");
         // TODO : call this method when the app is launched
-    //    this.getMetaDataWithResolver();
 
+        //    this.getMetaDataWithResolver();
         // will sort the data so that the tracks are listed in alphabetical order
         Collections.sort(this.playlistSongs, (a, b) -> { // new Comparator<Song> compare()
 

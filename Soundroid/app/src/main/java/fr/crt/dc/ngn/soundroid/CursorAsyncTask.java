@@ -13,9 +13,9 @@ import android.util.Log;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Objects;
 
 import fr.crt.dc.ngn.soundroid.model.Song;
 
@@ -23,11 +23,9 @@ public class CursorAsyncTask extends AsyncTask<Void, Void, ArrayList<Song>> {
 
     // you may separate this or combined to caller class.
     public interface AsyncResponse {
-        void processFinish(ArrayList<Song> rootPlaylist);
+        ArrayList<Song> processFinish(ArrayList<Song> rootPlaylist);
     }
 
-    // On a besoin du contexte pour replacer l'AsyncTask
-    private Context context;
     private ContentResolver contentResolver;
 
     private Bitmap defaultBitmap;
@@ -41,7 +39,6 @@ public class CursorAsyncTask extends AsyncTask<Void, Void, ArrayList<Song>> {
      * @param context
      */
     public CursorAsyncTask(Context context, AsyncResponse delegate) {
-        this.context = context;
         this.contentResolver = context.getContentResolver();
         // get the default artwork one time
         Bitmap tmp = BitmapFactory.decodeResource(context.getResources(),

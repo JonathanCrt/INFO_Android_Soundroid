@@ -1,7 +1,9 @@
 package fr.crt.dc.ngn.soundroid;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.util.Log;
 import android.view.Menu;
 import android.widget.ImageView;
@@ -11,6 +13,7 @@ import com.google.android.material.navigation.NavigationView;
 
 import java.util.ArrayList;
 import java.util.Objects;
+import java.util.concurrent.ExecutionException;
 
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.FragmentManager;
@@ -24,6 +27,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
 import fr.crt.dc.ngn.soundroid.controller.ToolbarController;
+import fr.crt.dc.ngn.soundroid.fragment.AllTracksFragment;
 import fr.crt.dc.ngn.soundroid.fragment.PlayerFragment;
 import fr.crt.dc.ngn.soundroid.model.Song;
 import fr.crt.dc.ngn.soundroid.service.SongService;
@@ -45,6 +49,8 @@ public class MainActivity extends AppCompatActivity {
     public static final int TOOLBAR_CONTROLLER_REQUEST_CODE = 1;
     private boolean isPlayerVisible;
 
+    private ArrayList<Song> rootList;
+
     public void initializeViews() {
         this.toolbar = findViewById(R.id.toolbar_player);
         this.artwork = findViewById(R.id.iv_list_artwork);
@@ -55,11 +61,21 @@ public class MainActivity extends AppCompatActivity {
         this.ivPrevControl = findViewById(R.id.iv_control_player_previous);
     }
 
+    private static Context context;
+
+
+    public static Context getAppContext() {
+        return MainActivity.context;
+    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_main);
+
+        MainActivity.context = getApplicationContext();
+
+
         Toolbar toolbarHead = findViewById(R.id.toolbar);
         setSupportActionBar(toolbarHead);
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
@@ -92,19 +108,19 @@ public class MainActivity extends AppCompatActivity {
         });
         this.initializeViews();
 
+        RootList rl = new RootList();
+        ArrayList<Song> rootList = null;
+        try {
+            rootList = rl.getFirstRootList();
+        } catch (ExecutionException e) {
+            Log.e("MainActivity", e.getMessage());
+        } catch (InterruptedException e) {
+            Log.e("MainActivity", e.getMessage());
+        }
 
-        // Test asynctask :
+        Log.i("TASK", "main rootlist = " + rootList );
 
-
-        CursorAsyncTask c = (CursorAsyncTask) new CursorAsyncTask(getApplicationContext(), new CursorAsyncTask.AsyncResponse() {
-        ArrayList<Song> test ;
-            @Override
-            public void processFinish(ArrayList<Song> rootPlaylist) {
-                Log.i("TASK", "ROOOOT  SSIZE " + rootPlaylist.size());
-                test = rootPlaylist;
-            }
-        }).execute();
-
+        RootList.setRootList(rootList);
 
     }
 
