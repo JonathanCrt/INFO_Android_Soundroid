@@ -82,6 +82,7 @@ public class MainActivity extends AppCompatActivity {
         toolbarPlayer.setOnClickListener(view -> {
             if (!isPlayerVisible) {
                 fragmentTransaction.replace(R.id.nav_host_fragment, playerFragment).commit();
+                fragmentTransaction.addToBackStack(null);
                 //this.switchToPlayer();
                 this.isPlayerVisible = true;
             } else {
@@ -97,7 +98,7 @@ public class MainActivity extends AppCompatActivity {
 
 
         CursorAsyncTask c = (CursorAsyncTask) new CursorAsyncTask(getApplicationContext(), new CursorAsyncTask.AsyncResponse() {
-        ArrayList<Song> test ;
+            ArrayList<Song> test ;
             @Override
             public void processFinish(ArrayList<Song> rootPlaylist) {
                 Log.i("TASK", "ROOOOT  SSIZE " + rootPlaylist.size());
