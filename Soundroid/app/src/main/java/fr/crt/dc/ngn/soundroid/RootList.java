@@ -18,7 +18,7 @@ public class RootList {
 
     private static ArrayList<Song> rootList;
 
-    public ArrayList<Song> getFirstRootList() throws ExecutionException, InterruptedException {
+    public ArrayList<Song> callAsyncTask() throws ExecutionException, InterruptedException {
         CursorAsyncTask c = (CursorAsyncTask) new CursorAsyncTask(MainActivity.getAppContext(), (rootPlaylist) -> {
             Log.i("TASK", "ROOOOT  SSIZE " + rootPlaylist.size());
             this.rootList = rootPlaylist;

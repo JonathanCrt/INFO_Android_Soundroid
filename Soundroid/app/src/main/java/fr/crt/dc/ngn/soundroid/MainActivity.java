@@ -112,7 +112,7 @@ public class MainActivity extends AppCompatActivity {
         RootList rl = new RootList();
         ArrayList<Song> rootList = null;
         try {
-            rootList = rl.getFirstRootList();
+            rootList = rl.callAsyncTask();
         } catch (ExecutionException e) {
             Log.e("MainActivity", e.getMessage());
         } catch (InterruptedException e) {

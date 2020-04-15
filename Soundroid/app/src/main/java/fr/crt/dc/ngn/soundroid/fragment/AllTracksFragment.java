@@ -51,20 +51,12 @@ import static androidx.core.content.PermissionChecker.checkSelfPermission;
 public class AllTracksFragment extends Fragment {
 
     private ArrayList<Song> playlistSongs;
-    private ContentResolver contentResolver;
-    private Bitmap defaultBitmap;
     private SongService songService;
     private Intent intent;
     private boolean connectionEstablished;
     private boolean isOnBackground;
     private Toolbar toolbar;
     private ListView lv;
-    private HashMap<Long, Bitmap> artworkMap;
-
-
-
-    private static final int MAX_ARTWORK_SIZE = 100;
-
 
     public AllTracksFragment() {// Required empty public constructor
     }
@@ -73,14 +65,8 @@ public class AllTracksFragment extends Fragment {
      * initialize the fields
      */
     private void initialization() {
-        // get the default artwork one time
-        Bitmap tmp = BitmapFactory.decodeResource(Objects.requireNonNull(getContext()).getResources(),
-                R.drawable.artwork_default);
-        this.defaultBitmap = Bitmap.createScaledBitmap(tmp, MAX_ARTWORK_SIZE, MAX_ARTWORK_SIZE, false);
-
         this.connectionEstablished = false;
         this.isOnBackground = false;
-        this.artworkMap = new HashMap<>();
     }
 
     @SuppressLint("WrongConstant")
@@ -99,7 +85,6 @@ public class AllTracksFragment extends Fragment {
                 requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
             }
         }
-
     }
 
     @Override
