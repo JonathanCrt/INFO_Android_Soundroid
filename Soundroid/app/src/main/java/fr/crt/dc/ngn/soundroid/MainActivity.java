@@ -9,6 +9,7 @@ import android.widget.TextView;
 
 import com.google.android.material.navigation.NavigationView;
 
+import java.util.ArrayList;
 import java.util.Objects;
 
 import androidx.constraintlayout.widget.ConstraintLayout;
@@ -24,6 +25,7 @@ import androidx.appcompat.widget.Toolbar;
 
 import fr.crt.dc.ngn.soundroid.controller.ToolbarController;
 import fr.crt.dc.ngn.soundroid.fragment.PlayerFragment;
+import fr.crt.dc.ngn.soundroid.model.Song;
 import fr.crt.dc.ngn.soundroid.service.SongService;
 
 
@@ -89,6 +91,21 @@ public class MainActivity extends AppCompatActivity {
 
         });
         this.initializeViews();
+
+
+        // Test asynctask :
+
+
+        CursorAsyncTask c = (CursorAsyncTask) new CursorAsyncTask(getApplicationContext(), new CursorAsyncTask.AsyncResponse() {
+        ArrayList<Song> test ;
+            @Override
+            public void processFinish(ArrayList<Song> rootPlaylist) {
+                Log.i("TASK", "ROOOOT  SSIZE " + rootPlaylist.size());
+                test = rootPlaylist;
+            }
+        }).execute();
+
+
     }
 
     private void switchToPlayer() {

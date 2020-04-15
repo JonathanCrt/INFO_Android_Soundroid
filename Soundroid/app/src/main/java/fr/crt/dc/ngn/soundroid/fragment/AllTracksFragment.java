@@ -117,7 +117,7 @@ public class AllTracksFragment extends Fragment {
 
         Playlist playlist = new Playlist("Root");
         // TODO : call this method when the app is launched
-        this.getMetaDataWithResolver();
+    //    this.getMetaDataWithResolver();
 
         // will sort the data so that the tracks are listed in alphabetical order
         Collections.sort(this.playlistSongs, (a, b) -> { // new Comparator<Song> compare()
