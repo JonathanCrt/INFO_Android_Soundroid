@@ -13,17 +13,13 @@ import java.util.concurrent.atomic.AtomicReference;
 import fr.crt.dc.ngn.soundroid.model.Song;
 
 public class RootList {
-    public RootList(){
+    private static ArrayList<Song> rootList = null;
 
-    }
-
-    private static ArrayList<Song> rootList;
-
-    public ArrayList<Song> callAsyncTask() throws ExecutionException, InterruptedException {
+    public static ArrayList<Song> callAsyncTask() throws ExecutionException, InterruptedException {
         CursorAsyncTask c = (CursorAsyncTask) new CursorAsyncTask(MainActivity.getAppContext(), (rootPlaylist) -> {
             Log.i("TASK", "ROOOOT  SSIZE " + rootPlaylist.size());
-            this.rootList = rootPlaylist;
-            Log.i("TASK", "ROOOOT  SSIZE " + this.rootList.size());
+            rootList = rootPlaylist;
+            Log.i("TASK", "ROOOOT  SSIZE " + rootList.size());
             return rootPlaylist;
         }).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 
