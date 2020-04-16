@@ -1,4 +1,4 @@
-package fr.crt.dc.ngn.soundroid;
+package fr.crt.dc.ngn.soundroid.async;
 
 import android.content.ContentResolver;
 import android.content.ContentUris;
@@ -17,6 +17,7 @@ import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import fr.crt.dc.ngn.soundroid.R;
 import fr.crt.dc.ngn.soundroid.model.Song;
 
 public class CursorAsyncTask extends AsyncTask<Void, Void, ArrayList<Song>> {

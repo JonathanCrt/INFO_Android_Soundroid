@@ -3,16 +3,10 @@ package fr.crt.dc.ngn.soundroid.fragment;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.ComponentName;
-import android.content.ContentResolver;
-import android.content.ContentUris;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
-import android.database.Cursor;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 
@@ -20,7 +14,6 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 
 import android.os.IBinder;
-import android.provider.MediaStore;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -28,15 +21,12 @@ import android.view.ViewGroup;
 import android.widget.ListView;
 import android.widget.Toolbar;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Objects;
 
 import fr.crt.dc.ngn.soundroid.R;
-import fr.crt.dc.ngn.soundroid.RootList;
+import fr.crt.dc.ngn.soundroid.helpers.RootList;
 import fr.crt.dc.ngn.soundroid.adapter.SongAdapter;
 import fr.crt.dc.ngn.soundroid.controller.ToolbarController;
 import fr.crt.dc.ngn.soundroid.model.Playlist;
