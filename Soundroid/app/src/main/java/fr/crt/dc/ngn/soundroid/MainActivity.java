@@ -38,16 +38,6 @@ import fr.crt.dc.ngn.soundroid.service.SongService;
 public class MainActivity extends AppCompatActivity {
 
     private AppBarConfiguration mAppBarConfiguration;
-    private Toolbar toolbar;
-    private ImageView artwork;
-    private TextView titleSong;
-    private TextView artistSong;
-    private ImageView ivPlayControl;
-    private ImageView ivNextControl;
-    private ImageView ivPrevControl;
-    private boolean connectionEstablished;
-    private SongService songService;
-    private Intent intent;
 
     private Button btnPanelPause;
     private Button btnPanelPlay;
@@ -60,14 +50,6 @@ public class MainActivity extends AppCompatActivity {
     private static Context context;
 
     public void initializeViews() {
-        this.toolbar = findViewById(R.id.toolbar_player);
-        this.artwork = findViewById(R.id.iv_list_artwork);
-        this.titleSong = findViewById(R.id.tv_toolbar_title);
-        this.artistSong = findViewById(R.id.tv_toolbar_artist);
-        this.ivPlayControl = findViewById(R.id.iv_control_play);
-        this.ivNextControl = findViewById(R.id.iv_control_player_next);
-        this.ivPrevControl = findViewById(R.id.iv_control_player_previous);
-
         this.btnPanelPlay = findViewById(R.id.btn_panel_play);
         this.btnPanelPause = findViewById(R.id.btn_panel_pause);
         this.btnPanelNext = findViewById(R.id.btn_panel_next);
