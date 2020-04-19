@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="128dp"
+    android:orientation="vertical"
+    android:background="@drawable/side_nav_bar">
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:id="@+id/iv_expanded_panel_artwork"
+            android:layout_width="128dp"
+            android:layout_height="128dp"
+            android:contentDescription="@string/pochette_piste"
+            android:src="@drawable/artwork_default" />
+        
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:padding="10dp">
+            
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/tv_expanded_panel_title"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="@string/titre"
+                    android:textColor="#FFFF"
+                    android:layout_weight="1"
+                    android:layout_gravity="center_vertical"
+                    android:textSize="20sp"
+                    android:textStyle="bold|italic">
+                </TextView>
+
+                <Button
+                    android:id="@+id/btn_expanded_panel_delete"
+                    android:layout_width="28dp"
+                    android:layout_height="28dp"
+                    android:layout_marginStart="5dp"
+                    android:background="@drawable/ic_cross_white">
+
+                </Button>
+
+
+            </LinearLayout>
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/tv_expanded_panel_artist"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="@string/artiste"
+                    android:textColor="#FFFF"
+                    android:layout_weight="1"
+                    android:layout_gravity="center_vertical"
+                    android:textSize="15sp"
+                    android:textStyle="italic">
+                </TextView>
+
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:divider="@drawable/divider_panel"
+                android:dividerPadding="12dp"
+                android:gravity="center"
+                android:orientation="horizontal"
+                android:showDividers="middle">
+                
+                
+                <Button
+                    android:id="@+id/btn_panel_previous"
+                    android:layout_width="42dp"
+                    android:layout_height="42dp"
+                    android:layout_margin="5dp"
+                    android:background="@drawable/ic_previous_white"
+                    style="@style/Widget.AppCompat.Button.Borderless">
+                </Button>
+
+                <Button
+                    android:id="@+id/btn_panel_pause"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:layout_margin="5dp"
+                    android:background="@drawable/ic_pause_white"
+                    android:visibility="gone"
+                    style="@style/Widget.AppCompat.Button.Borderless">
+                </Button>
+
+                <Button
+                    android:id="@+id/btn_panel_play"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:layout_margin="5dp"
+                    android:background="@drawable/ic_play_white"
+                    style="@style/Widget.AppCompat.Button.Borderless">
+                </Button>
+
+                <Button
+                    android:id="@+id/btn_panel_next"
+                    android:layout_width="42dp"
+                    android:layout_height="42dp"
+                    android:layout_margin="5dp"
+                    android:background="@drawable/ic_next_white"
+                    style="@style/Widget.AppCompat.Button.Borderless">
+                </Button>
+
+
+            </LinearLayout>
+
+
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</LinearLayout>

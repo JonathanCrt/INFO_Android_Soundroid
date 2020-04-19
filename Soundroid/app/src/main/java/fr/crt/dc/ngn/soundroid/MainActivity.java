@@ -6,8 +6,13 @@ import android.os.Bundle;
 import android.os.Parcelable;
 import android.util.Log;
 import android.view.Menu;
+import android.view.View;
+import android.view.animation.AnimationUtils;
+import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.material.navigation.NavigationView;
 
@@ -46,6 +51,12 @@ public class MainActivity extends AppCompatActivity {
     private boolean connectionEstablished;
     private SongService songService;
     private Intent intent;
+
+    private Button btnPanelPause;
+    private Button btnPanelPlay;
+    private Button btnPanelNext;
+    private Button btnPanelPrevious;
+
     public static final int TOOLBAR_CONTROLLER_REQUEST_CODE = 1;
     private boolean isPlayerVisible;
 
@@ -59,6 +70,11 @@ public class MainActivity extends AppCompatActivity {
         this.ivPlayControl = findViewById(R.id.iv_control_play);
         this.ivNextControl = findViewById(R.id.iv_control_player_next);
         this.ivPrevControl = findViewById(R.id.iv_control_player_previous);
+
+        this.btnPanelPlay = findViewById(R.id.btn_panel_play);
+        this.btnPanelPause = findViewById(R.id.btn_panel_pause);
+        this.btnPanelNext = findViewById(R.id.btn_panel_next);
+        this.btnPanelPrevious = findViewById(R.id.btn_panel_previous);
     }
 
     private static Context context;
@@ -67,6 +83,7 @@ public class MainActivity extends AppCompatActivity {
     public static Context getAppContext() {
         return MainActivity.context;
     }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

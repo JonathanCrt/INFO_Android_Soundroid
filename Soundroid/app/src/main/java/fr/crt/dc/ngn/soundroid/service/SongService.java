@@ -15,6 +15,7 @@ import android.os.Binder;
 import android.os.Build;
 import android.os.IBinder;
 import android.util.Log;
+import android.widget.Button;
 import android.widget.RemoteViews;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -43,6 +44,7 @@ public class SongService extends Service implements MediaPlayer.OnPreparedListen
     private ArrayList<Song> playlistSongs;
     private boolean isToolbarPushed;
     private boolean initializeSong;
+    private Button btnPanelPause;
 
     // Arbitrary ID for the notification (with different IDs a service can manage several notifications)
     public static final int NOTIFICATION_ID = 1;
@@ -120,7 +122,7 @@ public class SongService extends Service implements MediaPlayer.OnPreparedListen
         }
     }
 
-    private Notification createNotification(boolean highPriority) {
+    private Notification createNotification() {
 
         // Create intent for notification
         Intent notificationIntent = new Intent(this, MainActivity.class);
@@ -129,27 +131,21 @@ public class SongService extends Service implements MediaPlayer.OnPreparedListen
         // PendingIntent makes the return of the user when selecting the notification MainActivity
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
-        /*
-        RemoteViews remoteNotificationCollapsedLayout = new RemoteViews(getPackageName(), R.layout.notification_playback_collapsed);
-        remoteNotificationCollapsedLayout.setImageViewBitmap(R.id.iv_panel_notif_artwork, playlistSongs.get(songIndex).getArtwork());
-        remoteNotificationCollapsedLayout.setTextViewText(R.id.tv_panel_notif_title, playlistSongs.get(songIndex).getTitle());
-        remoteNotificationCollapsedLayout.setTextViewText(R.id.tv_panel_notif_artist, playlistSongs.get(songIndex).getArtist());
+        RemoteViews expandedView = new RemoteViews(getPackageName(), R.layout.notification_playback);
+        expandedView.setImageViewBitmap(R.id.iv_expanded_panel_artwork, playlistSongs.get(songIndex).getArtwork());
+        expandedView.setTextViewText(R.id.tv_expanded_panel_title, playlistSongs.get(songIndex).getTitle());
+        expandedView.setTextViewText(R.id.tv_expanded_panel_artist, playlistSongs.get(songIndex).getArtist());
 
-         */
         // build a read notification to display it in the notifications panel
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID)
+                .setContentIntent(pendingIntent)
                 .setSmallIcon(R.drawable.soundroid_logo)
-                .setContentTitle(playlistSongs.get(songIndex).getTitle())
-                .setContentText(playlistSongs.get(songIndex).getArtist())
-                .setLargeIcon(playlistSongs.get(songIndex).getArtwork())
-                .setStyle(new NotificationCompat.DecoratedCustomViewStyle())
-                .setOngoing(true)
-                .setContentIntent(pendingIntent);
-
-        if (highPriority) {
-            builder.setPriority(Notification.PRIORITY_HIGH);
-            builder.setDefaults(Notification.DEFAULT_LIGHTS);
-        }
+                .setAutoCancel(true)
+                .setCustomBigContentView(expandedView)
+                .setContentTitle(getString(R.string.app_name))
+                .setContentText("Control Audio")
+                .setPriority(Notification.PRIORITY_HIGH)
+                .setDefaults(Notification.DEFAULT_LIGHTS);
 
         return builder.build();
     }
@@ -206,7 +202,7 @@ public class SongService extends Service implements MediaPlayer.OnPreparedListen
     }
 
     public boolean playOrPauseSong() {
-        this.startForeground(NOTIFICATION_ID, this.createNotification(true));
+        this.startForeground(NOTIFICATION_ID, this.createNotification());
         // music is paused so user want to restart it or to start a new song
         if (!this.player.isPlaying() && this.isToolbarPushed) {
             if (!initializeSong) {  // no music yet
@@ -256,10 +252,6 @@ public class SongService extends Service implements MediaPlayer.OnPreparedListen
 
     @Override
     public void onDestroy() {
-        /*
-        this.player.stop();
-        this.player.release();
-         */
         this.stopForeground(true);
     }
 
