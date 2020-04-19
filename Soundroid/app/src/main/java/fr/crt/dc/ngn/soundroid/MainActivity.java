@@ -3,7 +3,6 @@ package fr.crt.dc.ngn.soundroid;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.util.Log;
 import android.view.Menu;
 import android.view.View;
@@ -20,7 +19,6 @@ import java.util.ArrayList;
 import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 
-import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.navigation.NavController;
@@ -31,9 +29,8 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
-import fr.crt.dc.ngn.soundroid.controller.ToolbarController;
-import fr.crt.dc.ngn.soundroid.fragment.AllTracksFragment;
 import fr.crt.dc.ngn.soundroid.fragment.PlayerFragment;
+import fr.crt.dc.ngn.soundroid.helpers.RootList;
 import fr.crt.dc.ngn.soundroid.model.Song;
 import fr.crt.dc.ngn.soundroid.service.SongService;
 
@@ -60,7 +57,7 @@ public class MainActivity extends AppCompatActivity {
     public static final int TOOLBAR_CONTROLLER_REQUEST_CODE = 1;
     private boolean isPlayerVisible;
 
-    private ArrayList<Song> rootList;
+    private static Context context;
 
     public void initializeViews() {
         this.toolbar = findViewById(R.id.toolbar_player);
@@ -77,7 +74,6 @@ public class MainActivity extends AppCompatActivity {
         this.btnPanelPrevious = findViewById(R.id.btn_panel_previous);
     }
 
-    private static Context context;
 
 
     public static Context getAppContext() {
@@ -91,7 +87,6 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         MainActivity.context = getApplicationContext();
-
 
         Toolbar toolbarHead = findViewById(R.id.toolbar);
         setSupportActionBar(toolbarHead);
@@ -126,17 +121,13 @@ public class MainActivity extends AppCompatActivity {
         });
         this.initializeViews();
 
-        RootList rl = new RootList();
-        ArrayList<Song> rootList = null;
+
+        // launch async task
         try {
-            rootList = rl.callAsyncTask();
-        } catch (ExecutionException e) {
-            Log.e("MainActivity", e.getMessage());
-        } catch (InterruptedException e) {
+            RootList.setRootList(RootList.callAsyncTask());
+        } catch (ExecutionException | InterruptedException e) {
             Log.e("MainActivity", e.getMessage());
         }
-
-        RootList.setRootList(rootList);
 
     }
 
