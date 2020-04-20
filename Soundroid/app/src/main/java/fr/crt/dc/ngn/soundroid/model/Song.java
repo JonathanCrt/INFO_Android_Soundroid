@@ -20,6 +20,7 @@ public class Song {
     private String tag;
     private int rating;
     private String link;
+    private byte[] footprint;
 
     public Song(long ID, String title, String artist, long duration, Bitmap artwork, String style, String album, String link) {
         this.ID = ID;
@@ -34,6 +35,23 @@ public class Song {
         this.rating = 0;
         this.link = link;
     }
+
+    public Song(long ID, String title, String artist, long duration, Bitmap artwork, String style, String album, String link, byte[] footprint) {
+        this.ID = ID;
+        this.title = title;
+        this.artist = artist;
+        this.duration = duration;
+        this.artwork = artwork;
+        this.style = style;
+        this.album = album;
+        this.countSongPlayed = 0;
+        this.tag = null;
+        this.rating = 0;
+        this.link = link;
+        this.footprint = footprint;
+    }
+
+
 
 
     public static String convertDuration(long duration){
@@ -85,6 +103,14 @@ public class Song {
 
     public void setRating(int rating) {
         this.rating = rating;
+    }
+
+    public byte[] getFootprint() {
+        return footprint;
+    }
+
+    public void setFootprint(byte[] footprint) {
+        this.footprint = footprint;
     }
 
     @Override

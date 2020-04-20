@@ -14,7 +14,11 @@ import android.util.Log;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.lang.ref.WeakReference;
+import java.lang.reflect.Array;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 
 import fr.crt.dc.ngn.soundroid.R;
@@ -120,11 +124,22 @@ public class CursorAsyncTask extends AsyncTask<Void, Void, ArrayList<Song>> {
                         Log.e("AllTracksFragment", "IOException", e);
                     }
 
-                    Song song = new Song(idSong, titleSong, artistSong, Long.parseLong(String.valueOf(durationSong)), bitmap, null, albumSong, songLink);
-                    rootSongs.add(song);
-                    idSong++;
-                    //Log.i("PlaylistSongs", "" + playlistSongs);
-                    Log.i("Cursor", "" + cursor.getString(0));
+                    try {
+                        // Create MD5 Hash
+                        MessageDigest digest = java.security.MessageDigest.getInstance("MD5");
+                        digest.update(titleSong.getBytes());
+                        byte[] messageDigest = digest.digest();
+                        Log.i("CursorAsync: msgDigest", Arrays.toString(messageDigest));
+
+                        Song song = new Song(idSong, titleSong, artistSong, Long.parseLong(String.valueOf(durationSong)), bitmap, null, albumSong, songLink, messageDigest);
+                        rootSongs.add(song);
+                        idSong++;
+                        Log.i("Cursor", "" + cursor.getString(0));
+
+                    } catch (NoSuchAlgorithmException e) {
+                        e.getMessage();
+                    }
+
                 }
                 while (cursor.moveToNext());
             }
