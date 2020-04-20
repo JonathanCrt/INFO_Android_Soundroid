@@ -5,8 +5,10 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.Color;
 import android.media.AudioAttributes;
 import android.media.MediaPlayer;
@@ -14,22 +16,19 @@ import android.net.Uri;
 import android.os.Binder;
 import android.os.Build;
 import android.os.IBinder;
+import android.support.v4.media.session.MediaSessionCompat;
 import android.util.Log;
 import android.widget.Button;
 import android.widget.RemoteViews;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.IOException;
 import java.util.ArrayList;
 
 import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
 import androidx.core.app.NotificationCompat;
-import androidx.core.content.ContextCompat;
 import fr.crt.dc.ngn.soundroid.MainActivity;
 import fr.crt.dc.ngn.soundroid.R;
-import fr.crt.dc.ngn.soundroid.controller.ToolbarController;
 import fr.crt.dc.ngn.soundroid.model.Song;
 
 /**
@@ -51,6 +50,12 @@ public class SongService extends Service implements MediaPlayer.OnPreparedListen
 
     //Identifier of the channel used for notification (required since API 26)
     public static final String CHANNEL_ID = SongService.class.getName() + ".SOUNDROID_CHANNEL";
+
+    public static final String NOTIFY_PREVIOUS = "fr.crt.dc.ngn.soundroid.PREVIOUS";
+    public static final String NOTIFY_PLAY = "fr.crt.dc.ngn.soundroid.PLAY";
+    public static final String NOTIFY_PAUSE = "fr.crt.dc.ngn.soundroid.PAUSE";
+    public static final String NOTIFY_NEXT = "fr.crt.dc.ngn.soundroid.NEXT";
+    public static final String NOTIFY_DELETE = "fr.crt.dc.ngn.soundroid.DELETE";
 
     /**
      * Class that returns an instance of service
@@ -136,6 +141,30 @@ public class SongService extends Service implements MediaPlayer.OnPreparedListen
         expandedView.setTextViewText(R.id.tv_expanded_panel_title, playlistSongs.get(songIndex).getTitle());
         expandedView.setTextViewText(R.id.tv_expanded_panel_artist, playlistSongs.get(songIndex).getArtist());
 
+
+        Intent previousIntent = new Intent(NOTIFY_PREVIOUS);
+        Intent nextIntent = new Intent(NOTIFY_NEXT);
+        Intent pauseIntent = new Intent(NOTIFY_PAUSE);
+        Intent playIntent = new Intent(NOTIFY_PLAY);
+        Intent deleteIntent = new Intent(NOTIFY_DELETE);
+
+        Intent testIntent = new Intent("test");
+
+        PendingIntent piPrevious = PendingIntent.getBroadcast(this, 0, previousIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        PendingIntent piNext = PendingIntent.getBroadcast(this, 0, nextIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        PendingIntent piPause = PendingIntent.getBroadcast(this, 0, pauseIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        PendingIntent piPlay = PendingIntent.getBroadcast(this, 0, playIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        PendingIntent piDelete = PendingIntent.getBroadcast(this, 0, deleteIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        PendingIntent piTest = PendingIntent.getBroadcast(this, 0, testIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        expandedView.setPendingIntentTemplate(R.id.btn_panel_previous, piPrevious);
+        expandedView.setPendingIntentTemplate(R.id.btn_panel_next, piNext);
+        expandedView.setPendingIntentTemplate(R.id.btn_panel_pause, piPause);
+        expandedView.setPendingIntentTemplate(R.id.btn_panel_play, piPlay);
+        expandedView.setPendingIntentTemplate(R.id.btn_expanded_panel_delete, piDelete);
+
+        expandedView.setOnClickPendingIntent(R.id.btn_panel_play, piTest);
+
         // build a read notification to display it in the notifications panel
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID)
                 .setContentIntent(pendingIntent)
@@ -144,13 +173,15 @@ public class SongService extends Service implements MediaPlayer.OnPreparedListen
                 .setCustomBigContentView(expandedView)
                 .setContentTitle(getString(R.string.app_name))
                 .setContentText("Control Audio")
+                .setOnlyAlertOnce(true)
                 .setPriority(Notification.PRIORITY_HIGH)
                 .setDefaults(Notification.DEFAULT_LIGHTS);
 
+        //installListeners(expandedView, getBaseContext());
+
+
         return builder.build();
     }
-
-
 
     @Override
     public void onCompletion(MediaPlayer mp) {

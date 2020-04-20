@@ -111,6 +111,8 @@ public class MainActivity extends AppCompatActivity {
             Log.e("MainActivity", e.getMessage());
         }
 
+
+
     }
 
     private void switchToPlayer() {

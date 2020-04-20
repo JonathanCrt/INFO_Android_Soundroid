@@ -92,7 +92,9 @@
                     android:layout_height="42dp"
                     android:layout_margin="5dp"
                     android:background="@drawable/ic_previous_white"
-                    style="@style/Widget.AppCompat.Button.Borderless">
+                    style="@style/Widget.AppCompat.Button.Borderless"
+
+                    >
                 </Button>
 
                 <Button
