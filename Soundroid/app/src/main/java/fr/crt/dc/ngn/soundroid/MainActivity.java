@@ -51,6 +51,8 @@ public class MainActivity extends AppCompatActivity {
 
     private static Context context;
 
+    private SongService songService;
+
     public void initializeViews() {
         this.btnPanelPlay = findViewById(R.id.btn_panel_play);
         this.btnPanelPause = findViewById(R.id.btn_panel_pause);
@@ -102,6 +104,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void launchPlayerActivity() {
         Intent it = new Intent(this, PlayerActivity.class);
+        //it.putExtra("artist", this.songService.getPlaylistSongs().get(this.songService.getSongIndex()).getArtist());
         startActivity(it);
     }
 

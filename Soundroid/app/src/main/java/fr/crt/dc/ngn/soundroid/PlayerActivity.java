@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import fr.crt.dc.ngn.soundroid.controller.PlayerController;
 import jp.wasabeef.blurry.Blurry;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 
@@ -24,6 +25,14 @@ public class PlayerActivity extends AppCompatActivity {
                 .color(Color.argb(66, 255, 255, 0))
                 .async()
                 .onto(findViewById(R.id.crtLay_player));
+
+        Intent intent = getIntent();
+
+        //attempt get artist info with intent for first launch
+       /* if(intent !=null){
+            String artist = intent.getStringExtra("artist");
+            this.playerController.setTextViewArtistSong(artist);
+        }*/
     }
 
     @Override

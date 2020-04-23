@@ -4,6 +4,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.graphics.Bitmap;
 import android.os.IBinder;
 import android.view.View;
 import android.widget.ImageView;
@@ -100,6 +101,24 @@ public class PlayerController {
         this.ivControlPreviousSong.setOnClickListener((v->pushPreviousControl()));
     }
 
+    private void setTextViewTitleSong(String title) {
+        this.tvTitleSong.setText(title);
+    }
+
+    public void setTextViewArtistSong(String artist) {
+        this.tvArtistSong.setText(artist);
+    }
+
+    private void setArtworkSong(Bitmap artwork) {
+        this.ivArtworkSong.setImageBitmap(artwork);
+    }
+
+    public void setWidgetsValues() {
+        this.setTextViewTitleSong(this.songService.getPlaylistSongs().get(this.songService.getSongIndex()).getTitle());
+        this.setTextViewArtistSong(this.songService.getPlaylistSongs().get(this.songService.getSongIndex()).getArtist());
+        this.setArtworkSong(this.songService.getPlaylistSongs().get(this.songService.getSongIndex()).getArtwork());
+    }
+
     public void setImagePlay(){
         this.ivControlPlaySong.setImageDrawable(ContextCompat.getDrawable(this.context, R.drawable.ic_play_white));
 
@@ -117,20 +136,20 @@ public class PlayerController {
         } else {
             Toast.makeText(this.context, "State : Play", Toast.LENGTH_SHORT).show();
             this.setImagePause();
-            //this.setWidgetsValues();
+            this.setWidgetsValues();
         }
     }
 
     private void pushNextControl() {
         this.songService.playNextSong();
         this.setImagePause();
-        //this.setWidgetsValues();
+        this.setWidgetsValues();
     }
 
     private void pushPreviousControl() {
         this.songService.playPreviousSong();
         this.setImagePause();
-        //this.setWidgetsValues();
+        this.setWidgetsValues();
     }
 
 }
