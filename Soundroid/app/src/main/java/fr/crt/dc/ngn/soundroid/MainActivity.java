@@ -92,10 +92,7 @@ public class MainActivity extends AppCompatActivity {
         try {
             Playlist p = new Playlist("Root");
             SongAdapter adapter = new SongAdapter(getAppContext(), p);
-            //p.setSongList(RootList.getRootList());
             RootList.callAsyncTask(adapter, new ArrayList<Song>());
-
-            //Log.i("TASK", "ROOOOT  SSIZE " + RootList.getRootList().size());
         } catch (ExecutionException | InterruptedException e) {
             Log.e("MainActivity", Objects.requireNonNull(e.getMessage()));
         }

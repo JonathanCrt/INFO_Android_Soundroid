@@ -54,7 +54,6 @@ public class CursorAsyncTask extends AsyncTask<Void, Song, ArrayList<Song>> {
     public CursorAsyncTask(Context context,  ArrayList<Song> rootSongs, AsyncResponse delegate) {
         this.rootSongs = rootSongs;
         this.songAdapter= RootList.getSongAdapter();
-        Log.i("ASIIIIIII", songAdapter.toString());
         this.contentResolver = context.getContentResolver();
         // get the default artwork one time
         Bitmap tmp = BitmapFactory.decodeResource(context.getResources(),
@@ -145,9 +144,9 @@ public class CursorAsyncTask extends AsyncTask<Void, Song, ArrayList<Song>> {
                         rootSongs.add(song);
                         idSong++;
                         Log.i("Cursor", "" + cursor.getString(0));
+
+                        // update adapter
                         publishProgress(song);
-                        //this.songAdapter.add(song);
-                        //this.songAdapter.notifyDataSetChanged();
 
                     } catch (NoSuchAlgorithmException e) {
                         e.getMessage();
@@ -164,8 +163,6 @@ public class CursorAsyncTask extends AsyncTask<Void, Song, ArrayList<Song>> {
     @Override
     protected void onProgressUpdate(Song... values) {
         super.onProgressUpdate(values);
-        Log.i("ON PROGRESS UPDAE", "MSG");
-        Log.i("VALUES", values[0].getTitle());
         this.songAdapter.add(values[0]);
         this.songAdapter.notifyDataSetChanged();
     }

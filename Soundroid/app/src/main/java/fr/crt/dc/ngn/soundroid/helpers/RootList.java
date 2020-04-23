@@ -4,6 +4,7 @@ import android.os.AsyncTask;
 import android.util.Log;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.concurrent.ExecutionException;
 
 import fr.crt.dc.ngn.soundroid.MainActivity;
@@ -32,10 +33,15 @@ public class RootList {
             AsyncTask<Void, Song, ArrayList<Song>> task = new CursorAsyncTask(MainActivity.getAppContext(), rootSongs, new CursorAsyncTask.AsyncResponse() {
                 @Override
                 public ArrayList<Song> processFinish(ArrayList<Song> rootPlaylist) {
-                    Log.i("TASK", "ROOOOT  SSIZE " + rootPlaylist.size());
-                    rootList = rootPlaylist;
+
+                    Collections.sort(rootPlaylist, (a, b) -> { // new Comparator<Song> compare()
+
+                        return a.getTitle().compareTo(b.getTitle());
+                    });
                     RootList.setRootList(rootPlaylist);
-                    Log.i("TASK", "ROOOOT  SSIZE " + rootList.size());
+                    Log.i("TASK", "ROOOOT  SSIZE " + rootPlaylist);
+                    // TODO: notifier la vue
+                    songAdapter.notifyDataSetInvalidated();
                     return rootPlaylist;
                 }
             }).execute();
