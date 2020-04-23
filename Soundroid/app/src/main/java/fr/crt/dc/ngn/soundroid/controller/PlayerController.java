@@ -96,6 +96,7 @@ public class PlayerController {
 
     private void installListener(){
         this.ivControlPlaySong.setOnClickListener(v->pushPlayControl());
+        this.ivControlNextSong.setOnClickListener(v->pushNextControl());
     }
 
     public void setImagePlay(){
@@ -119,7 +120,11 @@ public class PlayerController {
         }
     }
 
-
+    private void pushNextControl() {
+        this.songService.playNextSong();
+        this.setImagePause();
+        //this.setWidgetsValues();
+    }
 
 
 }
