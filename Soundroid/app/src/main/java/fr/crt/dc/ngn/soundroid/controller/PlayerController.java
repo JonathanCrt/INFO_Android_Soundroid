@@ -9,10 +9,13 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.Objects;
 
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.content.ContextCompat;
+
 import fr.crt.dc.ngn.soundroid.R;
 import fr.crt.dc.ngn.soundroid.service.SongService;
 
@@ -87,6 +90,36 @@ public class PlayerController {
         };
         this.context.bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
         Objects.requireNonNull(this.context).startService(intent); //demarrage du service;
+
+        installListener();
     }
+
+    private void installListener(){
+        this.ivControlPlaySong.setOnClickListener(v->pushPlayControl());
+    }
+
+    public void setImagePlay(){
+        this.ivControlPlaySong.setImageDrawable(ContextCompat.getDrawable(this.context, R.drawable.ic_play_white));
+
+    }
+
+    public void setImagePause(){
+        this.ivControlPlaySong.setImageDrawable(ContextCompat.getDrawable(this.context, R.drawable.ic_pause_white));
+    }
+
+    private void pushPlayControl() {
+        this.songService.setToolbarPushed(true);
+        if(!songService.playOrPauseSong()) {
+            Toast.makeText(this.context, "State : Pause", Toast.LENGTH_SHORT).show();
+            this.setImagePlay();
+        } else {
+            Toast.makeText(this.context, "State : Play", Toast.LENGTH_SHORT).show();
+            this.setImagePause();
+            //this.setWidgetsValues();
+        }
+    }
+
+
+
 
 }

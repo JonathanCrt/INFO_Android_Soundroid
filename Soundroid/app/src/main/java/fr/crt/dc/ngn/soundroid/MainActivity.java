@@ -85,6 +85,7 @@ public class MainActivity extends AppCompatActivity {
 
         Toolbar toolbarPlayer = findViewById(R.id.inc_toolbar_player);
 
+        //launch Player Activity
         toolbarPlayer.setOnClickListener(v -> this.launchPlayerActivity());
         this.initializeViews();
 
