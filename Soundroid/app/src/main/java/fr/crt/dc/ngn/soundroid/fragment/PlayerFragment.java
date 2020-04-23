@@ -52,5 +52,4 @@ public class PlayerFragment extends Fragment {
 
         return inflater.inflate(R.layout.fragment_player, container, false);
     }
-    
 }
