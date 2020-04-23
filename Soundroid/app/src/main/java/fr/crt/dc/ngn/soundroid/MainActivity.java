@@ -85,6 +85,7 @@ public class MainActivity extends AppCompatActivity {
 
         Toolbar toolbarPlayer = findViewById(R.id.inc_toolbar_player);
 
+        /*
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
 
@@ -101,6 +102,14 @@ public class MainActivity extends AppCompatActivity {
             Log.i("MainActivity", "Player is Visible ? " + isPlayerVisible);
 
         });
+
+         */
+
+
+        toolbarPlayer.setOnClickListener(v -> {
+            this.launchPlayerActivity();
+        });
+
         this.initializeViews();
 
 
@@ -111,9 +120,14 @@ public class MainActivity extends AppCompatActivity {
             Log.e("MainActivity", e.getMessage());
         }
 
-
-
     }
+
+    private void launchPlayerActivity() {
+        Intent it = new Intent(this, PlayerActivity.class);
+        startActivity(it);
+    }
+
+
 
     private void switchToPlayer() {
         PlayerFragment playerFragment = (PlayerFragment) getSupportFragmentManager().findFragmentByTag("PLAYER_FRAG");

@@ -24,4 +24,8 @@
 
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="duration">Duration</string>
+    <string name="star_for_note_of_track">star for note of track</string>
+    <string name="represents_a_button_to_launch_random_playback">represents a button to launch random playback</string>
+    <string name="represents_a_button_to_add_a_tag">represents a button to add a tag</string>
+    <string name="represents_a_button_to_return_previous_activity">represents a button to return previous activity</string>
 </resources>
