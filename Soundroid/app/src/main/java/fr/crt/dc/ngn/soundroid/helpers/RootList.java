@@ -34,13 +34,15 @@ public class RootList {
                 @Override
                 public ArrayList<Song> processFinish(ArrayList<Song> rootPlaylist) {
 
+                    // TODO: notifier la vue
+                    /*
                     Collections.sort(rootPlaylist, (a, b) -> { // new Comparator<Song> compare()
 
                         return a.getTitle().compareTo(b.getTitle());
                     });
+                     */
                     RootList.setRootList(rootPlaylist);
                     Log.i("TASK", "ROOOOT  SSIZE " + rootPlaylist);
-                    // TODO: notifier la vue
                     songAdapter.notifyDataSetInvalidated();
                     return rootPlaylist;
                 }
