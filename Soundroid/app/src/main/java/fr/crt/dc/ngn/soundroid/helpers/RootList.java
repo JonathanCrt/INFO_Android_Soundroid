@@ -7,25 +7,40 @@ import java.util.ArrayList;
 import java.util.concurrent.ExecutionException;
 
 import fr.crt.dc.ngn.soundroid.MainActivity;
+import fr.crt.dc.ngn.soundroid.adapter.SongAdapter;
 import fr.crt.dc.ngn.soundroid.async.CursorAsyncTask;
+import fr.crt.dc.ngn.soundroid.model.Playlist;
 import fr.crt.dc.ngn.soundroid.model.Song;
 
 public class RootList {
     private static ArrayList<Song> rootList = null;
     private static final Object MUTEX = new Object();
+    private static SongAdapter songAdapter;
 
-    public static ArrayList<Song> callAsyncTask() throws ExecutionException, InterruptedException {
+    public static SongAdapter getSongAdapter() {
+        return songAdapter;
+    }
+
+    public static void setSongAdapter(SongAdapter songAdapter) {
+        RootList.songAdapter = songAdapter;
+    }
+
+    public static void callAsyncTask(SongAdapter songAdapter, ArrayList<Song> rootSongs) throws ExecutionException, InterruptedException {
+        RootList.setSongAdapter(songAdapter);
+        RootList.setRootList(rootSongs);
         synchronized (MUTEX){
-            CursorAsyncTask c = (CursorAsyncTask) new CursorAsyncTask(MainActivity.getAppContext(), (rootPlaylist) -> {
-                Log.i("TASK", "ROOOOT  SSIZE " + rootPlaylist.size());
-                rootList = rootPlaylist;
-                Log.i("TASK", "ROOOOT  SSIZE " + rootList.size());
-                return rootPlaylist;
-            }).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+            AsyncTask<Void, Song, ArrayList<Song>> task = new CursorAsyncTask(MainActivity.getAppContext(), rootSongs, new CursorAsyncTask.AsyncResponse() {
+                @Override
+                public ArrayList<Song> processFinish(ArrayList<Song> rootPlaylist) {
+                    Log.i("TASK", "ROOOOT  SSIZE " + rootPlaylist.size());
+                    rootList = rootPlaylist;
+                    RootList.setRootList(rootPlaylist);
+                    Log.i("TASK", "ROOOOT  SSIZE " + rootList.size());
+                    return rootPlaylist;
+                }
+            }).execute();
 
-        return c.get();
         }
-
     }
 
 

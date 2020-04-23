@@ -29,8 +29,10 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
+import fr.crt.dc.ngn.soundroid.adapter.SongAdapter;
 import fr.crt.dc.ngn.soundroid.fragment.PlayerFragment;
 import fr.crt.dc.ngn.soundroid.helpers.RootList;
+import fr.crt.dc.ngn.soundroid.model.Playlist;
 import fr.crt.dc.ngn.soundroid.model.Song;
 import fr.crt.dc.ngn.soundroid.service.SongService;
 
@@ -103,10 +105,14 @@ public class MainActivity extends AppCompatActivity {
         });
         this.initializeViews();
 
-
         // launch async task
         try {
-            RootList.setRootList(RootList.callAsyncTask());
+            Playlist p = new Playlist("Root");
+            SongAdapter adapter = new SongAdapter(getAppContext(), p);
+            //p.setSongList(RootList.getRootList());
+            RootList.callAsyncTask(adapter, new ArrayList<Song>());
+
+            //Log.i("TASK", "ROOOOT  SSIZE " + RootList.getRootList().size());
         } catch (ExecutionException | InterruptedException e) {
             Log.e("MainActivity", e.getMessage());
         }

@@ -82,25 +82,28 @@ public class AllTracksFragment extends Fragment {
                              Bundle savedInstanceState) {
         Log.i("TASK", "rootlist = " + RootList.getRootList());
         this.playlistSongs = RootList.getRootList();
-        Log.i("TASK", "size " +this.playlistSongs.size());
+       // Log.i("TASK", "size " +this.playlistSongs.size());
         Playlist playlist = new Playlist("Root");
         // TODO : call this method when the app is launched
 
         //    this.getMetaDataWithResolver();
         // will sort the data so that the tracks are listed in alphabetical order
+        /*
         Collections.sort(this.playlistSongs, (a, b) -> { // new Comparator<Song> compare()
 
             return a.getTitle().compareTo(b.getTitle());
         });
+         */
         // create personal adapter
         playlist.setSongList(this.playlistSongs);
-        SongAdapter adapter = new SongAdapter(this.getContext(), playlist);
+      //  SongAdapter adapter = new SongAdapter(this.getContext(), playlist);
 
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_all_tracks, container, false);
 
         lv = v.findViewById(R.id.list_songs);
-        lv.setAdapter(adapter);
+        Log.i("ADAPT", RootList.getSongAdapter().toString());
+        lv.setAdapter(RootList.getSongAdapter());
 
         this.installOnItemClickListener();
 

@@ -8,6 +8,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 import android.util.Log;
 
@@ -22,9 +23,12 @@ import java.util.Arrays;
 import java.util.HashMap;
 
 import fr.crt.dc.ngn.soundroid.R;
+import fr.crt.dc.ngn.soundroid.adapter.SongAdapter;
+import fr.crt.dc.ngn.soundroid.helpers.RootList;
+import fr.crt.dc.ngn.soundroid.model.Playlist;
 import fr.crt.dc.ngn.soundroid.model.Song;
 
-public class CursorAsyncTask extends AsyncTask<Void, Void, ArrayList<Song>> {
+public class CursorAsyncTask extends AsyncTask<Void, Song, ArrayList<Song>> {
 
     // you may separate this or combined to caller class.
     public interface AsyncResponse {
@@ -39,11 +43,18 @@ public class CursorAsyncTask extends AsyncTask<Void, Void, ArrayList<Song>> {
 
     public AsyncResponse delegate = null;
 
+    private Playlist playlist;
+    private SongAdapter songAdapter;
+    private ArrayList<Song> rootSongs;
+
     /**
      * Constructeur de l'asyncTask.
      * @param context
      */
-    public CursorAsyncTask(Context context, AsyncResponse delegate) {
+    public CursorAsyncTask(Context context,  ArrayList<Song> rootSongs, AsyncResponse delegate) {
+        this.rootSongs = rootSongs;
+        this.songAdapter= RootList.getSongAdapter();
+        Log.i("ASIIIIIII", songAdapter.toString());
         this.contentResolver = context.getContentResolver();
         // get the default artwork one time
         Bitmap tmp = BitmapFactory.decodeResource(context.getResources(),
@@ -53,11 +64,10 @@ public class CursorAsyncTask extends AsyncTask<Void, Void, ArrayList<Song>> {
         this.artworkMap = new HashMap<>();
     }
 
-
     @Override
     protected ArrayList<Song> doInBackground(Void... voids) {
 
-        ArrayList<Song> rootSongs = new ArrayList<Song>();
+        //ArrayList<Song> rootSongs = new ArrayList<Song>();
 
         Uri uri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
         // TODO: uri to get the genre
@@ -135,6 +145,9 @@ public class CursorAsyncTask extends AsyncTask<Void, Void, ArrayList<Song>> {
                         rootSongs.add(song);
                         idSong++;
                         Log.i("Cursor", "" + cursor.getString(0));
+                        publishProgress(song);
+                        //this.songAdapter.add(song);
+                        //this.songAdapter.notifyDataSetChanged();
 
                     } catch (NoSuchAlgorithmException e) {
                         e.getMessage();
@@ -147,9 +160,14 @@ public class CursorAsyncTask extends AsyncTask<Void, Void, ArrayList<Song>> {
         return rootSongs;
     }
 
+
     @Override
-    protected void onProgressUpdate(Void... values) {
+    protected void onProgressUpdate(Song... values) {
         super.onProgressUpdate(values);
+        Log.i("ON PROGRESS UPDAE", "MSG");
+        Log.i("VALUES", values[0].getTitle());
+        this.songAdapter.add(values[0]);
+        this.songAdapter.notifyDataSetChanged();
     }
 
     /**
@@ -179,6 +197,7 @@ public class CursorAsyncTask extends AsyncTask<Void, Void, ArrayList<Song>> {
 
     @Override
     protected void onPostExecute(ArrayList<Song> result) {
+        this.songAdapter.notifyDataSetChanged();
         delegate.processFinish(result);
     }
 }
