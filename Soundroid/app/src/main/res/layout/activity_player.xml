@@ -1,0 +1,209 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/crtLay_player"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/side_nav_bar">
+
+    <ImageView
+        android:id="@+id/iv_player_back"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:contentDescription="@string/represents_a_button_to_return_previous_activity"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.957"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.023"
+        app:srcCompat="@drawable/ic_arrow_back_white" />
+
+    <TextView
+        android:id="@+id/tv_player_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/titre"
+        android:textColor="#FFFFFF"
+        android:textSize="36sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.114" />
+
+    <TextView
+        android:id="@+id/tv_player_artist"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/artiste"
+        android:textColor="#FFFFFF"
+        android:textSize="24sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.181" />
+
+    <ImageView
+        android:id="@+id/iv_player_artwork"
+        android:layout_width="303dp"
+        android:layout_height="246dp"
+        android:contentDescription="@string/pochette_piste"
+        android:src="@drawable/artwork_default"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.496"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.38" />
+
+    <SeekBar
+        android:id="@+id/seekBar_player"
+        style="@style/Widget.AppCompat.SeekBar"
+        android:layout_width="381dp"
+        android:layout_height="37dp"
+        android:background="@color/colorPrimary"
+        android:clickable="true"
+        android:focusable="true"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.466"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.743" />
+
+    <ImageView
+        android:id="@+id/iv_player_control_play"
+        android:layout_width="64dp"
+        android:layout_height="64dp"
+        android:contentDescription="@string/contr_le_pour_passer_a_la_piste_pr_c_dente"
+        android:src="@drawable/ic_play_white_2x"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/seekBar_player"
+        app:layout_constraintVertical_bias="0.368" />
+
+    <ImageView
+        android:id="@+id/iv_player_control_previous"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:contentDescription="@string/contr_le_pour_passer_a_la_piste_pr_c_dente"
+        android:src="@drawable/ic_previous_white"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/iv_player_control_play"
+        app:layout_constraintHorizontal_bias="0.833"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/seekBar_player"
+        app:layout_constraintVertical_bias="0.387" />
+
+    <ImageView
+        android:id="@+id/iv_player_control_next"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:contentDescription="@string/contr_le_pour_passer_musique_suivante"
+        android:src="@drawable/ic_next_white"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.153"
+        app:layout_constraintStart_toEndOf="@+id/iv_player_control_play"
+        app:layout_constraintTop_toBottomOf="@+id/seekBar_player"
+        app:layout_constraintVertical_bias="0.387" />
+
+    <ImageView
+        android:id="@+id/iv_player_note_star_3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:contentDescription="@string/star_for_note_of_track"
+        app:layout_constraintBottom_toTopOf="@+id/seekBar_player"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/iv_player_artwork"
+        app:layout_constraintVertical_bias="0.476"
+        app:srcCompat="@drawable/ic_outline_star_note" />
+
+    <ImageView
+        android:id="@+id/iv_player_note_star_2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:contentDescription="@string/star_for_note_of_track"
+        app:layout_constraintBottom_toTopOf="@+id/seekBar_player"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.402"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/iv_player_artwork"
+        app:layout_constraintVertical_bias="0.476"
+        app:srcCompat="@drawable/ic_outline_star_note" />
+
+    <ImageView
+        android:id="@+id/iv_player_note_star_4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:contentDescription="@string/star_for_note_of_track"
+        app:layout_constraintBottom_toTopOf="@+id/seekBar_player"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.594"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/iv_player_artwork"
+        app:layout_constraintVertical_bias="0.476"
+        app:srcCompat="@drawable/ic_outline_star_note" />
+
+    <ImageView
+        android:id="@+id/iv_player_note_star_1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:contentDescription="@string/star_for_note_of_track"
+        app:layout_constraintBottom_toTopOf="@+id/seekBar_player"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.306"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/iv_player_artwork"
+        app:layout_constraintVertical_bias="0.476"
+        app:srcCompat="@drawable/ic_outline_star_note" />
+
+    <ImageView
+        android:id="@+id/iv_player_note_star_5"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:contentDescription="@string/star_for_note_of_track"
+        app:layout_constraintBottom_toTopOf="@+id/seekBar_player"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.69"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/iv_player_artwork"
+        app:layout_constraintVertical_bias="0.476"
+        app:srcCompat="@drawable/ic_outline_star_note" />
+
+    <ImageView
+        android:id="@+id/iv_player_shuffle_playback"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:contentDescription="@string/represents_a_button_to_launch_random_playback"
+        app:layout_constraintBottom_toTopOf="@+id/seekBar_player"
+        app:layout_constraintEnd_toStartOf="@+id/iv_player_note_star_1"
+        app:layout_constraintHorizontal_bias="0.202"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/iv_player_artwork"
+        app:layout_constraintVertical_bias="0.478"
+        app:srcCompat="@drawable/ic_shuffle_white" />
+
+    <ImageView
+        android:id="@+id/iv_player_add_tag"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:contentDescription="@string/represents_a_button_to_add_a_tag"
+        app:layout_constraintBottom_toTopOf="@+id/seekBar_player"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.8"
+        app:layout_constraintStart_toEndOf="@+id/iv_player_note_star_5"
+        app:layout_constraintTop_toBottomOf="@+id/iv_player_artwork"
+        app:layout_constraintVertical_bias="0.478"
+        app:srcCompat="@drawable/ic_add_white" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

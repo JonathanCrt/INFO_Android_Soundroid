@@ -58,8 +58,6 @@ public class MainActivity extends AppCompatActivity {
         this.btnPanelPrevious = findViewById(R.id.btn_panel_previous);
     }
 
-
-
     public static Context getAppContext() {
         return MainActivity.context;
     }
@@ -87,22 +85,7 @@ public class MainActivity extends AppCompatActivity {
 
         Toolbar toolbarPlayer = findViewById(R.id.inc_toolbar_player);
 
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-
-        PlayerFragment playerFragment = new PlayerFragment();
-        toolbarPlayer.setOnClickListener(view -> {
-            if (!isPlayerVisible) {
-                fragmentTransaction.replace(R.id.nav_host_fragment, playerFragment).commit();
-                fragmentTransaction.addToBackStack(null);
-                //this.switchToPlayer();
-                this.isPlayerVisible = true;
-            } else {
-                isPlayerVisible = false;
-            }
-            Log.i("MainActivity", "Player is Visible ? " + isPlayerVisible);
-
-        });
+        toolbarPlayer.setOnClickListener(v -> this.launchPlayerActivity());
         this.initializeViews();
 
         // launch async task
@@ -114,48 +97,15 @@ public class MainActivity extends AppCompatActivity {
 
             //Log.i("TASK", "ROOOOT  SSIZE " + RootList.getRootList().size());
         } catch (ExecutionException | InterruptedException e) {
-            Log.e("MainActivity", e.getMessage());
+            Log.e("MainActivity", Objects.requireNonNull(e.getMessage()));
         }
 
-
-
     }
 
-    private void switchToPlayer() {
-        PlayerFragment playerFragment = (PlayerFragment) getSupportFragmentManager().findFragmentByTag("PLAYER_FRAG");
-        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-        fragmentTransaction.detach(Objects.requireNonNull(getSupportFragmentManager().findFragmentByTag("ALL_TRACKS")));
-        assert playerFragment != null;
-        fragmentTransaction.attach(playerFragment);
-        fragmentTransaction.addToBackStack(null);
-        fragmentTransaction.commitAllowingStateLoss();
-        getSupportFragmentManager().executePendingTransactions();
-
+    private void launchPlayerActivity() {
+        Intent it = new Intent(this, PlayerActivity.class);
+        startActivity(it);
     }
-
-    /*
-    public void toogleFragments() {
-        AllTracksFragment allTracksFragment = (AllTracksFragment) getSupportFragmentManager().findFragmentById(R.id.nav_all_tracks);
-        PlayerFragment playerFragment = (PlayerFragment) getSupportFragmentManager().findFragmentById(R.id.nav_player_song);
-
-        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-        if(!isPlayerVisible) {
-            fragmentTransaction.detach(allTracksFragment);
-            fragmentTransaction.attach(playerFragment);
-            fragmentTransaction.addToBackStack(null);
-            this.isPlayerVisible = true;
-        } else {
-            fragmentTransaction.detach(playerFragment);
-            fragmentTransaction.attach(allTracksFragment);
-            this.isPlayerVisible = false;
-        }
-
-        fragmentTransaction.commitAllowingStateLoss();
-        getSupportFragmentManager().executePendingTransactions();
-
-    }
-     */
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
