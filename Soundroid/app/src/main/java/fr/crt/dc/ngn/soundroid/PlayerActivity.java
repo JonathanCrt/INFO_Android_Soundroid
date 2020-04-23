@@ -29,7 +29,8 @@ public class PlayerActivity extends AppCompatActivity {
         Intent intent = getIntent();
 
         //attempt get artist info with intent for first launch
-       /* if(intent !=null){
+        //problem : how to get info from mainActivity withtout songService ?
+       /*if(intent !=null){
             String artist = intent.getStringExtra("artist");
             this.playerController.setTextViewArtistSong(artist);
         }*/
