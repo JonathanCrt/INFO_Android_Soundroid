@@ -19,6 +19,8 @@ public class PlayerActivity extends AppCompatActivity {
 
         this.playerController = new PlayerController(this, findViewById(R.id.crtLay_player));
 
+        playerController.setListenerRating();
+
         Blurry.with(this)
                 .radius(10)
                 .sampling(8)

@@ -46,6 +46,7 @@ public class PlayerController extends AbstractController {
     private Intent intent;
     private boolean connectionEstablished;
 
+    private boolean isNoteSet;
     private Context context;
     private ConstraintLayout constraintLayout;
 
@@ -99,6 +100,88 @@ public class PlayerController extends AbstractController {
         this.ivControlPlaySong.setOnClickListener(v->pushPlayControl());
         this.ivControlNextSong.setOnClickListener(v->pushNextControl());
         this.ivControlPreviousSong.setOnClickListener((v->pushPreviousControl()));
+    }
+
+    public void resetRating() {
+        ivNoteStarOne.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_outline_star_note));
+        ivNoteStarTwo.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_outline_star_note));
+        ivNoteStarThree.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_outline_star_note));
+        ivNoteStarFour.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_outline_star_note));
+        ivNoteStarFive.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_outline_star_note));
+        this.songService.getPlaylistSongs().get(this.songService.getSongIndex()).setRating(0);
+    }
+
+
+    public void setListenerRating() {
+        this.ivNoteStarOne.setOnClickListener(v -> {
+            if(!isNoteSet) {
+                ivNoteStarOne.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_filled_star_note));
+                ivNoteStarTwo.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_outline_star_note));
+                ivNoteStarThree.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_outline_star_note));
+                ivNoteStarFour.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_outline_star_note));
+                ivNoteStarFive.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_outline_star_note));
+                this.songService.getPlaylistSongs().get(this.songService.getSongIndex()).setRating(1);
+            } else {
+                isNoteSet = false;
+                resetRating();
+            }
+        });
+
+        this.ivNoteStarTwo.setOnClickListener(v -> {
+            if(!isNoteSet) {
+                ivNoteStarOne.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_filled_star_note));
+                ivNoteStarTwo.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_filled_star_note));
+                ivNoteStarThree.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_outline_star_note));
+                ivNoteStarFour.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_outline_star_note));
+                ivNoteStarFive.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_outline_star_note));
+                this.songService.getPlaylistSongs().get(this.songService.getSongIndex()).setRating(2);
+            } else {
+                isNoteSet = false;
+                resetRating();
+            }
+        });
+
+        this.ivNoteStarThree.setOnClickListener(v -> {
+            if(!isNoteSet) {
+                ivNoteStarOne.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_filled_star_note));
+                ivNoteStarTwo.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_filled_star_note));
+                ivNoteStarThree.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_filled_star_note));
+                ivNoteStarFour.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_outline_star_note));
+                ivNoteStarFive.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_outline_star_note));
+                this.songService.getPlaylistSongs().get(this.songService.getSongIndex()).setRating(3);
+            } else {
+                isNoteSet = false;
+                resetRating();
+            }
+        });
+
+        this.ivNoteStarFour.setOnClickListener(v -> {
+            if(!isNoteSet) {
+                ivNoteStarOne.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_filled_star_note));
+                ivNoteStarTwo.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_filled_star_note));
+                ivNoteStarThree.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_filled_star_note));
+                ivNoteStarFour.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_filled_star_note));
+                ivNoteStarFive.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_outline_star_note));
+                this.songService.getPlaylistSongs().get(this.songService.getSongIndex()).setRating(4);
+            } else {
+                isNoteSet = false;
+                resetRating();
+            }
+        });
+
+        this.ivNoteStarFive.setOnClickListener(v -> {
+            if(!isNoteSet) {
+                ivNoteStarOne.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_filled_star_note));
+                ivNoteStarTwo.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_filled_star_note));
+                ivNoteStarThree.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_filled_star_note));
+                ivNoteStarFour.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_filled_star_note));
+                ivNoteStarFive.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_filled_star_note));
+                this.songService.getPlaylistSongs().get(this.songService.getSongIndex()).setRating(5);
+            } else {
+                isNoteSet = false;
+                resetRating();
+            }
+        });
     }
 
     public void setWidgetsValues() {
