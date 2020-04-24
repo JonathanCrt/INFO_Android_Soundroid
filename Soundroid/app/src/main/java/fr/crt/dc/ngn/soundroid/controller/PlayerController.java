@@ -23,7 +23,7 @@ import fr.crt.dc.ngn.soundroid.service.SongService;
 /**
  * Created by CRETE JONATHAN on 23/04/2020.
  */
-public class PlayerController {
+public class PlayerController extends AbstractController {
 
     // Views
     private ImageView ivBack;
@@ -101,55 +101,34 @@ public class PlayerController {
         this.ivControlPreviousSong.setOnClickListener((v->pushPreviousControl()));
     }
 
-    private void setTextViewTitleSong(String title) {
-        this.tvTitleSong.setText(title);
-    }
-
-    public void setTextViewArtistSong(String artist) {
-        this.tvArtistSong.setText(artist);
-    }
-
-    private void setArtworkSong(Bitmap artwork) {
-        this.ivArtworkSong.setImageBitmap(artwork);
-    }
-
     public void setWidgetsValues() {
-        this.setTextViewTitleSong(this.songService.getPlaylistSongs().get(this.songService.getSongIndex()).getTitle());
-        this.setTextViewArtistSong(this.songService.getPlaylistSongs().get(this.songService.getSongIndex()).getArtist());
-        this.setArtworkSong(this.songService.getPlaylistSongs().get(this.songService.getSongIndex()).getArtwork());
-    }
-
-    public void setImagePlay(){
-        this.ivControlPlaySong.setImageDrawable(ContextCompat.getDrawable(this.context, R.drawable.ic_play_white));
-
-    }
-
-    public void setImagePause(){
-        this.ivControlPlaySong.setImageDrawable(ContextCompat.getDrawable(this.context, R.drawable.ic_pause_white));
+        setTextSongInformation(this.songService.getPlaylistSongs().get(this.songService.getSongIndex()).getTitle(), this.tvTitleSong);
+        setTextSongInformation(this.songService.getPlaylistSongs().get(this.songService.getSongIndex()).getTitle(), this.tvArtistSong);
+        setArtworkSong(this.songService.getPlaylistSongs().get(this.songService.getSongIndex()).getArtwork(), this.ivArtworkSong);
     }
 
     private void pushPlayControl() {
         this.songService.setToolbarPushed(true);
         if(!songService.playOrPauseSong()) {
             Toast.makeText(this.context, "State : Pause", Toast.LENGTH_SHORT).show();
-            this.setImagePlay();
+            setImagePlay(ivControlPlaySong, this.context);
         } else {
             Toast.makeText(this.context, "State : Play", Toast.LENGTH_SHORT).show();
-            this.setImagePause();
-            this.setWidgetsValues();
+            setImagePause(ivControlPlaySong, context);
+            setWidgetsValues();
         }
     }
 
     private void pushNextControl() {
         this.songService.playNextSong();
-        this.setImagePause();
-        this.setWidgetsValues();
+        setImagePause(ivControlPlaySong, context);
+        setWidgetsValues();
     }
 
     private void pushPreviousControl() {
         this.songService.playPreviousSong();
-        this.setImagePause();
-        this.setWidgetsValues();
+        setImagePause(ivControlPlaySong, context);
+        setWidgetsValues();
     }
 
 }

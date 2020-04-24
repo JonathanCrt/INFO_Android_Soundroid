@@ -116,7 +116,7 @@ public class AllTracksFragment extends Fragment {
         lv.setOnItemClickListener((parent, view, position, id) -> {
             this.songService.setCurrentSong(position);
             this.songService.playOrPauseSong();
-            toolbarController.setImagePause();
+            toolbarController.setImagePauseFromFragment();
             toolbarController.setWidgetsValues();
         });
     }
