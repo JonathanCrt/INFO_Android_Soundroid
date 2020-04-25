@@ -24,6 +24,7 @@ import android.widget.Toast;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
@@ -44,6 +45,7 @@ public class SongService extends Service implements MediaPlayer.OnPreparedListen
     private boolean isToolbarPushed;
     private boolean initializeSong;
     private Button btnPanelPause;
+    private boolean isShuffled = false;
 
     // Arbitrary ID for the notification (with different IDs a service can manage several notifications)
     public static final int NOTIFICATION_ID = 1;
@@ -277,6 +279,26 @@ public class SongService extends Service implements MediaPlayer.OnPreparedListen
         if (this.songIndex < 0) {
             this.songIndex = this.playlistSongs.size() - 1;
         }
+        this.playOrPauseSong();
+    }
+
+
+    public void shuffleSongList(){
+       //ArrayList<Song> playlistSongToBeShuffled = new ArrayList<>(this.playlistSongs);
+        //ArrayList<Song> playlistSongNotShuffled = new ArrayList<>();
+        //for(Song currentSong : this.playlistSongs){
+          //  playlistSongShuffled.add(currentSong);
+        //}
+
+        if(this.isShuffled == false){
+            Collections.shuffle(this.playlistSongs);
+            this.isShuffled = true;
+
+        }else{
+
+            this.isShuffled = false;
+        }
+        Log.d("SHUFFLE", "to shuffle " + this.isShuffled);
         this.playOrPauseSong();
     }
 

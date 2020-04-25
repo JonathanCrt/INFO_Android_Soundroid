@@ -103,6 +103,7 @@ public class PlayerController extends AbstractController {
         this.ivControlPlaySong.setOnClickListener(v->pushPlayControl());
         this.ivControlNextSong.setOnClickListener(v->pushNextControl());
         this.ivControlPreviousSong.setOnClickListener((v->pushPreviousControl()));
+        this.ivRandomPlayback.setOnClickListener(v->pushShuffleControl());
     }
 
     public void resetRating() {
@@ -229,6 +230,12 @@ public class PlayerController extends AbstractController {
     private void pushPreviousControl() {
         this.songService.playPreviousSong();
         setImagePause(ivControlPlaySong, context);
+        setWidgetsValues();
+    }
+
+    private void pushShuffleControl(){
+        //appelle fonction shuffle dans songSERvice
+        this.songService.shuffleSongList();
         setWidgetsValues();
     }
 
