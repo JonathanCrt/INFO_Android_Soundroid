@@ -284,19 +284,18 @@ public class SongService extends Service implements MediaPlayer.OnPreparedListen
 
 
     public void shuffleSongList(){
-       //ArrayList<Song> playlistSongToBeShuffled = new ArrayList<>(this.playlistSongs);
-        //ArrayList<Song> playlistSongNotShuffled = new ArrayList<>();
-        //for(Song currentSong : this.playlistSongs){
-          //  playlistSongShuffled.add(currentSong);
-        //}
+       ArrayList<Song> playlistSongToBeShuffled = new ArrayList<>();
 
+        playlistSongToBeShuffled.addAll(this.playlistSongs); //copy playListSong in it, try to UNSHUFFLE
         if(this.isShuffled == false){
-            Collections.shuffle(this.playlistSongs);
+            Collections.shuffle(playlistSongToBeShuffled); //shuffle the copy
+            setPlaylistSongs(playlistSongToBeShuffled); //set the copy
             this.isShuffled = true;
 
         }else{
-
-            this.isShuffled = false;
+            //hos to reset the playlistSong
+            setPlaylistSongs(this.playlistSongs);   //set the initial playListSong to unshuffle
+            this.isShuffled = false;                //is not shuffled anymore
         }
         Log.d("SHUFFLE", "to shuffle " + this.isShuffled);
         this.playOrPauseSong();
