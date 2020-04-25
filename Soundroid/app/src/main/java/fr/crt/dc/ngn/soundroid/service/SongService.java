@@ -280,11 +280,12 @@ public class SongService extends Service implements MediaPlayer.OnPreparedListen
         this.playOrPauseSong();
     }
 
-
-    @Override
-    public void onDestroy() {
-        this.stopForeground(true);
+    public void handleSeekBar(int progression, boolean isfromUser) {
+        if(player != null && isfromUser) {
+            player.seekTo(progression * 1000);
+        }
     }
+
 
 
     public int getSongIndex() {
@@ -337,4 +338,8 @@ public class SongService extends Service implements MediaPlayer.OnPreparedListen
         this.player.pause();
     }
 
+    @Override
+    public void onDestroy() {
+        this.stopForeground(true);
+    }
 }
