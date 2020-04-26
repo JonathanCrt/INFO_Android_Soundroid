@@ -1,5 +1,6 @@
 package fr.crt.dc.ngn.soundroid;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
@@ -14,16 +15,30 @@ import android.content.ServiceConnection;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.os.PersistableBundle;
+import android.util.Log;
 import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
+import java.io.Serializable;
 import java.util.Objects;
 
-public class PlayerActivity extends AppCompatActivity  {
+public class PlayerActivity extends AppCompatActivity {
+
+    public static class State implements Serializable {
+
+        private PlayerController playerController;
+
+        State(PlayerController playerController) {
+            this.playerController = playerController;
+        }
+    }
+
 
     private PlayerController playerController;
     private ImageView ivBack;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,15 +62,22 @@ public class PlayerActivity extends AppCompatActivity  {
             this.playerController.setTextViewArtistSong(artist);
         }*/
 
+        if (savedInstanceState != null) {
+            State state = (State) savedInstanceState.getSerializable("state");
+            this.playerController = state.playerController;
+        }
+
         this.playerController = new PlayerController(this, findViewById(R.id.crtLay_player));
         playerController.setListenerRating();
         playerController.changeSeekBar();
         this.setIvBackListener();
+
     }
 
     @Override
     protected void onStart() {
         super.onStart();
+        playerController.setWidgetsValues();
     }
 
     @Override
@@ -67,5 +89,12 @@ public class PlayerActivity extends AppCompatActivity  {
         this.ivBack.setOnClickListener(v -> {
             finish();
         });
+    }
+
+    @Override
+    protected void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        State state = new State(this.playerController);
+        outState.putSerializable("state", state);
     }
 }

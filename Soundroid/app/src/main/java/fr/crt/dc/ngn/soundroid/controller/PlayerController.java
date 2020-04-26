@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.graphics.Bitmap;
 import android.os.IBinder;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -53,6 +54,24 @@ public class PlayerController extends AbstractController {
     private Context context;
     private ConstraintLayout constraintLayout;
 
+
+    private ServiceConnection serviceConnection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            SongService.SongBinder songBinder = (SongService.SongBinder) service;
+            // Permet de récupérer le service
+            songService = songBinder.getService();
+            connectionEstablished = true;
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+            connectionEstablished = false;
+        }
+    };
+
+
+
     private void initializeViews() {
         this.ivBack = (ImageView) constraintLayout.getViewById(R.id.iv_player_back);
         this.tvTitleSong = (TextView) constraintLayout.getViewById(R.id.tv_player_title);
@@ -77,22 +96,9 @@ public class PlayerController extends AbstractController {
         this.context = context;
         this.constraintLayout = layoutMainActivity;
         this.initializeViews();
-
+        Log.i("PlayerController", "I'm into constructor");
         intent = new Intent(this.context, SongService.class);
-        ServiceConnection serviceConnection = new ServiceConnection() {
-            @Override
-            public void onServiceConnected(ComponentName name, IBinder service) {
-                SongService.SongBinder songBinder = (SongService.SongBinder) service;
-                // Permet de récupérer le service
-                songService = songBinder.getService();
-                connectionEstablished = true;
-            }
 
-            @Override
-            public void onServiceDisconnected(ComponentName name) {
-                connectionEstablished = false;
-            }
-        };
         this.context.bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
         Objects.requireNonNull(this.context).startService(intent); //demarrage du service;
 
@@ -188,6 +194,7 @@ public class PlayerController extends AbstractController {
     }
 
     public void setWidgetsValues() {
+        Log.i("PlayerController", this.songService.toString());
         setTextSongInformation(this.songService.getPlaylistSongs().get(this.songService.getSongIndex()).getTitle(), this.tvTitleSong);
         setTextSongInformation(this.songService.getPlaylistSongs().get(this.songService.getSongIndex()).getTitle(), this.tvArtistSong);
         setArtworkSong(this.songService.getPlaylistSongs().get(this.songService.getSongIndex()).getArtwork(), this.ivArtworkSong);
