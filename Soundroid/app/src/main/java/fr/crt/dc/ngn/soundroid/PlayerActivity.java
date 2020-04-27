@@ -20,31 +20,35 @@ import android.util.Log;
 import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import org.w3c.dom.Text;
 
 import java.io.Serializable;
 import java.util.Objects;
 
 public class PlayerActivity extends AppCompatActivity {
 
+    private PlayerController playerController;
+    private ImageView ivBack;
+    private TextView tvTitleSong;
+    private TextView tvArtistSong;
+
+
     public static class State implements Serializable {
-
         private PlayerController playerController;
-
         State(PlayerController playerController) {
             this.playerController = playerController;
         }
     }
-
-
-    private PlayerController playerController;
-    private ImageView ivBack;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_player);
         this.ivBack = findViewById(R.id.iv_player_back);
+        this.tvArtistSong = findViewById(R.id.tv_player_artist);
+
 
         Blurry.with(this)
                 .radius(10)
@@ -61,12 +65,10 @@ public class PlayerActivity extends AppCompatActivity {
             String artist = intent.getStringExtra("artist");
             this.playerController.setTextViewArtistSong(artist);
         }*/
-
         if (savedInstanceState != null) {
             State state = (State) savedInstanceState.getSerializable("state");
             this.playerController = state.playerController;
         }
-
         this.playerController = new PlayerController(this, findViewById(R.id.crtLay_player));
         playerController.setListenerRating();
         playerController.changeSeekBar();
@@ -77,18 +79,26 @@ public class PlayerActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        playerController.setWidgetsValues();
+        String currentTitle = getIntent().getStringExtra("TITLE_SONG");
+        String currentArtist = getIntent().getStringExtra("ARTIST_SONG");
+        int currentNote = getIntent().getIntExtra("RATING_SONG", 0);
+        this.playerController.setWidgetsValues(currentTitle, currentArtist, currentNote);
     }
 
     @Override
-    protected void onResume() {
-        super.onResume();
+    protected void onStop() {
+        super.onStop();
+        //this.playerController.unbindService();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        //this.playerController.unbindService();
     }
 
     public void setIvBackListener() {
-        this.ivBack.setOnClickListener(v -> {
-            finish();
-        });
+        this.ivBack.setOnClickListener(v -> finish());
     }
 
     @Override
@@ -97,4 +107,5 @@ public class PlayerActivity extends AppCompatActivity {
         State state = new State(this.playerController);
         outState.putSerializable("state", state);
     }
+
 }

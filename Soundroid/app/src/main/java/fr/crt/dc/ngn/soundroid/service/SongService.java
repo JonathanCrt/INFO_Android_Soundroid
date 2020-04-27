@@ -177,7 +177,7 @@ public class SongService extends Service implements MediaPlayer.OnPreparedListen
                 .setContentText("Control Audio")
                 .setOnlyAlertOnce(true)
                 .setPriority(Notification.PRIORITY_HIGH)
-                .setDefaults(Notification.DEFAULT_LIGHTS);
+                .setDefaults(Notification.DEFAULT_ALL);
 
         //installListeners(expandedView, getBaseContext());
 

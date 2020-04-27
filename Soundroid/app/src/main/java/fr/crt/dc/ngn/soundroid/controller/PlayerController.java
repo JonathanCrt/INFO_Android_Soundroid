@@ -55,23 +55,6 @@ public class PlayerController extends AbstractController {
     private ConstraintLayout constraintLayout;
 
 
-    private ServiceConnection serviceConnection = new ServiceConnection() {
-        @Override
-        public void onServiceConnected(ComponentName name, IBinder service) {
-            SongService.SongBinder songBinder = (SongService.SongBinder) service;
-            // Permet de récupérer le service
-            songService = songBinder.getService();
-            connectionEstablished = true;
-        }
-
-        @Override
-        public void onServiceDisconnected(ComponentName name) {
-            connectionEstablished = false;
-        }
-    };
-
-
-
     private void initializeViews() {
         this.ivBack = (ImageView) constraintLayout.getViewById(R.id.iv_player_back);
         this.tvTitleSong = (TextView) constraintLayout.getViewById(R.id.tv_player_title);
@@ -92,6 +75,22 @@ public class PlayerController extends AbstractController {
         this.ivControlPlaySong = (ImageView) constraintLayout.getViewById(R.id.iv_player_control_play);
     }
 
+    ServiceConnection serviceConnection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            SongService.SongBinder songBinder = (SongService.SongBinder) service;
+            // Permet de récupérer le service
+            songService = songBinder.getService();
+            connectionEstablished = true;
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+            connectionEstablished = false;
+        }
+    };
+
+
     public PlayerController(Context context, ConstraintLayout layoutMainActivity){
         this.context = context;
         this.constraintLayout = layoutMainActivity;
@@ -99,9 +98,10 @@ public class PlayerController extends AbstractController {
         Log.i("PlayerController", "I'm into constructor");
         intent = new Intent(this.context, SongService.class);
 
+        // Permet de récupérer le service
+
         this.context.bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
         Objects.requireNonNull(this.context).startService(intent); //demarrage du service;
-
         installListener();
     }
 
@@ -112,7 +112,7 @@ public class PlayerController extends AbstractController {
         this.ivRandomPlayback.setOnClickListener(v->pushShuffleControl());
     }
 
-    public void resetRating() {
+    private void resetRating() {
         ivNoteStarOne.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_outline_star_note));
         ivNoteStarTwo.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_outline_star_note));
         ivNoteStarThree.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_outline_star_note));
@@ -121,15 +121,58 @@ public class PlayerController extends AbstractController {
         this.songService.getPlaylistSongs().get(this.songService.getSongIndex()).setRating(0);
     }
 
+
+
+    private void setRatingToOne() {
+        ivNoteStarOne.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_filled_star_note));
+        ivNoteStarTwo.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_outline_star_note));
+        ivNoteStarThree.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_outline_star_note));
+        ivNoteStarFour.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_outline_star_note));
+        ivNoteStarFive.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_outline_star_note));
+        this.songService.getPlaylistSongs().get(this.songService.getSongIndex()).setRating(1);
+    }
+
+    private void setRatingToTwo() {
+        ivNoteStarOne.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_filled_star_note));
+        ivNoteStarTwo.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_filled_star_note));
+        ivNoteStarThree.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_outline_star_note));
+        ivNoteStarFour.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_outline_star_note));
+        ivNoteStarFive.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_outline_star_note));
+        this.songService.getPlaylistSongs().get(this.songService.getSongIndex()).setRating(2);
+    }
+
+    private void setRatingToThree() {
+        ivNoteStarOne.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_filled_star_note));
+        ivNoteStarTwo.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_filled_star_note));
+        ivNoteStarThree.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_filled_star_note));
+        ivNoteStarFour.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_outline_star_note));
+        ivNoteStarFive.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_outline_star_note));
+        this.songService.getPlaylistSongs().get(this.songService.getSongIndex()).setRating(3);
+    }
+
+    private void setRatingToFour() {
+        ivNoteStarOne.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_filled_star_note));
+        ivNoteStarTwo.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_filled_star_note));
+        ivNoteStarThree.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_filled_star_note));
+        ivNoteStarFour.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_filled_star_note));
+        ivNoteStarFive.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_outline_star_note));
+        this.songService.getPlaylistSongs().get(this.songService.getSongIndex()).setRating(4);
+    }
+
+    private void setRatingToFive() {
+        ivNoteStarOne.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_filled_star_note));
+        ivNoteStarTwo.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_filled_star_note));
+        ivNoteStarThree.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_filled_star_note));
+        ivNoteStarFour.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_filled_star_note));
+        ivNoteStarFive.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_filled_star_note));
+        this.songService.getPlaylistSongs().get(this.songService.getSongIndex()).setRating(5);
+    }
+
+
     public void setListenerRating() {
         this.ivNoteStarOne.setOnClickListener(v -> {
             if(!isNoteSet) {
-                ivNoteStarOne.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_filled_star_note));
-                ivNoteStarTwo.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_outline_star_note));
-                ivNoteStarThree.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_outline_star_note));
-                ivNoteStarFour.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_outline_star_note));
-                ivNoteStarFive.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_outline_star_note));
-                this.songService.getPlaylistSongs().get(this.songService.getSongIndex()).setRating(1);
+                this.setRatingToOne();
             } else {
                 isNoteSet = false;
                 resetRating();
@@ -138,12 +181,7 @@ public class PlayerController extends AbstractController {
 
         this.ivNoteStarTwo.setOnClickListener(v -> {
             if(!isNoteSet) {
-                ivNoteStarOne.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_filled_star_note));
-                ivNoteStarTwo.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_filled_star_note));
-                ivNoteStarThree.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_outline_star_note));
-                ivNoteStarFour.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_outline_star_note));
-                ivNoteStarFive.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_outline_star_note));
-                this.songService.getPlaylistSongs().get(this.songService.getSongIndex()).setRating(2);
+                this.setRatingToTwo();
             } else {
                 isNoteSet = false;
                 resetRating();
@@ -152,12 +190,7 @@ public class PlayerController extends AbstractController {
 
         this.ivNoteStarThree.setOnClickListener(v -> {
             if(!isNoteSet) {
-                ivNoteStarOne.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_filled_star_note));
-                ivNoteStarTwo.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_filled_star_note));
-                ivNoteStarThree.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_filled_star_note));
-                ivNoteStarFour.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_outline_star_note));
-                ivNoteStarFive.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_outline_star_note));
-                this.songService.getPlaylistSongs().get(this.songService.getSongIndex()).setRating(3);
+                this.setRatingToThree();
             } else {
                 isNoteSet = false;
                 resetRating();
@@ -166,12 +199,7 @@ public class PlayerController extends AbstractController {
 
         this.ivNoteStarFour.setOnClickListener(v -> {
             if(!isNoteSet) {
-                ivNoteStarOne.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_filled_star_note));
-                ivNoteStarTwo.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_filled_star_note));
-                ivNoteStarThree.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_filled_star_note));
-                ivNoteStarFour.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_filled_star_note));
-                ivNoteStarFive.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_outline_star_note));
-                this.songService.getPlaylistSongs().get(this.songService.getSongIndex()).setRating(4);
+                this.setRatingToFour();
             } else {
                 isNoteSet = false;
                 resetRating();
@@ -180,12 +208,7 @@ public class PlayerController extends AbstractController {
 
         this.ivNoteStarFive.setOnClickListener(v -> {
             if(!isNoteSet) {
-                ivNoteStarOne.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_filled_star_note));
-                ivNoteStarTwo.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_filled_star_note));
-                ivNoteStarThree.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_filled_star_note));
-                ivNoteStarFour.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_filled_star_note));
-                ivNoteStarFive.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_filled_star_note));
-                this.songService.getPlaylistSongs().get(this.songService.getSongIndex()).setRating(5);
+                this.setRatingToFive();
             } else {
                 isNoteSet = false;
                 resetRating();
@@ -193,13 +216,35 @@ public class PlayerController extends AbstractController {
         });
     }
 
-    public void setWidgetsValues() {
-        Log.i("PlayerController", this.songService.toString());
-        setTextSongInformation(this.songService.getPlaylistSongs().get(this.songService.getSongIndex()).getTitle(), this.tvTitleSong);
-        setTextSongInformation(this.songService.getPlaylistSongs().get(this.songService.getSongIndex()).getTitle(), this.tvArtistSong);
-        setArtworkSong(this.songService.getPlaylistSongs().get(this.songService.getSongIndex()).getArtwork(), this.ivArtworkSong);
+    public void unbindService() {
+        if(serviceConnection != null) {
+            this.songService.unbindService(serviceConnection);
+        }
     }
 
+
+    public void setWidgetsValues(String title, String artist, int rating) {
+        setTextSongInformation(title, this.tvTitleSong);
+        setTextSongInformation(artist, this.tvArtistSong);
+        //setArtworkSong(this.songService.getPlaylistSongs().get(this.songService.getSongIndex()).getArtwork(), this.ivArtworkSong);
+        switch (rating) {
+            case 1 :
+                setRatingToOne();
+                break;
+            case 2:
+                setRatingToTwo();
+                break;
+            case 3:
+                setRatingToThree();
+                break;
+            case 4:
+                setRatingToFour();
+                break;
+            case 5:
+                setRatingToFive();
+                break;
+        }
+    }
 
     public void changeSeekBar() {
         seekBarPlayback.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
@@ -224,26 +269,26 @@ public class PlayerController extends AbstractController {
         } else {
             Toast.makeText(this.context, "State : Play", Toast.LENGTH_SHORT).show();
             setImagePause(ivControlPlaySong, context);
-            setWidgetsValues();
+            //setWidgetsValues();
         }
     }
 
     private void pushNextControl() {
         this.songService.playNextSong();
         setImagePause(ivControlPlaySong, context);
-        setWidgetsValues();
+        //setWidgetsValues();
     }
 
     private void pushPreviousControl() {
         this.songService.playPreviousSong();
         setImagePause(ivControlPlaySong, context);
-        setWidgetsValues();
+        //setWidgetsValues();
     }
 
     private void pushShuffleControl(){
         //appelle fonction shuffle dans songSERvice
         this.songService.shuffleSongList();
-        setWidgetsValues();
+        //setWidgetsValues();
     }
 
 }

@@ -47,6 +47,8 @@ public class AllTracksFragment extends Fragment {
     private boolean isOnBackground;
     private Toolbar toolbar;
     private ListView lv;
+    private ConstraintLayout constraintLayout;
+    private ToolbarController toolbarController;
 
     public AllTracksFragment() {// Required empty public constructor
     }
@@ -105,19 +107,20 @@ public class AllTracksFragment extends Fragment {
         Log.i("ADAPT", RootList.getSongAdapter().toString());
         lv.setAdapter(RootList.getSongAdapter());
 
+        this.constraintLayout = Objects.requireNonNull(getActivity()).findViewById(R.id.crt_layout);
+        this.toolbarController = new ToolbarController(getActivity(), constraintLayout);
         this.installOnItemClickListener();
 
         return v;
     }
 
     private void installOnItemClickListener () {
-        ConstraintLayout constraintLayout = Objects.requireNonNull(getActivity()).findViewById(R.id.crt_layout);
-        ToolbarController toolbarController = new ToolbarController(getActivity(), constraintLayout);
+
         lv.setOnItemClickListener((parent, view, position, id) -> {
             this.songService.setCurrentSong(position);
             this.songService.playOrPauseSong();
-            toolbarController.setImagePauseFromFragment();
-            toolbarController.setWidgetsValues();
+            this.toolbarController.setImagePauseFromFragment();
+            this.toolbarController.setWidgetsValues();
         });
     }
 
@@ -172,7 +175,9 @@ public class AllTracksFragment extends Fragment {
         Log.d("cycle life of fragment", "i'm inside onDestroy");
 
         if (connectionEstablished) {
+
             songService.unbindService(serviceConnection); //destruction connexion
+            Log.i("ss destruct", "SongService Unbinded");
         }
         this.songService.stopService(intent);
         this.songService = null;
