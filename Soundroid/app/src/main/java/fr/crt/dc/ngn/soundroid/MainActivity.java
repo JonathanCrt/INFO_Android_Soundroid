@@ -52,6 +52,7 @@ public class MainActivity extends AppCompatActivity {
     private static Context context;
     private Intent intent;
     private SongService songService;
+    private boolean connectionEstablished;
 
 
     public static Context getAppContext() {
@@ -98,12 +99,12 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        if (intent == null) {
-            intent = new Intent(this, SongService.class);
-            this.bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
-            Objects.requireNonNull(this).startService(intent); //demarrage du service;
-            //songService.startService(intent);
-        }
+        doBindService();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
     }
 
     @Override
@@ -114,19 +115,38 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onStop() {
         super.onStop();
-        //this.songService.unbindService(serviceConnection);
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        doUnbindService();
     }
+
+    public void doBindService() {
+        if (intent == null) {
+            intent = new Intent(this, SongService.class);
+            bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
+        }
+        startService(intent);
+    }
+
+    public void doUnbindService() {
+        if (connectionEstablished) {
+            songService.unbindService(serviceConnection);
+            connectionEstablished = false;
+        }
+        this.stopService(intent);
+        this.songService = null;
+    }
+
 
     private void launchPlayerActivity() {
         Intent it = new Intent(this, PlayerActivity.class);
         it.putExtra("TITLE_SONG", this.songService.getPlaylistSongs().get(this.songService.getSongIndex()).getTitle());
         it.putExtra("ARTIST_SONG", this.songService.getPlaylistSongs().get(this.songService.getSongIndex()).getArtist());
         it.putExtra("RATING_SONG", this.songService.getPlaylistSongs().get(this.songService.getSongIndex()).getRating());
+        it.putExtra("ARTWORK_SONG", this.songService.getPlaylistSongs().get(this.songService.getSongIndex()).getArtwork());
         startActivity(it);
     }
 

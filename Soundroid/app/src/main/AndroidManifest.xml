@@ -30,8 +30,6 @@
             </intent-filter>
         </activity>
         <activity android:name=".MainActivity" />
-        <activity android:name=".controller.ToolbarController" />
-        <activity android:name=".controller.PlayerController" />
 
         <receiver
             android:name=".notification.NotificationBroadcast"

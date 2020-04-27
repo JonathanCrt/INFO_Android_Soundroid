@@ -132,13 +132,7 @@ public class AllTracksFragment extends Fragment {
         Log.d("cycle life of fragment", "i'm inside onStart");
         super.onStart();
         Log.i("intent value: ", "" + intent);
-
-        if (intent == null) {
-            intent = new Intent(getActivity(), SongService.class);
-            getContext().bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
-            Objects.requireNonNull(getActivity()).startService(intent); //demarrage du service;
-            //songService.startService(intent);
-        }
+        this.doBindService();
     }
 
     /**
@@ -167,21 +161,32 @@ public class AllTracksFragment extends Fragment {
     public void onStop() {
         Log.d("cycle life of fragment", "i'm inside onStop");
         super.onStop();
-
     }
 
     @Override
     public void onDestroy() {
         Log.d("cycle life of fragment", "i'm inside onDestroy");
+        this.toolbarController = null;
+        this.doUnbindService();
+        super.onDestroy();
+    }
 
+
+    private void doBindService() {
+        if(intent == null) {
+            intent = new Intent(getContext(), SongService.class);
+            Objects.requireNonNull(getContext()).bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
+        }
+        Objects.requireNonNull(getActivity()).startService(intent);
+    }
+
+    private void doUnbindService() {
         if (connectionEstablished) {
-
-            songService.unbindService(serviceConnection); //destruction connexion
-            Log.i("ss destruct", "SongService Unbinded");
+            songService.unbindService(serviceConnection);
+            connectionEstablished = false;
         }
         this.songService.stopService(intent);
         this.songService = null;
-        super.onDestroy();
     }
 
     public boolean isPlaying() {
