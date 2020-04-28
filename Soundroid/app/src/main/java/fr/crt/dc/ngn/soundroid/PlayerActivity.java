@@ -374,10 +374,13 @@ public class PlayerActivity extends AppCompatActivity {
         this.runUIThreadToSetProgressSeekBar();
     }
 
+    /**
+     * start the shuffle mode
+     */
     private void pushShuffleControl() {
-        //appelle fonction shuffle dans songSERvice
-        this.songService.shuffleSongList();
-        //setWidgetsValues();
+
+        this.songService.toShuffle();
+
     }
 
 }

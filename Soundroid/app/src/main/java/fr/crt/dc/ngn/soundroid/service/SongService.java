@@ -25,6 +25,7 @@ import android.widget.Toast;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Random;
 
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
@@ -46,6 +47,7 @@ public class SongService extends Service implements MediaPlayer.OnPreparedListen
     private boolean initializeSong;
     private Button btnPanelPause;
     private boolean isShuffled = false;
+    private Random rand;
 
     // Arbitrary ID for the notification (with different IDs a service can manage several notifications)
     public static final int NOTIFICATION_ID = 1;
@@ -72,6 +74,7 @@ public class SongService extends Service implements MediaPlayer.OnPreparedListen
     public void onCreate() {
         super.onCreate();
         this.songIndex = 0;
+        this.rand =new Random();
         this.player = new MediaPlayer();
         this.player.setAudioAttributes(new AudioAttributes.Builder()
                 .setUsage(AudioAttributes.USAGE_MEDIA)
@@ -255,12 +258,20 @@ public class SongService extends Service implements MediaPlayer.OnPreparedListen
     }
 
     /**
+     *  permet de gerer le mode aleatoire des music a lancer
      * Permet de gérer le contrôle suivant
      * On incrémente  l'index de la chanson,
      * vérifier que nous ne sommes pas allés en dehors de la plage de la liste,
      * et on appelle la méthode playSong()
      */
     public void playNextSong() {
+        if(this.isShuffled){
+            int currentSong = this.songIndex;
+            while(currentSong == this.songIndex){
+                currentSong = rand.nextInt(playlistSongs.size());
+            }
+            this.songIndex = currentSong;
+        }
         this.songIndex++;
         if (songIndex >= playlistSongs.size()) {
             this.songIndex = 0;
@@ -283,24 +294,34 @@ public class SongService extends Service implements MediaPlayer.OnPreparedListen
     }
 
 
-    public void shuffleSongList(){
-       ArrayList<Song> playlistSongToBeShuffled = new ArrayList<>();
+    //public void shuffleSongList(){
+       //ArrayList<Song> playlistSongToBeShuffled = new ArrayList<>();
 
-        playlistSongToBeShuffled.addAll(this.playlistSongs); //copy playListSong in it, try to UNSHUFFLE
-        if(this.isShuffled == false){
-            Collections.shuffle(playlistSongToBeShuffled); //shuffle the copy
-            setPlaylistSongs(playlistSongToBeShuffled); //set the copy
-            this.isShuffled = true;
+        //playlistSongToBeShuffled.addAll(this.playlistSongs); //copy playListSong in it, try to UNSHUFFLE
+        //if(this.isShuffled == false){
+            //Collections.shuffle(playlistSongToBeShuffled); //shuffle the copy
+            //setPlaylistSongs(playlistSongToBeShuffled); //set the copy
+          //  this.isShuffled = true;
 
-        }else{
+        //}else{
             //hos to reset the playlistSong
-            setPlaylistSongs(this.playlistSongs);   //set the initial playListSong to unshuffle
-            this.isShuffled = false;                //is not shuffled anymore
+          //  setPlaylistSongs(this.playlistSongs);   //set the initial playListSong to unshuffle
+        //    this.isShuffled = false;                //is not shuffled anymore
+      //  }
+
+    //}
+
+
+    public void toShuffle(){
+        if(this.isShuffled) {
+            this.isShuffled=false;
+        }
+        else{
+            this.isShuffled = true;
         }
         Log.d("SHUFFLE", "to shuffle " + this.isShuffled);
-        this.playOrPauseSong();
-    }
 
+    }
     public void handleSeekBar(int progression, boolean isfromUser) {
         if(player != null && isfromUser) {
             player.seekTo(progression * 1000);

@@ -287,7 +287,7 @@ public class PlayerController extends AbstractController {
 
     private void pushShuffleControl(){
         //appelle fonction shuffle dans songSERvice
-        this.songService.shuffleSongList();
+        this.songService.toShuffle();
         //setWidgetsValues();
     }
 
