@@ -1,6 +1,7 @@
 package fr.crt.dc.ngn.soundroid.adapter;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -73,5 +74,11 @@ public class SongAdapter extends ArrayAdapter<Song> {
 
         // Update position as position tag that will start the right song when the user clicks a list item
         return convertView;
+    }
+
+    @Override
+    public int getCount() {
+        Log.i("SongAdapter lv size", ""  + playlist.getSongList().size());
+        return playlist.getSongList().size();
     }
 }

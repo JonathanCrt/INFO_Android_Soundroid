@@ -19,7 +19,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
-import android.widget.Toolbar;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -45,13 +46,15 @@ public class AllTracksFragment extends Fragment {
     private Intent intent;
     private boolean connectionEstablished;
     private boolean isOnBackground;
-    private Toolbar toolbar;
+    private TextView tvNumberOfSongs;
     private ListView lv;
     private ConstraintLayout constraintLayout;
     private ToolbarController toolbarController;
 
     public AllTracksFragment() {// Required empty public constructor
     }
+
+
 
     /**
      * initialize the fields
@@ -86,28 +89,35 @@ public class AllTracksFragment extends Fragment {
         this.playlistSongs = RootList.getRootList();
        // Log.i("TASK", "size " +this.playlistSongs.size());
         Playlist playlist = new Playlist("Root");
+
         // TODO : call this method when the app is launched
-
         //    this.getMetaDataWithResolver();
-        // will sort the data so that the tracks are listed in alphabetical order
 
-        Collections.sort(this.playlistSongs, (a, b) -> { // new Comparator<Song> compare()
 
-            return a.getTitle().compareTo(b.getTitle());
-        });
         // create personal adapter
         playlist.setSongList(this.playlistSongs);
       //  SongAdapter adapter = new SongAdapter(this.getContext(), playlist);
 
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_all_tracks, container, false);
+        this.tvNumberOfSongs = v.findViewById(R.id.tv_list_number_songs);
 
         lv = v.findViewById(R.id.list_songs);
         Log.i("ADAPT", RootList.getSongAdapter().toString());
-        lv.setAdapter(RootList.getSongAdapter());
+        SongAdapter adapter = RootList.getSongAdapter();
+        lv.setAdapter(adapter);
+
+        // will sort the data so that the tracks are listed in alphabetical order
+        Collections.sort(this.playlistSongs, (a, b) -> { // new Comparator<Song> compare()
+
+            return a.getTitle().compareTo(b.getTitle());
+        });
 
         this.constraintLayout = Objects.requireNonNull(getActivity()).findViewById(R.id.crt_layout);
         this.toolbarController = new ToolbarController(getActivity(), constraintLayout);
+        int sizeAdapter = this.lv.getAdapter().getCount();
+
+
         this.installOnItemClickListener();
 
         return v;
@@ -132,6 +142,9 @@ public class AllTracksFragment extends Fragment {
         super.onStart();
         Log.i("intent value: ", "" + intent);
         this.doBindService();
+        Toast.makeText(this.getContext(), "PlayList size: " + RootList.getRootList().size(), Toast.LENGTH_SHORT).show();
+        this.tvNumberOfSongs.setText(String.valueOf(RootList.getRootList().size()));
+
     }
 
     /**
@@ -234,4 +247,5 @@ public class AllTracksFragment extends Fragment {
             connectionEstablished = false;
         }
     };
+
 }

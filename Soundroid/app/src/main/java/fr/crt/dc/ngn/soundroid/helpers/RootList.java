@@ -30,22 +30,19 @@ public class RootList {
         RootList.setSongAdapter(songAdapter);
         RootList.setRootList(rootSongs);
         synchronized (MUTEX){
-            AsyncTask<Void, Song, ArrayList<Song>> task = new CursorAsyncTask(MainActivity.getAppContext(), rootSongs, new CursorAsyncTask.AsyncResponse() {
-                @Override
-                public ArrayList<Song> processFinish(ArrayList<Song> rootPlaylist) {
+            AsyncTask<Void, Song, ArrayList<Song>> task = new CursorAsyncTask(MainActivity.getAppContext(), rootSongs, rootPlaylist -> {
 
-                    // TODO: notifier la vue
-                    /*
-                    Collections.sort(rootPlaylist, (a, b) -> { // new Comparator<Song> compare()
+                // TODO: notifier la vue
+                /*
+                Collections.sort(rootPlaylist, (a, b) -> { // new Comparator<Song> compare()
 
-                        return a.getTitle().compareTo(b.getTitle());
-                    });
-                     */
-                    RootList.setRootList(rootPlaylist);
-                    Log.i("TASK", "ROOOOT  SSIZE " + rootPlaylist);
-                    songAdapter.notifyDataSetInvalidated();
-                    return rootPlaylist;
-                }
+                    return a.getTitle().compareTo(b.getTitle());
+                });
+                 */
+                RootList.setRootList(rootPlaylist);
+                Log.i("TASK", "ROOOOT  SSIZE " + rootPlaylist);
+                songAdapter.notifyDataSetInvalidated();
+                return rootPlaylist;
             }).execute();
 
         }

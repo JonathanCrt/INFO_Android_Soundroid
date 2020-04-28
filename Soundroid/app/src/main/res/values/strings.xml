@@ -9,7 +9,6 @@
     <string name="home_second">Home Second</string>
     <string name="mes_pistes">Mes pistes</string>
     <string name="playlists">Listes de lecture</string>
-    <string name="historique">Historique</string>
     <string name="partage">Partage</string>
     <string name="exporter">Exporter</string>
     <string name="param_tres">Paramètres</string>
@@ -29,4 +28,14 @@
     <string name="represents_a_button_to_add_a_tag">represents a button to add a tag</string>
     <string name="represents_a_button_to_return_previous_activity">represents a button to return previous activity</string>
     <string name="_0_00">0:00</string>
+    <string name="number_of_songs">Number of songs</string>
+    <string name="historique">Historique</string>
+    <string name="chansons">Chansons</string>
+    <string name="_0">0</string>
+    <string name="favoris">Favoris</string>
+    <string name="button_to_go_to_favoris_fragment">button to go to favoris fragment</string>
+    <string name="butto_n_to_go_to_history_fragment">butto,n to go to history fragment</string>
+    <string name="button_to_go_to_playlists_fragment">button to go to playlists fragment</string>
+    <string name="lecture_al_atoire">Lecture aléatoire</string>
+    <string name="button_to_select_filter_for_listview">button to select filter for listView</string>
 </resources>

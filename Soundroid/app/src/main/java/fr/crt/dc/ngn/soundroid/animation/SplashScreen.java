@@ -19,7 +19,7 @@ public class SplashScreen extends Activity {
         setContentView(R.layout.splash_screen);
 
         // Montre le splash screen pendant 2 secondes.
-        int SPLASH_TIME_OUT = 2000;
+        int SPLASH_TIME_OUT = 1000;
         new Handler().postDelayed(() -> {
             Intent i = new Intent(SplashScreen.this, MainActivity.class);
             startActivity(i);

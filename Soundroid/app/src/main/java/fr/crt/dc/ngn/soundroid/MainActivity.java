@@ -80,7 +80,7 @@ public class MainActivity extends AppCompatActivity {
         NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
         NavigationUI.setupWithNavController(navigationView, navController);
 
-        Toolbar toolbarPlayer = findViewById(R.id.inc_toolbar_player);
+        Toolbar toolbarPlayer = findViewById(R.id.toolbar_player);
 
         //launch Player Activity
         toolbarPlayer.setOnClickListener(v -> this.launchPlayerActivity());
