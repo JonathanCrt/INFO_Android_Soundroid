@@ -28,26 +28,26 @@ public class RootList {
 
     public static void callAsyncTask(SongAdapter songAdapter, ArrayList<Song> rootSongs) throws ExecutionException, InterruptedException {
         RootList.setSongAdapter(songAdapter);
-        RootList.setRootList(rootSongs);
         synchronized (MUTEX){
             AsyncTask<Void, Song, ArrayList<Song>> task = new CursorAsyncTask(MainActivity.getAppContext(), rootSongs, rootPlaylist -> {
-
-                // TODO: notifier la vue
-                /*
+                // Sort the list of songs by alphabetical order
                 Collections.sort(rootPlaylist, (a, b) -> { // new Comparator<Song> compare()
-
                     return a.getTitle().compareTo(b.getTitle());
                 });
-                 */
+
                 RootList.setRootList(rootPlaylist);
-                Log.i("TASK", "ROOOOT  SSIZE " + rootPlaylist);
-                songAdapter.notifyDataSetInvalidated();
+                // put in the adapter all the sorted songs
+                songAdapter.clear();
+                for(Song song: rootPlaylist){
+                    songAdapter.add(song);
+                }
+                songAdapter.notifyDataSetChanged();
+
+                Log.i("TASK", "END ASYNC TASK");
                 return rootPlaylist;
             }).execute();
-
         }
     }
-
 
     public static ArrayList<Song> getRootList() {
         return rootList;

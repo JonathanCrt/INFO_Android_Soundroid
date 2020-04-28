@@ -85,38 +85,24 @@ public class AllTracksFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        Log.i("TASK", "rootlist = " + RootList.getRootList());
         this.playlistSongs = RootList.getRootList();
-       // Log.i("TASK", "size " +this.playlistSongs.size());
+        // Log.i("TASK", "size " +this.playlistSongs.size());
         Playlist playlist = new Playlist("Root");
-
-        // TODO : call this method when the app is launched
-        //    this.getMetaDataWithResolver();
-
-
         // create personal adapter
         playlist.setSongList(this.playlistSongs);
-      //  SongAdapter adapter = new SongAdapter(this.getContext(), playlist);
+        //  SongAdapter adapter = new SongAdapter(this.getContext(), playlist);
 
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_all_tracks, container, false);
         this.tvNumberOfSongs = v.findViewById(R.id.tv_list_number_songs);
 
         lv = v.findViewById(R.id.list_songs);
-        Log.i("ADAPT", RootList.getSongAdapter().toString());
         SongAdapter adapter = RootList.getSongAdapter();
         lv.setAdapter(adapter);
-
-        // will sort the data so that the tracks are listed in alphabetical order
-        Collections.sort(this.playlistSongs, (a, b) -> { // new Comparator<Song> compare()
-
-            return a.getTitle().compareTo(b.getTitle());
-        });
 
         this.constraintLayout = Objects.requireNonNull(getActivity()).findViewById(R.id.crt_layout);
         this.toolbarController = new ToolbarController(getActivity(), constraintLayout);
         int sizeAdapter = this.lv.getAdapter().getCount();
-
 
         this.installOnItemClickListener();
 
