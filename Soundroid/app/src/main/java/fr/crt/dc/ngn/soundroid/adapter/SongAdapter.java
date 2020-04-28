@@ -1,5 +1,6 @@
 package fr.crt.dc.ngn.soundroid.adapter;
 
+import android.app.Activity;
 import android.content.Context;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -11,6 +12,7 @@ import android.widget.TextView;
 
 import androidx.constraintlayout.widget.ConstraintLayout;
 
+import fr.crt.dc.ngn.soundroid.MainActivity;
 import fr.crt.dc.ngn.soundroid.R;
 import fr.crt.dc.ngn.soundroid.model.Playlist;
 import fr.crt.dc.ngn.soundroid.model.Song;
@@ -55,7 +57,6 @@ public class SongAdapter extends ArrayAdapter<Song> {
             mViewHolder.tv_artist = convertView.findViewById(R.id.tv_list_artist);
             mViewHolder.tv_duration = convertView.findViewById(R.id.tv_list_duration);
             mViewHolder.iv_artwork = convertView.findViewById(R.id.iv_list_artwork);
-
             // save the viewHolder to be reused later.
             convertView.setTag(mViewHolder);
         } else {

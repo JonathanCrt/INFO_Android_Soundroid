@@ -1,5 +1,6 @@
 package fr.crt.dc.ngn.soundroid.async;
 
+import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.Context;
@@ -10,6 +11,9 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.provider.MediaStore;
 import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.TextView;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -19,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 
+import fr.crt.dc.ngn.soundroid.MainActivity;
 import fr.crt.dc.ngn.soundroid.R;
 import fr.crt.dc.ngn.soundroid.adapter.SongAdapter;
 import fr.crt.dc.ngn.soundroid.helpers.RootList;
@@ -58,6 +63,12 @@ public class CursorAsyncTask extends AsyncTask<Void, Song, ArrayList<Song>> {
         this.defaultBitmap = Bitmap.createScaledBitmap(tmp, MAX_ARTWORK_SIZE, MAX_ARTWORK_SIZE, false);
         this.delegate = delegate;
         this.artworkMap = new HashMap<>();
+
+        LayoutInflater li = LayoutInflater.from(MainActivity.getAppContext());
+        View theview = li.inflate(R.layout.fragment_all_tracks, null);
+
+        TextView t = (TextView) theview.findViewById(R.id.tv_list_number_songs);
+        t.setText("42");
     }
 
     @Override

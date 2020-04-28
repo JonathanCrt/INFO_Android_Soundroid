@@ -86,12 +86,9 @@ public class AllTracksFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         this.playlistSongs = RootList.getRootList();
-        // Log.i("TASK", "size " +this.playlistSongs.size());
         Playlist playlist = new Playlist("Root");
         // create personal adapter
         playlist.setSongList(this.playlistSongs);
-        //  SongAdapter adapter = new SongAdapter(this.getContext(), playlist);
-
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_all_tracks, container, false);
         this.tvNumberOfSongs = v.findViewById(R.id.tv_list_number_songs);
@@ -103,9 +100,7 @@ public class AllTracksFragment extends Fragment {
         this.constraintLayout = Objects.requireNonNull(getActivity()).findViewById(R.id.crt_layout);
         this.toolbarController = new ToolbarController(getActivity(), constraintLayout);
         int sizeAdapter = this.lv.getAdapter().getCount();
-
         this.installOnItemClickListener();
-
         return v;
     }
 

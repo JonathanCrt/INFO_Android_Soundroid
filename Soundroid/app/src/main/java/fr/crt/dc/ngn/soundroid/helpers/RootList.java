@@ -1,13 +1,20 @@
 package fr.crt.dc.ngn.soundroid.helpers;
 
+import android.Manifest;
+import android.app.Activity;
 import android.os.AsyncTask;
+import android.text.Layout;
 import android.util.Log;
+import android.view.View;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.concurrent.ExecutionException;
 
 import fr.crt.dc.ngn.soundroid.MainActivity;
+import fr.crt.dc.ngn.soundroid.R;
 import fr.crt.dc.ngn.soundroid.adapter.SongAdapter;
 import fr.crt.dc.ngn.soundroid.async.CursorAsyncTask;
 import fr.crt.dc.ngn.soundroid.model.Playlist;
@@ -28,22 +35,34 @@ public class RootList {
 
     public static void callAsyncTask(SongAdapter songAdapter, ArrayList<Song> rootSongs) throws ExecutionException, InterruptedException {
         RootList.setSongAdapter(songAdapter);
+        RootList.setRootList(rootSongs);
         synchronized (MUTEX){
             AsyncTask<Void, Song, ArrayList<Song>> task = new CursorAsyncTask(MainActivity.getAppContext(), rootSongs, rootPlaylist -> {
                 // Sort the list of songs by alphabetical order
                 Collections.sort(rootPlaylist, (a, b) -> { // new Comparator<Song> compare()
                     return a.getTitle().compareTo(b.getTitle());
                 });
-
                 RootList.setRootList(rootPlaylist);
                 // put in the adapter all the sorted songs
                 songAdapter.clear();
                 for(Song song: rootPlaylist){
                     songAdapter.add(song);
                 }
-                songAdapter.notifyDataSetChanged();
-
                 Log.i("TASK", "END ASYNC TASK");
+                Toast.makeText(MainActivity.getAppContext(), "End of async task: ", Toast.LENGTH_SHORT).show();
+                //TextView t = (TextView) ((Activity) MainActivity.getAppContext()).findViewById(R.id.tv_list_number_songs);
+
+               // t.setText(rootPlaylist.size());
+/*
+                Layout layout = (Layout)findViewByid(R.id.toolbar);
+                View test = .inflate(R.layout.fragment_all_tracks, null);;
+
+                TextView t = (TextView) test.findViewById(R.id.tv_list_number_songs);
+
+                t.setText("42");
+                Log.i("TASK", "COUCOU");
+ */
+                songAdapter.notifyDataSetChanged();
                 return rootPlaylist;
             }).execute();
         }

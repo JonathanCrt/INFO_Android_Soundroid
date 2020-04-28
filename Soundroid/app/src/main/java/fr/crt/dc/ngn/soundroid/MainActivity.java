@@ -7,6 +7,7 @@ import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
 import android.view.animation.AnimationUtils;
@@ -93,7 +94,6 @@ public class MainActivity extends AppCompatActivity {
         } catch (ExecutionException | InterruptedException e) {
             Log.e("MainActivity", Objects.requireNonNull(e.getMessage()));
         }
-
     }
 
     @Override
