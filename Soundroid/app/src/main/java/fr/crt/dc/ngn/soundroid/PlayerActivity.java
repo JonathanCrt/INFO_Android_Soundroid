@@ -1,33 +1,25 @@
 package fr.crt.dc.ngn.soundroid;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
 import fr.crt.dc.ngn.soundroid.controller.PlayerController;
 import fr.crt.dc.ngn.soundroid.service.SongService;
-import jp.wasabeef.blurry.Blurry;
+import fr.crt.dc.ngn.soundroid.utility.Utility;
 
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.graphics.Bitmap;
-import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.IBinder;
-import android.os.PersistableBundle;
 import android.util.Log;
-import android.view.View;
 import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import org.w3c.dom.Text;
-
-import java.io.Serializable;
-import java.util.Objects;
 
 public class PlayerActivity extends AppCompatActivity {
 
@@ -49,14 +41,15 @@ public class PlayerActivity extends AppCompatActivity {
     private ImageView ivControlNextSong;
     private ImageView ivControlPreviousSong;
     private boolean isNoteSet;
+    private TextView tvElapsedTime;
+    private TextView tvDuration;
 
 
     private SongService songService;
     private Intent intent;
     private boolean connectionEstablished;
-
-
-    private PlayerController playerController;
+    private Handler mHandler;
+    private long currentSongLength;
 
 
     private void initializeViews() {
@@ -77,46 +70,36 @@ public class PlayerActivity extends AppCompatActivity {
         this.ivControlPreviousSong = findViewById(R.id.iv_player_control_previous);
         this.ivControlNextSong = findViewById(R.id.iv_player_control_next);
         this.ivControlPlaySong = findViewById(R.id.iv_player_control_play);
+        this.tvElapsedTime = findViewById(R.id.tv_player_elapsed_time);
+        this.tvDuration = findViewById(R.id.tv_player_end_time);
     }
 
-
-    public static class State implements Serializable {
-        private PlayerController playerController;
-
-        State(PlayerController playerController) {
-            this.playerController = playerController;
+    private ServiceConnection serviceConnection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            SongService.SongBinder songBinder = (SongService.SongBinder) service;
+            // Permet de récupérer le service
+            songService = songBinder.getService();
+            connectionEstablished = true;
         }
-    }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+            connectionEstablished = false;
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_player);
         this.initializeViews();
-
-
-        Intent intent = getIntent();
-
-        //attempt get artist info with intent for first launch
-        //problem : how to get info from mainActivity withtout songService ?
-       /*if(intent !=null){
-            String artist = intent.getStringExtra("artist");
-            this.playerController.setTextViewArtistSong(artist);
-        }*/
-       /*
-        if (savedInstanceState != null) {
-            State state = (State) savedInstanceState.getSerializable("state");
-            this.playerController = state.playerController;
-        }
-        //this.playerController = new PlayerController(this, findViewById(R.id.crtLay_player));
-
-        */
+        this.mHandler = new Handler();
         this.setListenerRating();
         this.changeSeekBar();
         this.setIvBackListener();
-
-        installListener();
-
+        this.setTextViewSelected();
+        this.installListener();
     }
 
     @Override
@@ -126,9 +109,10 @@ public class PlayerActivity extends AppCompatActivity {
         String currentTitle = getIntent().getStringExtra("TITLE_SONG");
         String currentArtist = getIntent().getStringExtra("ARTIST_SONG");
         int currentNote = getIntent().getIntExtra("RATING_SONG", 0);
-        Bitmap currentArtwork = intent.getParcelableExtra("ARTWORK_SONG");
+        Bitmap currentArtwork = getIntent().getParcelableExtra("ARTWORK_SONG");
+        long currentDuration = getIntent().getLongExtra("DURATION_SONG", 0L);
         Log.i("Values: ", currentTitle + " " + " " + currentArtist + " " + currentNote);
-        this.setWidgetsValues(currentTitle, currentArtist, currentNote, currentArtwork);
+        this.setWidgetsValues(currentTitle, currentArtist, currentNote, currentArtwork, currentDuration);
     }
 
     @Override
@@ -142,6 +126,9 @@ public class PlayerActivity extends AppCompatActivity {
         doUnbindService();
     }
 
+    /**
+     * bind service to obtain a persistent connection
+     */
     public void doBindService() {
         if (intent == null) {
             intent = new Intent(this, SongService.class);
@@ -159,11 +146,17 @@ public class PlayerActivity extends AppCompatActivity {
         this.songService = null;
     }
 
-
-    public void setWidgetsValues(String title, String artist, int rating, Bitmap artwork) {
+    /**
+     * set widgets values according to the given parameters
+     *
+     * @param title   title of song
+     * @param artist  artist of song
+     * @param rating  rating of song
+     * @param artwork artwork of song
+     */
+    public void setWidgetsValues(String title, String artist, int rating, Bitmap artwork, long duration) {
         this.tvTitleSong.setText(title);
         this.tvArtistSong.setText(artist);
-        //setArtworkSong(this.songService.getPlaylistSongs().get(this.songService.getSongIndex()).getArtwork(), this.ivArtworkSong);
         Log.i("Values: ", title + " " + " " + artist + " " + rating);
         switch (rating) {
             case 1:
@@ -183,7 +176,12 @@ public class PlayerActivity extends AppCompatActivity {
                 break;
         }
         this.ivArtworkSong.setImageBitmap(artwork);
-        seekBarPlayback.setProgress(0);
+        this.tvDuration.setText(Utility.convertDuration(duration));
+    }
+
+    private void setTextViewSelected() {
+        this.tvTitleSong.setSelected(true);
+        this.tvArtistSong.setSelected(true);
     }
 
     private void installListener() {
@@ -193,32 +191,12 @@ public class PlayerActivity extends AppCompatActivity {
         this.ivRandomPlayback.setOnClickListener(v -> pushShuffleControl());
     }
 
+    /**
+     * return to MainActivity by clicking on the Imageview ivBack
+     */
     public void setIvBackListener() {
         this.ivBack.setOnClickListener(v -> finish());
     }
-
-    @Override
-    protected void onSaveInstanceState(@NonNull Bundle outState) {
-        super.onSaveInstanceState(outState);
-        State state = new State(this.playerController);
-        outState.putSerializable("state", state);
-    }
-
-    ServiceConnection serviceConnection = new ServiceConnection() {
-        @Override
-        public void onServiceConnected(ComponentName name, IBinder service) {
-            SongService.SongBinder songBinder = (SongService.SongBinder) service;
-            // Permet de récupérer le service
-            songService = songBinder.getService();
-            connectionEstablished = true;
-        }
-
-        @Override
-        public void onServiceDisconnected(ComponentName name) {
-            connectionEstablished = false;
-        }
-    };
-
 
     private void resetRating() {
         ivNoteStarOne.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_outline_star_note));
@@ -323,7 +301,9 @@ public class PlayerActivity extends AppCompatActivity {
         });
     }
 
-
+    /**
+     * set progress of seekbar
+     */
     public void changeSeekBar() {
         seekBarPlayback.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
@@ -341,6 +321,21 @@ public class PlayerActivity extends AppCompatActivity {
         });
     }
 
+    private void runUIThreadToSetProgressSeekBar() {
+        this.runOnUiThread(new Runnable() { // UI Thread
+            @Override
+            public void run() {
+                currentSongLength = songService.getSongDuration();
+                seekBarPlayback.setMax((int) currentSongLength / 1000); // To calculate the progress of the song
+                int mCurrentPosition = songService.getCurrentPositionPlayer() / 1000;
+                seekBarPlayback.setProgress(mCurrentPosition); // To set progress to current position
+                tvElapsedTime.setText(Utility.convertDuration(songService.getCurrentPositionPlayer())); // Put the current time in the tv
+                mHandler.postDelayed(this, 1000); // Every second
+            }
+        });
+    }
+
+
     private void pushPlayControl() {
         this.songService.setToolbarPushed(true);
         if (!songService.playOrPauseSong()) {
@@ -349,7 +344,7 @@ public class PlayerActivity extends AppCompatActivity {
         } else {
             Toast.makeText(this, "State : Play", Toast.LENGTH_SHORT).show();
             ivControlPlaySong.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_pause_white_2x));
-            //setWidgetsValues();
+            runUIThreadToSetProgressSeekBar();
         }
     }
 
@@ -360,7 +355,10 @@ public class PlayerActivity extends AppCompatActivity {
                 this.songService.getPlaylistSongs().get(songService.getSongIndex()).getTitle(),
                 this.songService.getPlaylistSongs().get(songService.getSongIndex()).getArtist(),
                 this.songService.getPlaylistSongs().get(songService.getSongIndex()).getRating(),
-                this.songService.getPlaylistSongs().get(this.songService.getSongIndex()).getArtwork());
+                this.songService.getPlaylistSongs().get(this.songService.getSongIndex()).getArtwork(),
+                this.songService.getPlaylistSongs().get(this.songService.getSongIndex()).getDuration()
+        );
+        this.runUIThreadToSetProgressSeekBar();
     }
 
     private void pushPreviousControl() {
@@ -370,7 +368,10 @@ public class PlayerActivity extends AppCompatActivity {
                 this.songService.getPlaylistSongs().get(songService.getSongIndex()).getTitle(),
                 this.songService.getPlaylistSongs().get(songService.getSongIndex()).getArtist(),
                 this.songService.getPlaylistSongs().get(songService.getSongIndex()).getRating(),
-                this.songService.getPlaylistSongs().get(this.songService.getSongIndex()).getArtwork());
+                this.songService.getPlaylistSongs().get(this.songService.getSongIndex()).getArtwork(),
+                this.songService.getPlaylistSongs().get(this.songService.getSongIndex()).getDuration()
+        );
+        this.runUIThreadToSetProgressSeekBar();
     }
 
     private void pushShuffleControl() {

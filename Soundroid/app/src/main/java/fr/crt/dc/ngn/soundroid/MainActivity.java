@@ -147,6 +147,7 @@ public class MainActivity extends AppCompatActivity {
         it.putExtra("ARTIST_SONG", this.songService.getPlaylistSongs().get(this.songService.getSongIndex()).getArtist());
         it.putExtra("RATING_SONG", this.songService.getPlaylistSongs().get(this.songService.getSongIndex()).getRating());
         it.putExtra("ARTWORK_SONG", this.songService.getPlaylistSongs().get(this.songService.getSongIndex()).getArtwork());
+        it.putExtra("DURATION_SONG", this.songService.getPlaylistSongs().get(this.songService.getSongIndex()).getDuration());
         startActivity(it);
     }
 
