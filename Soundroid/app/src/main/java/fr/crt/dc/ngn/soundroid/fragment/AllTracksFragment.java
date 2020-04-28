@@ -90,12 +90,11 @@ public class AllTracksFragment extends Fragment {
 
         //    this.getMetaDataWithResolver();
         // will sort the data so that the tracks are listed in alphabetical order
-        /*
+
         Collections.sort(this.playlistSongs, (a, b) -> { // new Comparator<Song> compare()
 
             return a.getTitle().compareTo(b.getTitle());
         });
-         */
         // create personal adapter
         playlist.setSongList(this.playlistSongs);
       //  SongAdapter adapter = new SongAdapter(this.getContext(), playlist);
