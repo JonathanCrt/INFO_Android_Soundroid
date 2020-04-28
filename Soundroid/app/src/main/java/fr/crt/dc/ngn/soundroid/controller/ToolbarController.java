@@ -56,7 +56,7 @@ public class ToolbarController extends AbstractController   {
         this.context = context;
         this.constraintLayout = mainActivity;
         this.initialization();
-
+        this.setTextViewSelected();
         intent = new Intent(this.context, SongService.class);
 
         ServiceConnection serviceConnection = new ServiceConnection() {
@@ -85,17 +85,20 @@ public class ToolbarController extends AbstractController   {
         this.ivNextControl.setOnClickListener(v-> pushNextControl());
     }
 
+    private void setTextViewSelected() {
+        this.tvTitleSong.setSelected(true);
+        this.tvArtistSong.setSelected(true);
+    }
+
     public void setImagePauseFromFragment() {
         setImagePause(ivPlayControl, context);
     }
 
     public void setWidgetsValues() {
         setTextSongInformation(this.songService.getPlaylistSongs().get(this.songService.getSongIndex()).getTitle(), this.tvTitleSong);
-        setTextSongInformation(this.songService.getPlaylistSongs().get(this.songService.getSongIndex()).getTitle(), this.tvArtistSong);
+        setTextSongInformation(this.songService.getPlaylistSongs().get(this.songService.getSongIndex()).getArtist(), this.tvArtistSong);
         setArtworkSong(this.songService.getPlaylistSongs().get(this.songService.getSongIndex()).getArtwork(), this.artwork);
     }
-
-
 
     /**
      * Manage play control
