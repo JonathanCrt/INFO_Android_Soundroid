@@ -18,6 +18,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -97,6 +98,11 @@ public class AllTracksFragment extends Fragment {
         SongAdapter adapter = RootList.getSongAdapter();
         lv.setAdapter(adapter);
 
+        Button shuffleButton = v.findViewById(R.id.button2);
+        shuffleButton.setOnClickListener(e->{
+            this.songService.toShuffle();
+            this.songService.playOrPauseSong();
+        });
         this.constraintLayout = Objects.requireNonNull(getActivity()).findViewById(R.id.crt_layout);
         this.toolbarController = new ToolbarController(getActivity(), constraintLayout);
         int sizeAdapter = this.lv.getAdapter().getCount();
