@@ -28,4 +28,5 @@
     <string name="represents_a_button_to_launch_random_playback">represents a button to launch random playback</string>
     <string name="represents_a_button_to_add_a_tag">represents a button to add a tag</string>
     <string name="represents_a_button_to_return_previous_activity">represents a button to return previous activity</string>
+    <string name="_0_00">0:00</string>
 </resources>
