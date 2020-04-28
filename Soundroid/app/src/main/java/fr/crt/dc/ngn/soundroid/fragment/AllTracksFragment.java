@@ -51,6 +51,7 @@ public class AllTracksFragment extends Fragment {
     private ListView lv;
     private ConstraintLayout constraintLayout;
     private ToolbarController toolbarController;
+    private Button shuffleButton;
 
     public AllTracksFragment() {// Required empty public constructor
     }
@@ -98,11 +99,9 @@ public class AllTracksFragment extends Fragment {
         SongAdapter adapter = RootList.getSongAdapter();
         lv.setAdapter(adapter);
 
-        Button shuffleButton = v.findViewById(R.id.button2);
-        shuffleButton.setOnClickListener(e->{
-            this.songService.toShuffle();
-            this.songService.playOrPauseSong();
-        });
+        this.shuffleButton = v.findViewById(R.id.button2);
+        this.toShuffle();
+
         this.constraintLayout = Objects.requireNonNull(getActivity()).findViewById(R.id.crt_layout);
         this.toolbarController = new ToolbarController(getActivity(), constraintLayout);
         int sizeAdapter = this.lv.getAdapter().getCount();
@@ -203,7 +202,13 @@ public class AllTracksFragment extends Fragment {
         songService.playPreviousSong();
     }
 
-
+    private void toShuffle(){
+        this.shuffleButton.setOnClickListener(e->{
+            this.songService.toShuffle();
+            this.songService.playOrPauseSong();
+            this.toolbarController.setWidgetsValues();
+        });
+    }
     /**
      * set the song position
      * as a flag for each element of view from the list
