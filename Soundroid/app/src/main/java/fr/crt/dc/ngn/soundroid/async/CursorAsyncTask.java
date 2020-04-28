@@ -39,7 +39,7 @@ public class CursorAsyncTask extends AsyncTask<Void, Song, ArrayList<Song>> {
 
     private Bitmap defaultBitmap;
     private HashMap<Long, Bitmap> artworkMap;
-    private static final int MAX_ARTWORK_SIZE = 100;
+    private static final int MAX_ARTWORK_SIZE = 200;
 
     public AsyncResponse delegate = null;
 
