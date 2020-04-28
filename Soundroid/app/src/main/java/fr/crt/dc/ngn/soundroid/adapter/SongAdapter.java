@@ -22,53 +22,56 @@ public class SongAdapter extends ArrayAdapter<Song> {
     private Playlist playlist;
     private LayoutInflater songInflater;
 
-
-    public SongAdapter(Context context,  Playlist playlist){
+    public SongAdapter(Context context, Playlist playlist) {
         super(context, 0, playlist.getSongList());
-        // Log.i("LOG", "SONG ADAPTER size = " + listSongs.size());
         this.playlist = playlist;
         this.songInflater = LayoutInflater.from(context);
     }
 
-    /*
-    @Override
-    public int getCount() {
-        return playlist.getSongList().size();
+    static class ViewHolder {
+        TextView tv_title;
+        TextView tv_artist;
+        TextView tv_duration;
+        ImageView iv_artwork;
     }
 
-    @Override
-    public Object getItem(int position) {
-        return null;
-    }
-
-    @Override
-    public long getItemId(int position) {
-        return 0;
-    }
-    */
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
 
-        ConstraintLayout songRowLayout = (ConstraintLayout) songInflater.inflate(R.layout.song_row, parent, false);
+        // holder of the views to be reused.
+        ViewHolder mViewHolder;
 
-        TextView tv_title = songRowLayout.findViewById(R.id.tv_list_title);
-        TextView tv_artist = songRowLayout.findViewById(R.id.tv_list_artist);
-        TextView tv_duration  =songRowLayout.findViewById(R.id.tv_list_duration);
+        if (convertView == null) {
+            // create the container ViewHolder
+            mViewHolder = new ViewHolder();
 
-        ImageView iv_artwork = songRowLayout.findViewById(R.id.iv_list_artwork);
+            // inflate the views from layout for the new row
+            songInflater = LayoutInflater.from(parent.getContext());
+            convertView = songInflater.inflate(R.layout.song_row, parent, false);
 
-        // Récupérer la chanson en utilisant l'index de la position
-        Song currentSong  = playlist.getSongList().get(position);
+            // set the view to the ViewHolder.
+            mViewHolder.tv_title = convertView.findViewById(R.id.tv_list_title);
+            mViewHolder.tv_artist = convertView.findViewById(R.id.tv_list_artist);
+            mViewHolder.tv_duration = convertView.findViewById(R.id.tv_list_duration);
+            mViewHolder.iv_artwork = convertView.findViewById(R.id.iv_list_artwork);
 
-        tv_title.setText(currentSong.getTitle());
-        tv_artist.setText(currentSong.getArtist());
-        tv_duration.setText(Song.convertDuration(currentSong.getDuration()));
+            // save the viewHolder to be reused later.
+            convertView.setTag(mViewHolder);
+        } else {
+            // there is already ViewHolder, reuse it.
+            mViewHolder = (ViewHolder) convertView.getTag();
+        }
 
-        iv_artwork.setImageBitmap(currentSong.getArtwork());
+        // Retrieve song using position index
+        Song currentSong = playlist.getSongList().get(position);
 
+        // now we can set populate the data via the ViewHolder into views
+        mViewHolder.tv_title.setText(currentSong.getTitle());
+        mViewHolder.tv_artist.setText(currentSong.getArtist());
+        mViewHolder.tv_duration.setText(Song.convertDuration(currentSong.getDuration()));
+        mViewHolder.iv_artwork.setImageBitmap(currentSong.getArtwork());
 
-        //Mettre à jour la position comme tag de position qui lancera la bonne musique lorsque l'utilisateur cliquera sur un item de la liste
-        songRowLayout.setTag(position);
-        return songRowLayout;
+        // Update position as position tag that will start the right song when the user clicks a list item
+        return convertView;
     }
 }
