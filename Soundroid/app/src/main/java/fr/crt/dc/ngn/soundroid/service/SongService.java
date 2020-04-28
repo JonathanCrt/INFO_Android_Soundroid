@@ -363,4 +363,13 @@ public class SongService extends Service implements MediaPlayer.OnPreparedListen
     public void onDestroy() {
         this.stopForeground(true);
     }
+
+    public long getSongDuration() {
+        return playlistSongs.get(songIndex).getDuration();
+    }
+
+    public int getCurrentPositionPlayer() {
+        return player.getCurrentPosition();
+    }
+
 }
