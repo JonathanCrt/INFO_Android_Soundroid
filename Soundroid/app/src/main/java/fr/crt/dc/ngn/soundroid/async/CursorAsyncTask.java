@@ -64,11 +64,20 @@ public class CursorAsyncTask extends AsyncTask<Void, Song, ArrayList<Song>> {
         this.delegate = delegate;
         this.artworkMap = new HashMap<>();
 
+        /*
         LayoutInflater li = LayoutInflater.from(MainActivity.getAppContext());
         View theview = li.inflate(R.layout.fragment_all_tracks, null);
 
         TextView t = (TextView) theview.findViewById(R.id.tv_list_number_songs);
         t.setText("42");
+
+        Log.i("TASK", (String) t.getText());
+        theview.refreshDrawableState();
+        theview.invalidate();
+
+         */
+
+
     }
 
     @Override

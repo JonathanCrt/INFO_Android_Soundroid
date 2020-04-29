@@ -24,11 +24,13 @@ public class SongAdapter extends ArrayAdapter<Song> {
 
     private Playlist playlist;
     private LayoutInflater songInflater;
+    private Context context;
 
     public SongAdapter(Context context, Playlist playlist) {
         super(context, 0, playlist.getSongList());
         this.playlist = playlist;
         this.songInflater = LayoutInflater.from(context);
+        this.context = context;
     }
 
     static class ViewHolder {
@@ -36,6 +38,8 @@ public class SongAdapter extends ArrayAdapter<Song> {
         TextView tv_artist;
         TextView tv_duration;
         ImageView iv_artwork;
+
+        TextView tv_nbSongs;
     }
 
     @Override
@@ -57,6 +61,13 @@ public class SongAdapter extends ArrayAdapter<Song> {
             mViewHolder.tv_artist = convertView.findViewById(R.id.tv_list_artist);
             mViewHolder.tv_duration = convertView.findViewById(R.id.tv_list_duration);
             mViewHolder.iv_artwork = convertView.findViewById(R.id.iv_list_artwork);
+
+
+            //mViewHolder.tv_nbSongs = convertView.findViewById(R.id.tv_list_number_songs);
+
+            //mViewHolder.tv_nbSongs = (TextView) ((Activity)context.getApplicationContext()).findViewById(R.id.text);
+
+
             // save the viewHolder to be reused later.
             convertView.setTag(mViewHolder);
         } else {
@@ -72,6 +83,8 @@ public class SongAdapter extends ArrayAdapter<Song> {
         mViewHolder.tv_artist.setText(currentSong.getArtist());
         mViewHolder.tv_duration.setText(Song.convertDuration(currentSong.getDuration()));
         mViewHolder.iv_artwork.setImageBitmap(currentSong.getArtwork());
+
+        //mViewHolder.tv_nbSongs.setText(playlist.getSongList().size());
 
         // Update position as position tag that will start the right song when the user clicks a list item
         return convertView;

@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.os.AsyncTask;
 import android.text.Layout;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -50,19 +51,18 @@ public class RootList {
                 }
                 Log.i("TASK", "END ASYNC TASK");
                 Toast.makeText(MainActivity.getAppContext(), "End of async task: ", Toast.LENGTH_SHORT).show();
-                //TextView t = (TextView) ((Activity) MainActivity.getAppContext()).findViewById(R.id.tv_list_number_songs);
+                LayoutInflater li = LayoutInflater.from(MainActivity.getAppContext());
+                View theview = li.inflate(R.layout.fragment_all_tracks, null);
 
-               // t.setText(rootPlaylist.size());
-/*
-                Layout layout = (Layout)findViewByid(R.id.toolbar);
-                View test = .inflate(R.layout.fragment_all_tracks, null);;
+                TextView t2 = theview.findViewById(R.id.tv_list_number_songs);
 
-                TextView t = (TextView) test.findViewById(R.id.tv_list_number_songs);
-
-                t.setText("42");
+                t2.setText("42");
                 Log.i("TASK", "COUCOU");
- */
+                Log.i("TASK", (String) t2.getText());
+                theview.refreshDrawableState();
+                theview.invalidate();
                 songAdapter.notifyDataSetChanged();
+
                 return rootPlaylist;
             }).execute();
         }

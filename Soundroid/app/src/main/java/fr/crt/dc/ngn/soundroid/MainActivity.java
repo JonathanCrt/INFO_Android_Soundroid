@@ -1,5 +1,6 @@
 package fr.crt.dc.ngn.soundroid;
 
+import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -86,6 +87,11 @@ public class MainActivity extends AppCompatActivity {
         //launch Player Activity
         toolbarPlayer.setOnClickListener(v -> this.launchPlayerActivity());
 
+        /*
+        TextView tv = ((Activity) getApplicationContext()).findViewById(R.id.tv_list_number_songs);
+        Log.i("TASK", tv.toString());
+        tv.setText("42");
+        */
         // launch async task
         try {
             Playlist p = new Playlist("Root");
@@ -95,6 +101,7 @@ public class MainActivity extends AppCompatActivity {
             Log.e("MainActivity", Objects.requireNonNull(e.getMessage()));
         }
     }
+
 
     @Override
     protected void onStart() {
@@ -186,5 +193,4 @@ public class MainActivity extends AppCompatActivity {
 
         }
     };
-
 }

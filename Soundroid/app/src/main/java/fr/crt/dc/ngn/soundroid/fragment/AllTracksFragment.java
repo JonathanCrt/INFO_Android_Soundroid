@@ -119,6 +119,7 @@ public class AllTracksFragment extends Fragment {
         });
     }
 
+
     /**
      * Allow initialization of service's intance when fragment begin
      */
@@ -129,7 +130,7 @@ public class AllTracksFragment extends Fragment {
         Log.i("intent value: ", "" + intent);
         this.doBindService();
         Toast.makeText(this.getContext(), "PlayList size: " + RootList.getRootList().size(), Toast.LENGTH_SHORT).show();
-        this.tvNumberOfSongs.setText(String.valueOf(RootList.getRootList().size()));
+        //this.tvNumberOfSongs.setText(String.valueOf(RootList.getRootList().size()));
 
     }
 
