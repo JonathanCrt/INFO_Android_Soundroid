@@ -10,16 +10,21 @@ import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 
 import android.os.IBinder;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -27,6 +32,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Objects;
 
+import fr.crt.dc.ngn.soundroid.MainActivity;
 import fr.crt.dc.ngn.soundroid.R;
 import fr.crt.dc.ngn.soundroid.helpers.RootList;
 import fr.crt.dc.ngn.soundroid.adapter.SongAdapter;
@@ -52,18 +58,18 @@ public class AllTracksFragment extends Fragment {
     private ConstraintLayout constraintLayout;
     private ToolbarController toolbarController;
     private Button shuffleButton;
+    private PopupMenu popupMenu;
+    private ImageView ivButtonFilter;
+    private SongAdapter adapter;
 
     public AllTracksFragment() {// Required empty public constructor
     }
-
-
 
     /**
      * initialize the fields
      */
     private void initialization() {
         this.connectionEstablished = false;
-        this.isOnBackground = false;
     }
 
     @SuppressLint("WrongConstant")
@@ -96,17 +102,37 @@ public class AllTracksFragment extends Fragment {
         this.tvNumberOfSongs = v.findViewById(R.id.tv_list_number_songs);
 
         lv = v.findViewById(R.id.list_songs);
-        SongAdapter adapter = RootList.getSongAdapter();
+        adapter = RootList.getSongAdapter();
         lv.setAdapter(adapter);
 
         this.shuffleButton = v.findViewById(R.id.button2);
         this.toShuffle();
+
+
 
         this.constraintLayout = Objects.requireNonNull(getActivity()).findViewById(R.id.crt_layout);
         this.toolbarController = new ToolbarController(getActivity(), constraintLayout);
         int sizeAdapter = this.lv.getAdapter().getCount();
         this.installOnItemClickListener();
         return v;
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        this.ivButtonFilter = view.findViewById(R.id.iv_list_filter);
+        ivButtonFilter.setOnClickListener(v -> {
+            PopupMenu popup = new PopupMenu(this.getContext(), ivButtonFilter);
+            popup.getMenuInflater().inflate(R.menu.popup_filter, popup.getMenu());
+            popup.setOnMenuItemClickListener(item -> {
+                Toast.makeText(this.getContext(), "You Clicked : " + item.getTitle(), Toast.LENGTH_SHORT).show();
+                Log.d("AllTracksFragment item", " " + item.getTitle());
+
+                adapter.getFilter().filter(item.getTitle());
+                return true;
+            });
+            popup.show(); //showing popup menu
+
+        });
     }
 
     private void installOnItemClickListener () {

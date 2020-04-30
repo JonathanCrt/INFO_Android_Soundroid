@@ -38,4 +38,8 @@
     <string name="button_to_go_to_playlists_fragment">button to go to playlists fragment</string>
     <string name="lecture_al_atoire">Lecture aléatoire</string>
     <string name="button_to_select_filter_for_listview">button to select filter for listView</string>
+    <string name="dur_e">Durée</string>
+    <string name="temps">Temps</string>
+    <string name="plus_courtes">Plus courtes</string>
+    <string name="plus_longues">Plus Longues</string>
 </resources>

@@ -335,7 +335,6 @@ public class PlayerActivity extends AppCompatActivity {
         });
     }
 
-
     private void pushPlayControl() {
         this.songService.setToolbarPushed(true);
         if (!songService.playOrPauseSong()) {

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/filterTitle"
+        android:title="@string/titre" />
+
+    <item
+        android:id="@+id/filterArtist"
+        android:title="@string/artiste" />
+
+    <item android:id="@+id/filterLowerDuration"
+        android:title="@string/plus_courtes" />
+
+    <item android:id="@+id/filterLongestDuration"
+        android:title="@string/plus_longues" />
+</menu>
