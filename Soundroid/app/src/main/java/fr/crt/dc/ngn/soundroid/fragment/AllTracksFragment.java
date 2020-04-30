@@ -62,8 +62,6 @@ public class AllTracksFragment extends Fragment {
         return AllTracksFragment.context;
     }
 
-
-
     /**
      * initialize the fields
      */

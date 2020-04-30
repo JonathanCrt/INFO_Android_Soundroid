@@ -69,9 +69,6 @@ public class CursorAsyncTask extends AsyncTask<Void, Song, ArrayList<Song>> {
 
     @Override
     protected ArrayList<Song> doInBackground(Void... voids) {
-
-        //ArrayList<Song> rootSongs = new ArrayList<Song>();
-
         Uri uri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
         // TODO: uri to get the genre
         //Uri uri = MediaStore.Audio.Genres.EXTERNAL_CONTENT_URI;
@@ -106,7 +103,7 @@ public class CursorAsyncTask extends AsyncTask<Void, Song, ArrayList<Song>> {
 
                 do {
                     long thisId = cursor.getLong(idColumn);
-                    Log.i("LOG", "ID SONG " + thisId);
+                    //Log.i("LOG", "ID SONG " + thisId);
                     //long idSong = cursor.getLong(idColumn);
                     String titleSong = cursor.getString(titleColumn);
                     String artistSong = cursor.getString(artistColumn);
@@ -142,12 +139,9 @@ public class CursorAsyncTask extends AsyncTask<Void, Song, ArrayList<Song>> {
                         MessageDigest digest = java.security.MessageDigest.getInstance("MD5");
                         digest.update(titleSong.getBytes());
                         byte[] messageDigest = digest.digest();
-                        Log.i("CursorAsync: msgDigest", Arrays.toString(messageDigest));
-
                         Song song = new Song(idSong, titleSong, artistSong, Long.parseLong(String.valueOf(durationSong)), bitmap, null, albumSong, songLink, messageDigest);
                         rootSongs.add(song);
                         idSong++;
-                        Log.i("Cursor", "" + cursor.getString(0));
 
                         // update adapter
                         publishProgress(song);
@@ -155,7 +149,6 @@ public class CursorAsyncTask extends AsyncTask<Void, Song, ArrayList<Song>> {
                     } catch (NoSuchAlgorithmException e) {
                         e.getMessage();
                     }
-
                 }
                 while (cursor.moveToNext());
             }
@@ -169,8 +162,9 @@ public class CursorAsyncTask extends AsyncTask<Void, Song, ArrayList<Song>> {
         super.onProgressUpdate(values);
         this.songAdapter.add(values[0]);
         this.songAdapter.notifyDataSetChanged();
-        TextView t = ( AllTracksFragment.getAppContext()).getActivity().findViewById(R.id.tv_list_number_songs);
-        t.setText(String.valueOf(songAdapter.getCount()));
+        // update number of songs as things progress
+        TextView textView = ( AllTracksFragment.getAppContext()).getActivity().findViewById(R.id.tv_list_number_songs);
+        textView.setText(String.valueOf(songAdapter.getCount()));
     }
 
     /**
@@ -202,6 +196,7 @@ public class CursorAsyncTask extends AsyncTask<Void, Song, ArrayList<Song>> {
     protected void onPostExecute(ArrayList<Song> result) {
         this.songAdapter.notifyDataSetChanged();
         delegate.processFinish(result);
+        // update number of songs at the end
         TextView t = ( AllTracksFragment.getAppContext()).getActivity().findViewById(R.id.tv_list_number_songs);
         t.setText(String.valueOf(result.size()));
     }

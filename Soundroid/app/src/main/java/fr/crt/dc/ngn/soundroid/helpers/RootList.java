@@ -53,20 +53,7 @@ public class RootList {
                     songAdapter.add(song);
                 }
                 Log.i("TASK", "END ASYNC TASK");
-                Toast.makeText(MainActivity.getAppContext(), "End of async task: ", Toast.LENGTH_SHORT).show();
-                LayoutInflater li = LayoutInflater.from(MainActivity.getAppContext());
-                View theview = li.inflate(R.layout.fragment_all_tracks, null);
-
-                TextView t2 = theview.findViewById(R.id.tv_list_number_songs);
-
-    /*
-                t2.setText("42");
-                Log.i("TASK", (String) t2.getText());
-                theview.refreshDrawableState();
-                theview.invalidate();
-                */
                 songAdapter.notifyDataSetChanged();
-
                 return rootPlaylist;
             }).execute();
         }
