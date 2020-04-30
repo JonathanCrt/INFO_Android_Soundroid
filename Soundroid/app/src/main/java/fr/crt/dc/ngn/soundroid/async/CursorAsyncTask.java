@@ -26,6 +26,7 @@ import java.util.HashMap;
 import fr.crt.dc.ngn.soundroid.MainActivity;
 import fr.crt.dc.ngn.soundroid.R;
 import fr.crt.dc.ngn.soundroid.adapter.SongAdapter;
+import fr.crt.dc.ngn.soundroid.fragment.AllTracksFragment;
 import fr.crt.dc.ngn.soundroid.helpers.RootList;
 import fr.crt.dc.ngn.soundroid.model.Playlist;
 import fr.crt.dc.ngn.soundroid.model.Song;
@@ -48,6 +49,7 @@ public class CursorAsyncTask extends AsyncTask<Void, Song, ArrayList<Song>> {
     private Playlist playlist;
     private SongAdapter songAdapter;
     private ArrayList<Song> rootSongs;
+    private TextView nbSongs;
 
     /**
      * Constructeur de l'asyncTask.
@@ -63,21 +65,6 @@ public class CursorAsyncTask extends AsyncTask<Void, Song, ArrayList<Song>> {
         this.defaultBitmap = Bitmap.createScaledBitmap(tmp, MAX_ARTWORK_SIZE, MAX_ARTWORK_SIZE, false);
         this.delegate = delegate;
         this.artworkMap = new HashMap<>();
-
-        /*
-        LayoutInflater li = LayoutInflater.from(MainActivity.getAppContext());
-        View theview = li.inflate(R.layout.fragment_all_tracks, null);
-
-        TextView t = (TextView) theview.findViewById(R.id.tv_list_number_songs);
-        t.setText("42");
-
-        Log.i("TASK", (String) t.getText());
-        theview.refreshDrawableState();
-        theview.invalidate();
-
-         */
-
-
     }
 
     @Override
@@ -182,6 +169,8 @@ public class CursorAsyncTask extends AsyncTask<Void, Song, ArrayList<Song>> {
         super.onProgressUpdate(values);
         this.songAdapter.add(values[0]);
         this.songAdapter.notifyDataSetChanged();
+        TextView t = ( AllTracksFragment.getAppContext()).getActivity().findViewById(R.id.tv_list_number_songs);
+        t.setText(String.valueOf(songAdapter.getCount()));
     }
 
     /**
@@ -213,5 +202,7 @@ public class CursorAsyncTask extends AsyncTask<Void, Song, ArrayList<Song>> {
     protected void onPostExecute(ArrayList<Song> result) {
         this.songAdapter.notifyDataSetChanged();
         delegate.processFinish(result);
+        TextView t = ( AllTracksFragment.getAppContext()).getActivity().findViewById(R.id.tv_list_number_songs);
+        t.setText(String.valueOf(result.size()));
     }
 }

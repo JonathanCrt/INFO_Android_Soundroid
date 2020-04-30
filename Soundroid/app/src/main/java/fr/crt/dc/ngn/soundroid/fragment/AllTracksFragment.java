@@ -24,7 +24,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Objects;
 
 import fr.crt.dc.ngn.soundroid.R;
@@ -53,7 +52,14 @@ public class AllTracksFragment extends Fragment {
     private ToolbarController toolbarController;
     private Button shuffleButton;
 
+    private static AllTracksFragment context;
+
     public AllTracksFragment() {// Required empty public constructor
+    }
+
+
+    public static AllTracksFragment getAppContext() {
+        return AllTracksFragment.context;
     }
 
 
@@ -64,6 +70,7 @@ public class AllTracksFragment extends Fragment {
     private void initialization() {
         this.connectionEstablished = false;
         this.isOnBackground = false;
+        this.context = this;
     }
 
     @SuppressLint("WrongConstant")

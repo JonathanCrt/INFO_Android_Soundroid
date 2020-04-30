@@ -10,6 +10,8 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.fragment.app.FragmentActivity;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.concurrent.ExecutionException;
@@ -18,6 +20,7 @@ import fr.crt.dc.ngn.soundroid.MainActivity;
 import fr.crt.dc.ngn.soundroid.R;
 import fr.crt.dc.ngn.soundroid.adapter.SongAdapter;
 import fr.crt.dc.ngn.soundroid.async.CursorAsyncTask;
+import fr.crt.dc.ngn.soundroid.fragment.AllTracksFragment;
 import fr.crt.dc.ngn.soundroid.model.Playlist;
 import fr.crt.dc.ngn.soundroid.model.Song;
 
@@ -56,11 +59,12 @@ public class RootList {
 
                 TextView t2 = theview.findViewById(R.id.tv_list_number_songs);
 
+    /*
                 t2.setText("42");
-                Log.i("TASK", "COUCOU");
                 Log.i("TASK", (String) t2.getText());
                 theview.refreshDrawableState();
                 theview.invalidate();
+                */
                 songAdapter.notifyDataSetChanged();
 
                 return rootPlaylist;
