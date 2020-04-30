@@ -49,6 +49,7 @@ public class CursorAsyncTask extends AsyncTask<Void, Song, ArrayList<Song>> {
     private Playlist playlist;
     private SongAdapter songAdapter;
     private ArrayList<Song> rootSongs;
+    private TextView nbSongs;
 
     /**
      * Constructeur de l'asyncTask.
@@ -64,21 +65,6 @@ public class CursorAsyncTask extends AsyncTask<Void, Song, ArrayList<Song>> {
         this.defaultBitmap = Bitmap.createScaledBitmap(tmp, MAX_ARTWORK_SIZE, MAX_ARTWORK_SIZE, false);
         this.delegate = delegate;
         this.artworkMap = new HashMap<>();
-
-        /*
-        LayoutInflater li = LayoutInflater.from(MainActivity.getAppContext());
-        View theview = li.inflate(R.layout.fragment_all_tracks, null);
-
-        TextView t = (TextView) theview.findViewById(R.id.tv_list_number_songs);
-        t.setText("42");
-
-        Log.i("TASK", (String) t.getText());
-        theview.refreshDrawableState();
-        theview.invalidate();
-
-         */
-
-
     }
 
     @Override
@@ -116,6 +102,7 @@ public class CursorAsyncTask extends AsyncTask<Void, Song, ArrayList<Song>> {
                 //Log.i("LOG", "style = " + style);
 
                 do {
+                    long thisId = cursor.getLong(idColumn);
                     //Log.i("LOG", "ID SONG " + thisId);
                     //long idSong = cursor.getLong(idColumn);
                     String titleSong = cursor.getString(titleColumn);
@@ -175,6 +162,9 @@ public class CursorAsyncTask extends AsyncTask<Void, Song, ArrayList<Song>> {
         super.onProgressUpdate(values);
         this.songAdapter.add(values[0]);
         this.songAdapter.notifyDataSetChanged();
+        // update number of songs as things progress
+        TextView textView = ( AllTracksFragment.getAppContext()).getActivity().findViewById(R.id.tv_list_number_songs);
+        textView.setText(String.valueOf(songAdapter.getCount()));
     }
 
     /**
@@ -206,5 +196,8 @@ public class CursorAsyncTask extends AsyncTask<Void, Song, ArrayList<Song>> {
     protected void onPostExecute(ArrayList<Song> result) {
         this.songAdapter.notifyDataSetChanged();
         delegate.processFinish(result);
+        // update number of songs at the end
+        TextView t = ( AllTracksFragment.getAppContext()).getActivity().findViewById(R.id.tv_list_number_songs);
+        t.setText(String.valueOf(result.size()));
     }
 }

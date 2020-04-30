@@ -43,7 +43,6 @@ public class SongAdapter extends ArrayAdapter<Song>  implements Filterable {
         TextView tv_artist;
         TextView tv_duration;
         ImageView iv_artwork;
-
     }
 
     @Override
@@ -65,7 +64,7 @@ public class SongAdapter extends ArrayAdapter<Song>  implements Filterable {
             mViewHolder.tv_artist = convertView.findViewById(R.id.tv_list_artist);
             mViewHolder.tv_duration = convertView.findViewById(R.id.tv_list_duration);
             mViewHolder.iv_artwork = convertView.findViewById(R.id.iv_list_artwork);
-
+            // save the viewHolder to be reused later.
             convertView.setTag(mViewHolder);
         } else {
             // there is already ViewHolder, reuse it.
