@@ -87,11 +87,6 @@ public class MainActivity extends AppCompatActivity {
         //launch Player Activity
         toolbarPlayer.setOnClickListener(v -> this.launchPlayerActivity());
 
-        /*
-        TextView tv = ((Activity) getApplicationContext()).findViewById(R.id.tv_list_number_songs);
-        Log.i("TASK", tv.toString());
-        tv.setText("42");
-        */
         // launch async task
         try {
             Playlist p = new Playlist("Root");

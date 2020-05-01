@@ -21,7 +21,9 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.TreeSet;
 
 import fr.crt.dc.ngn.soundroid.MainActivity;
 import fr.crt.dc.ngn.soundroid.R;
@@ -46,10 +48,8 @@ public class CursorAsyncTask extends AsyncTask<Void, Song, ArrayList<Song>> {
 
     public AsyncResponse delegate = null;
 
-    private Playlist playlist;
     private SongAdapter songAdapter;
     private ArrayList<Song> rootSongs;
-    private TextView nbSongs;
 
     /**
      * Constructeur de l'asyncTask.
@@ -69,6 +69,14 @@ public class CursorAsyncTask extends AsyncTask<Void, Song, ArrayList<Song>> {
 
     @Override
     protected ArrayList<Song> doInBackground(Void... voids) {
+        // add songs in this treeset to guarantee unicity of songs
+        TreeSet<Song> treeSetSong = new TreeSet<Song>(new Comparator<Song>() {
+            @Override
+            public int compare(Song song1, Song song2) {
+                return song1.getFootprint().toString().compareTo(song2.getFootprint().toString());
+            }
+        });
+
         Uri uri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
         // TODO: uri to get the genre
         //Uri uri = MediaStore.Audio.Genres.EXTERNAL_CONTENT_URI;
@@ -140,7 +148,11 @@ public class CursorAsyncTask extends AsyncTask<Void, Song, ArrayList<Song>> {
                         digest.update(titleSong.getBytes());
                         byte[] messageDigest = digest.digest();
                         Song song = new Song(idSong, titleSong, artistSong, Long.parseLong(String.valueOf(durationSong)), bitmap, null, albumSong, songLink, messageDigest);
-                        rootSongs.add(song);
+                        // add in treeset
+                        treeSetSong.add(song);
+                        // add in rootSongs values of treeset continually to assures that there are unique songs
+                        rootSongs.clear();
+                        rootSongs.addAll(treeSetSong);
                         idSong++;
 
                         // update adapter

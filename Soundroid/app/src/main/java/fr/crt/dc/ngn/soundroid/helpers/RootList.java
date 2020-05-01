@@ -43,9 +43,7 @@ public class RootList {
         synchronized (MUTEX){
             AsyncTask<Void, Song, ArrayList<Song>> task = new CursorAsyncTask(MainActivity.getAppContext(), rootSongs, rootPlaylist -> {
                 // Sort the list of songs by alphabetical order
-                Collections.sort(rootPlaylist, (a, b) -> { // new Comparator<Song> compare()
-                    return a.getTitle().compareTo(b.getTitle());
-                });
+                Collections.sort(rootPlaylist, (a, b) -> a.getTitle().compareTo(b.getTitle()));
                 RootList.setRootList(rootPlaylist);
                 // put in the adapter all the sorted songs
                 songAdapter.clear();
