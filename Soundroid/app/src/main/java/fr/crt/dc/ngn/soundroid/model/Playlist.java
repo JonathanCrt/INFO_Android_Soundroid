@@ -4,11 +4,17 @@ import android.util.Log;
 
 import java.util.ArrayList;
 
+import androidx.room.ColumnInfo;
+import androidx.room.Entity;
+import androidx.room.PrimaryKey;
+
 public class Playlist {
 
     private final String name;
+
     private ArrayList<Song> songList;
     private Search search;
+
     private boolean isAutomatic;
 
     public Playlist(String name) {
