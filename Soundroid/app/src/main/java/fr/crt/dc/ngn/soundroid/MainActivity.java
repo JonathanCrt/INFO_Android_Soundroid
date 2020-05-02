@@ -21,6 +21,8 @@ import android.widget.Toast;
 import com.google.android.material.navigation.NavigationView;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 
@@ -36,6 +38,9 @@ import androidx.appcompat.widget.Toolbar;
 
 import fr.crt.dc.ngn.soundroid.adapter.SongAdapter;
 import fr.crt.dc.ngn.soundroid.controller.ToolbarController;
+import fr.crt.dc.ngn.soundroid.database.SoundroidDatabase;
+import fr.crt.dc.ngn.soundroid.database.SoundroidDatabase_Impl;
+import fr.crt.dc.ngn.soundroid.database.dao.SongDao;
 import fr.crt.dc.ngn.soundroid.fragment.PlayerFragment;
 import fr.crt.dc.ngn.soundroid.helpers.RootList;
 import fr.crt.dc.ngn.soundroid.model.Playlist;
@@ -95,6 +100,21 @@ public class MainActivity extends AppCompatActivity {
         } catch (ExecutionException | InterruptedException e) {
             Log.e("MainActivity", Objects.requireNonNull(e.getMessage()));
         }
+
+        SoundroidDatabase database = SoundroidDatabase.getInstance(this);
+        database.playlistDao().createPlayList(new fr.crt.dc.ngn.soundroid.database.entity.Playlist("poooooooooop"));
+        //database.songDao().insertSong(new fr.crt.dc.ngn.soundroid.database.entity.Song(1, "Billie Jean", "Michael Jackson", 2503, "rep/artwork", "pop", "King of pop", "rep/...",  "89+79gs76g"));
+
+        Log.i("MainActivity SIZE" , "" + database.playlistDao().getAllPlayLists().size());
+
+
+        for(int i = 0; i < database.playlistDao().getAllPlayLists().size(); i++) {
+            Log.i("increment", " " + i);
+            Log.i("MainActivity NAME" , "" + database.playlistDao().getAllPlayLists().get(i).getName());
+        }
+
+        //Log.i("MainActivity DB" , "" + database.playlistDao().getAllPlayLists());
+
     }
 
 

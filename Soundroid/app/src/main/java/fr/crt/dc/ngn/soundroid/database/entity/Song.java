@@ -69,6 +69,7 @@ public class Song {
         this.rating = 0;
         this.link = link;
         this.footprint = footprint;
+        this.playlistId = 123;
     }
 
 
@@ -184,7 +185,11 @@ public class Song {
                 new Song(3, "Thriller", "Michael Jackson", 2793, "rep/artwork", "pop", "King of pop", "rep/...",  "89+79gs76g")
         };
     }
-    
+
+
+
+
+
      
 
 }
