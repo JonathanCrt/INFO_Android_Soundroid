@@ -49,14 +49,14 @@ public class Song {
     private String link;
 
     @ColumnInfo(name = "footprint")
-    private byte[] footprint;
+    private String footprint;
 
     @ColumnInfo(name = "playlist_id")
     private long playlistId;
 
     public Song() {}
 
-    public Song(long ID, String title, String artist, long duration, String artwork, String style, String album, String link, byte[] footprint) {
+    public Song(long ID, String title, String artist, long duration, String artwork, String style, String album, String link, String footprint) {
         this.id = ID;
         this.title = title;
         this.artist = artist;
@@ -160,11 +160,11 @@ public class Song {
         this.link = link;
     }
 
-    public byte[] getFootprint() {
+    public String getFootprint() {
         return footprint;
     }
 
-    public void setFootprint(byte[] footprint) {
+    public void setFootprint(String footprint) {
         this.footprint = footprint;
     }
 
@@ -175,4 +175,16 @@ public class Song {
     public void setPlaylistId(long playlistId) {
         this.playlistId = playlistId;
     }
+        
+    
+    public static Song[] populateData() {
+        return new Song[] {
+                new Song(1, "Billie Jean", "Michael Jackson", 2503, "rep/artwork", "pop", "King of pop", "rep/...",  "89+79gs76g"),
+                new Song(2, "Beat it", "Michael Jackson", 2553, "rep/artwork", "pop", "King of pop", "rep/...",  "89+79gs76g"),
+                new Song(3, "Thriller", "Michael Jackson", 2793, "rep/artwork", "pop", "King of pop", "rep/...",  "89+79gs76g")
+        };
+    }
+    
+     
+
 }
