@@ -1,6 +1,8 @@
 package fr.crt.dc.ngn.soundroid.utility;
 
 import android.annotation.SuppressLint;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 
 import java.util.Locale;
 
@@ -22,5 +24,9 @@ public class Utility {
         // met en forme -> EX : 3:03
         return String.format(Locale.getDefault(),"%d:%02d", minutes, seconds);
 
+    }
+
+    public static Bitmap convertByteToBitmap(byte[] byteArray){
+        return BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);
     }
 }

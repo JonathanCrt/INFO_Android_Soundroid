@@ -43,8 +43,8 @@ import fr.crt.dc.ngn.soundroid.database.SoundroidDatabase_Impl;
 import fr.crt.dc.ngn.soundroid.database.dao.SongDao;
 import fr.crt.dc.ngn.soundroid.fragment.PlayerFragment;
 import fr.crt.dc.ngn.soundroid.helpers.RootList;
-import fr.crt.dc.ngn.soundroid.model.Playlist;
-import fr.crt.dc.ngn.soundroid.model.Song;
+import fr.crt.dc.ngn.soundroid.database.entity.Playlist;
+import fr.crt.dc.ngn.soundroid.database.entity.Song;
 import fr.crt.dc.ngn.soundroid.service.SongService;
 
 
@@ -60,7 +60,7 @@ public class MainActivity extends AppCompatActivity {
     private Intent intent;
     private SongService songService;
     private boolean connectionEstablished;
-
+    private SoundroidDatabase soundroidDatabase;
 
     public static Context getAppContext() {
         return MainActivity.context;
@@ -69,6 +69,8 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        this.soundroidDatabase = SoundroidDatabase.getInstance(this);
 
         setContentView(R.layout.activity_main);
 
@@ -94,8 +96,10 @@ public class MainActivity extends AppCompatActivity {
 
         // launch async task
         try {
-            Playlist p = new Playlist("Root");
-            SongAdapter adapter = new SongAdapter(getAppContext(), p);
+            //Playlist p = new Playlist("Root");
+            ArrayList<Song> arrayList = (ArrayList<Song>) soundroidDatabase.songDao().getAllSongs();
+
+            SongAdapter adapter = new SongAdapter(getAppContext(), arrayList);
             RootList.callAsyncTask(adapter, new ArrayList<Song>());
         } catch (ExecutionException | InterruptedException e) {
             Log.e("MainActivity", Objects.requireNonNull(e.getMessage()));

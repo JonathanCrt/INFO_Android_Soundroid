@@ -13,6 +13,7 @@ import android.provider.MediaStore;
 import android.util.Log;
 import android.widget.TextView;
 
+import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.security.MessageDigest;
@@ -24,6 +25,7 @@ import java.util.TreeSet;
 
 import fr.crt.dc.ngn.soundroid.R;
 import fr.crt.dc.ngn.soundroid.adapter.SongAdapter;
+import fr.crt.dc.ngn.soundroid.database.SoundroidDatabase;
 import fr.crt.dc.ngn.soundroid.fragment.AllTracksFragment;
 import fr.crt.dc.ngn.soundroid.helpers.RootList;
 //import fr.crt.dc.ngn.soundroid.model.Song;
@@ -46,6 +48,7 @@ public class CursorAsyncTask extends AsyncTask<Void, Song, ArrayList<Song>> {
 
     private SongAdapter songAdapter;
     private ArrayList<Song> rootSongs;
+    private SoundroidDatabase soundroidDatabase;
 
     /**
      * Constructeur de l'asyncTask.
@@ -61,6 +64,8 @@ public class CursorAsyncTask extends AsyncTask<Void, Song, ArrayList<Song>> {
         this.defaultBitmap = Bitmap.createScaledBitmap(tmp, MAX_ARTWORK_SIZE, MAX_ARTWORK_SIZE, false);
         this.delegate = delegate;
         this.artworkMap = new HashMap<>();
+        this.soundroidDatabase = SoundroidDatabase.getInstance(context);
+
     }
 
     @Override
@@ -139,7 +144,11 @@ public class CursorAsyncTask extends AsyncTask<Void, Song, ArrayList<Song>> {
                         MessageDigest digest = java.security.MessageDigest.getInstance("MD5");
                         digest.update(titleSong.getBytes());
                         byte[] messageDigest = digest.digest();
-                        Song song = new Song(idSong, titleSong, artistSong, Long.parseLong(String.valueOf(durationSong)), albumArtUri.toString(), null, albumSong, songLink, messageDigest.toString());
+                        //Song song = new Song(idSong, titleSong, artistSong, Long.parseLong(String.valueOf(durationSong)), albumArtUri.toString(), null, albumSong, songLink, messageDigest.toString());
+                        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                        bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
+                        byte[] byteArray = stream.toByteArray();
+                        Song song = new Song(idSong, titleSong, artistSong, Long.parseLong(String.valueOf(durationSong)), byteArray, null, albumSong, songLink, messageDigest.toString());
                         Log.i("CursorAsyncTask song:", song.toString());
                         // add in treeset
                         treeSetSong.add(song);
@@ -147,6 +156,8 @@ public class CursorAsyncTask extends AsyncTask<Void, Song, ArrayList<Song>> {
                         rootSongs.clear();
                         rootSongs.addAll(treeSetSong);
                         idSong++;
+
+                        soundroidDatabase.songDao().insertSong(song);
 
                         // update adapter
                         publishProgress(song);
@@ -166,6 +177,7 @@ public class CursorAsyncTask extends AsyncTask<Void, Song, ArrayList<Song>> {
     protected void onProgressUpdate(Song... values) {
         super.onProgressUpdate(values);
         this.songAdapter.add(values[0]);
+        Log.i("ASYNC", values[0].toString());
         this.songAdapter.notifyDataSetChanged();
         // update number of songs as things progress
         TextView textView = ( AllTracksFragment.getAppContext()).getActivity().findViewById(R.id.tv_list_number_songs);

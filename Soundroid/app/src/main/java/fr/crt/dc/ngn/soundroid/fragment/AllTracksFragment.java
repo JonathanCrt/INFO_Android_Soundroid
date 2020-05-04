@@ -36,8 +36,8 @@ import fr.crt.dc.ngn.soundroid.R;
 import fr.crt.dc.ngn.soundroid.helpers.RootList;
 import fr.crt.dc.ngn.soundroid.adapter.SongAdapter;
 import fr.crt.dc.ngn.soundroid.controller.ToolbarController;
-import fr.crt.dc.ngn.soundroid.model.Playlist;
-import fr.crt.dc.ngn.soundroid.model.Song;
+import fr.crt.dc.ngn.soundroid.database.entity.Playlist;
+import fr.crt.dc.ngn.soundroid.database.entity.Song;
 import fr.crt.dc.ngn.soundroid.service.SongService;
 
 import static androidx.core.content.PermissionChecker.checkSelfPermission;
@@ -102,9 +102,9 @@ public class AllTracksFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         this.playlistSongs = RootList.getRootList();
-        Playlist playlist = new Playlist("Root");
+        //Playlist playlist = new Playlist("Root");
         // create personal adapter
-        playlist.setSongList(this.playlistSongs);
+        //playlist.setSongList(this.playlistSongs);
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_all_tracks, container, false);
         this.tvNumberOfSongs = v.findViewById(R.id.tv_list_number_songs);
@@ -112,6 +112,7 @@ public class AllTracksFragment extends Fragment {
         lv = v.findViewById(R.id.list_songs);
         adapter = RootList.getSongAdapter();
         lv.setAdapter(adapter);
+        Log.i("LOG", "" + adapter.getCount());
 
         this.shuffleButton = v.findViewById(R.id.button2);
         this.toShuffle();

@@ -31,7 +31,8 @@ import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 import fr.crt.dc.ngn.soundroid.MainActivity;
 import fr.crt.dc.ngn.soundroid.R;
-import fr.crt.dc.ngn.soundroid.model.Song;
+import fr.crt.dc.ngn.soundroid.database.entity.Song;
+import fr.crt.dc.ngn.soundroid.utility.Utility;
 
 /**
  * Created by CRETE JONATHAN on 05/04/2020.
@@ -146,7 +147,7 @@ public class SongService extends Service implements MediaPlayer.OnPreparedListen
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
         RemoteViews expandedView = new RemoteViews(getPackageName(), R.layout.notification_playback);
-        expandedView.setImageViewBitmap(R.id.iv_expanded_panel_artwork, playlistSongs.get(songIndex).getArtwork());
+        expandedView.setImageViewBitmap(R.id.iv_expanded_panel_artwork, Utility.convertByteToBitmap(playlistSongs.get(songIndex).getArtwork()));
         expandedView.setTextViewText(R.id.tv_expanded_panel_title, playlistSongs.get(songIndex).getTitle());
         expandedView.setTextViewText(R.id.tv_expanded_panel_artist, playlistSongs.get(songIndex).getArtist());
 
@@ -210,7 +211,7 @@ public class SongService extends Service implements MediaPlayer.OnPreparedListen
     private void initializeSong() {
         this.player.reset();
         Song currentSong = playlistSongs.get(songIndex);
-        long currentSongID = currentSong.getID();
+        long currentSongID = currentSong.getId();
         Log.i("SongService", "Current song to play = " + currentSong);
         Uri songUri = Uri.parse(currentSong.getLink());
 

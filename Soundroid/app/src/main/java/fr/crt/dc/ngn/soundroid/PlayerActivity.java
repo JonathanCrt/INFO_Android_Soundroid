@@ -365,7 +365,7 @@ public class PlayerActivity extends AppCompatActivity {
                 this.songService.getPlaylistSongs().get(songService.getSongIndex()).getTitle(),
                 this.songService.getPlaylistSongs().get(songService.getSongIndex()).getArtist(),
                 this.songService.getPlaylistSongs().get(songService.getSongIndex()).getRating(),
-                this.songService.getPlaylistSongs().get(this.songService.getSongIndex()).getArtwork(),
+                Utility.convertByteToBitmap(this.songService.getPlaylistSongs().get(this.songService.getSongIndex()).getArtwork()),
                 this.songService.getPlaylistSongs().get(this.songService.getSongIndex()).getDuration()
         );
     }
@@ -377,7 +377,7 @@ public class PlayerActivity extends AppCompatActivity {
                 this.songService.getPlaylistSongs().get(songService.getSongIndex()).getTitle(),
                 this.songService.getPlaylistSongs().get(songService.getSongIndex()).getArtist(),
                 this.songService.getPlaylistSongs().get(songService.getSongIndex()).getRating(),
-                this.songService.getPlaylistSongs().get(this.songService.getSongIndex()).getArtwork(),
+                Utility.convertByteToBitmap(this.songService.getPlaylistSongs().get(this.songService.getSongIndex()).getArtwork()),
                 this.songService.getPlaylistSongs().get(this.songService.getSongIndex()).getDuration()
         );
     }

@@ -29,9 +29,6 @@ public class Song {
     @ColumnInfo(name="duration")
     private long duration;
 
-    @ColumnInfo(name = "artwork_url")
-    private String artworkUrl;
-
     @ColumnInfo(name = "style")
     private  String style;
 
@@ -56,14 +53,17 @@ public class Song {
     @ColumnInfo(name = "playlist_id")
     private long playlistId;
 
+    @ColumnInfo(name = "artwork")
+    private byte[] artwork;
+
     public Song() {}
 
-    public Song(long ID, String title, String artist, long duration, String artwork, String style, String album, String link, String footprint) {
+    public Song(long ID, String title, String artist, long duration, byte[] artwork, String style, String album, String link, String footprint) {
         this.id = ID;
         this.title = title;
         this.artist = artist;
         this.duration = duration;
-        this.artworkUrl = artwork;
+        this.artwork = artwork;
         this.style = style;
         this.album = album;
         this.countSongPlayed = 0;
@@ -71,7 +71,7 @@ public class Song {
         this.rating = 0;
         this.link = link;
         this.footprint = footprint;
-        this.playlistId = 123;
+        this.playlistId = 1;
     }
 
 
@@ -107,12 +107,12 @@ public class Song {
         this.duration = duration;
     }
 
-    public String getArtworkUrl() {
-        return artworkUrl;
+    public byte[] getArtwork() {
+        return artwork;
     }
 
-    public void setArtworkUrl(String artworkUrl) {
-        this.artworkUrl = artworkUrl;
+    public void setArtwork(byte[] artwork) {
+        this.artwork = artwork;
     }
 
     public String getStyle() {
@@ -188,9 +188,9 @@ public class Song {
     
     public static Song[] populateData() {
         return new Song[] {
-                new Song(1, "Billie Jean", "Michael Jackson", 2503, "rep/artwork", "pop", "King of pop", "rep/...",  "89+79gs76g"),
-                new Song(2, "Beat it", "Michael Jackson", 2553, "rep/artwork", "pop", "King of pop", "rep/...",  "89+79gs76g"),
-                new Song(3, "Thriller", "Michael Jackson", 2793, "rep/artwork", "pop", "King of pop", "rep/...",  "89+79gs76g")
+                new Song(1, "Billie Jean", "Michael Jackson", 2503, new byte[1], "pop", "King of pop", "rep/...",  "89+79gs76g"),
+                new Song(2, "Beat it", "Michael Jackson", 2553, new byte[1], "pop", "King of pop", "rep/...",  "89+79gs76g"),
+                new Song(3, "Thriller", "Michael Jackson", 2793, new byte[1], "pop", "King of pop", "rep/...",  "89+79gs76g")
         };
     }
 

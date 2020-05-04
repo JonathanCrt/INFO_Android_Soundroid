@@ -5,6 +5,7 @@ import java.util.List;
 import androidx.room.Dao;
 import androidx.room.Delete;
 import androidx.room.Insert;
+import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
 import androidx.room.Update;
 import fr.crt.dc.ngn.soundroid.database.entity.Song;
@@ -36,7 +37,7 @@ public interface SongDao {
     @Query("SELECT * FROM Song WHERE tag = :tag")
     Song findByTag(String tag);
 
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insertSong(Song song);
 
     @Insert

@@ -21,6 +21,7 @@ import androidx.core.content.ContextCompat;
 import fr.crt.dc.ngn.soundroid.R;
 import fr.crt.dc.ngn.soundroid.model.Song;
 import fr.crt.dc.ngn.soundroid.service.SongService;
+import fr.crt.dc.ngn.soundroid.utility.Utility;
 
 /**
  * Created by CRETE JONATHAN on 09/04/2020.
@@ -97,7 +98,7 @@ public class ToolbarController extends AbstractController   {
     public void setWidgetsValues() {
         setTextSongInformation(this.songService.getPlaylistSongs().get(this.songService.getSongIndex()).getTitle(), this.tvTitleSong);
         setTextSongInformation(this.songService.getPlaylistSongs().get(this.songService.getSongIndex()).getArtist(), this.tvArtistSong);
-        setArtworkSong(this.songService.getPlaylistSongs().get(this.songService.getSongIndex()).getArtwork(), this.artwork);
+        setArtworkSong(Utility.convertByteToBitmap(this.songService.getPlaylistSongs().get(this.songService.getSongIndex()).getArtwork()), this.artwork);
     }
 
     /**

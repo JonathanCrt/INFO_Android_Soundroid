@@ -22,7 +22,7 @@ public interface PlaylistDao {
     @Query("SELECT * FROM Playlist WHERE name = :name")
     Playlist findByName(String name);
 
-    @Insert(onConflict = OnConflictStrategy.FAIL)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     void createPlayList(Playlist playlist);
 
     @Update

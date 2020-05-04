@@ -6,7 +6,7 @@ import android.widget.Filter;
 import java.util.ArrayList;
 import java.util.Collections;
 
-import fr.crt.dc.ngn.soundroid.model.Song;
+import fr.crt.dc.ngn.soundroid.database.entity.Song;
 
 /**
  * Created by CRETE JONATHAN on 30/04/2020.
@@ -80,7 +80,7 @@ public class CustomFilter extends Filter {
     @Override
     protected void publishResults(CharSequence constraint, FilterResults results) {
         Log.i("CustomFilter", " " + results.values);
-        adapter.filteredPlayList.setSongList((ArrayList<Song>) results.values);
+        adapter.filteredPlayList = (ArrayList<Song>) results.values;
         adapter.notifyDataSetChanged();
     }
 }

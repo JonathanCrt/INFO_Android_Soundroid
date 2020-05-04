@@ -48,7 +48,10 @@ public abstract class SoundroidDatabase extends RoomDatabase {
             @Override
             public void onCreate(@NonNull SupportSQLiteDatabase db) {
                 super.onCreate(db);
-                Executors.newSingleThreadExecutor().execute(() -> getInstance(context).songDao().insertAllSongs(Song.populateData()));
+
+                Executors.newSingleThreadExecutor().execute(() -> getInstance(context).playlistDao().createPlayList(new Playlist("root")));
+
+                //Executors.newSingleThreadExecutor().execute(() -> getInstance(context).songDao().insertAllSongs(Song.populateData()));
             }
         }).allowMainThreadQueries().build();
     }

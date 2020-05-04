@@ -21,8 +21,8 @@ import fr.crt.dc.ngn.soundroid.R;
 import fr.crt.dc.ngn.soundroid.adapter.SongAdapter;
 import fr.crt.dc.ngn.soundroid.async.CursorAsyncTask;
 import fr.crt.dc.ngn.soundroid.fragment.AllTracksFragment;
-import fr.crt.dc.ngn.soundroid.model.Playlist;
-import fr.crt.dc.ngn.soundroid.model.Song;
+import fr.crt.dc.ngn.soundroid.database.entity.Playlist;
+import fr.crt.dc.ngn.soundroid.database.entity.Song;
 
 public class RootList {
     private static ArrayList<Song> rootList = null;
