@@ -3,6 +3,7 @@ package fr.crt.dc.ngn.soundroid.model;
 import android.graphics.Bitmap;
 import android.media.Image;
 
+import java.util.Arrays;
 import java.util.Locale;
 
 /**
@@ -126,6 +127,8 @@ public class Song {
                 ", countSongPlayed=" + countSongPlayed +
                 ", tag='" + tag + '\'' +
                 ", rating=" + rating +
+                ", link='" + link + '\'' +
+                ", footprint=" + Arrays.toString(footprint) +
                 '}';
     }
 }

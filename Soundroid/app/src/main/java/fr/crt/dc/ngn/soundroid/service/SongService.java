@@ -70,6 +70,10 @@ public class SongService extends Service implements MediaPlayer.OnPreparedListen
         }
     }
 
+    public SongService getSongService()  {
+        return SongService.this;
+    }
+
     @Override
     public void onCreate() {
         super.onCreate();

@@ -11,8 +11,6 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.provider.MediaStore;
 import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
 import android.widget.TextView;
 
 import java.io.FileNotFoundException;
@@ -20,18 +18,16 @@ import java.io.IOException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.TreeSet;
 
-import fr.crt.dc.ngn.soundroid.MainActivity;
 import fr.crt.dc.ngn.soundroid.R;
 import fr.crt.dc.ngn.soundroid.adapter.SongAdapter;
 import fr.crt.dc.ngn.soundroid.fragment.AllTracksFragment;
 import fr.crt.dc.ngn.soundroid.helpers.RootList;
-import fr.crt.dc.ngn.soundroid.model.Playlist;
-import fr.crt.dc.ngn.soundroid.model.Song;
+//import fr.crt.dc.ngn.soundroid.model.Song;
+import fr.crt.dc.ngn.soundroid.database.entity.Song;
 
 public class CursorAsyncTask extends AsyncTask<Void, Song, ArrayList<Song>> {
 
@@ -70,12 +66,7 @@ public class CursorAsyncTask extends AsyncTask<Void, Song, ArrayList<Song>> {
     @Override
     protected ArrayList<Song> doInBackground(Void... voids) {
         // add songs in this treeset to guarantee unicity of songs
-        TreeSet<Song> treeSetSong = new TreeSet<Song>(new Comparator<Song>() {
-            @Override
-            public int compare(Song song1, Song song2) {
-                return song1.getFootprint().toString().compareTo(song2.getFootprint().toString());
-            }
-        });
+        TreeSet<Song> treeSetSong = new TreeSet<>((song1, song2) -> song1.getFootprint().toString().compareTo(song2.getFootprint().toString()));
 
         Uri uri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
         // TODO: uri to get the genre
@@ -121,6 +112,7 @@ public class CursorAsyncTask extends AsyncTask<Void, Song, ArrayList<Song>> {
                     String songLink = Uri.parse(cursor.getString(linkColumn)).toString();
 
                     Bitmap bitmap = null;
+                    Uri albumArtUri = null;
                     try {
                         // artwork bitmap already get
                         if(artworkMap.containsKey(albumId)){
@@ -129,7 +121,7 @@ public class CursorAsyncTask extends AsyncTask<Void, Song, ArrayList<Song>> {
                             // get the bitmap
                             Uri sArtworkUri = Uri
                                     .parse("content://media/external/audio/albumart");
-                            Uri albumArtUri = ContentUris.withAppendedId(sArtworkUri, albumId);
+                            albumArtUri = ContentUris.withAppendedId(sArtworkUri, albumId);
                             bitmap = getBitmapFromURI(albumArtUri);
                             this.artworkMap.put(albumId, bitmap);
                         }
@@ -147,7 +139,8 @@ public class CursorAsyncTask extends AsyncTask<Void, Song, ArrayList<Song>> {
                         MessageDigest digest = java.security.MessageDigest.getInstance("MD5");
                         digest.update(titleSong.getBytes());
                         byte[] messageDigest = digest.digest();
-                        Song song = new Song(idSong, titleSong, artistSong, Long.parseLong(String.valueOf(durationSong)), bitmap, null, albumSong, songLink, messageDigest);
+                        Song song = new Song(idSong, titleSong, artistSong, Long.parseLong(String.valueOf(durationSong)), albumArtUri.toString(), null, albumSong, songLink, messageDigest.toString());
+                        Log.i("CursorAsyncTask song:", song.toString());
                         // add in treeset
                         treeSetSong.add(song);
                         // add in rootSongs values of treeset continually to assures that there are unique songs

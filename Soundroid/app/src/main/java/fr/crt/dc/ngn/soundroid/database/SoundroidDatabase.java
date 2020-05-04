@@ -34,7 +34,6 @@ public abstract class SoundroidDatabase extends RoomDatabase {
     public static SoundroidDatabase getInstance(Context context) {
         Log.d("SoundroidDatabase", "getting database instance");
         if (DB_INSTANCE == null) {
-            Log.d("SoundroidDatabase", "" + "I'm on if");
             synchronized (SoundroidDatabase.class) {
                 DB_INSTANCE = buildDatabase(context);
             }

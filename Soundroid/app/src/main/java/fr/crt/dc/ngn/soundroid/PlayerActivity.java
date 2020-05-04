@@ -1,8 +1,10 @@
 package fr.crt.dc.ngn.soundroid;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
 import fr.crt.dc.ngn.soundroid.controller.PlayerController;
+import fr.crt.dc.ngn.soundroid.controller.ToolbarController;
 import fr.crt.dc.ngn.soundroid.service.SongService;
 import fr.crt.dc.ngn.soundroid.utility.Utility;
 
@@ -49,6 +51,7 @@ public class PlayerActivity extends AppCompatActivity {
     private Intent intent;
     private boolean connectionEstablished;
     private Handler mHandler;
+    private Runnable mRunnable;
     private long currentSongLength;
 
 
@@ -74,20 +77,7 @@ public class PlayerActivity extends AppCompatActivity {
         this.tvDuration = findViewById(R.id.tv_player_end_time);
     }
 
-    private ServiceConnection serviceConnection = new ServiceConnection() {
-        @Override
-        public void onServiceConnected(ComponentName name, IBinder service) {
-            SongService.SongBinder songBinder = (SongService.SongBinder) service;
-            // Permet de récupérer le service
-            songService = songBinder.getService();
-            connectionEstablished = true;
-        }
 
-        @Override
-        public void onServiceDisconnected(ComponentName name) {
-            connectionEstablished = false;
-        }
-    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -118,6 +108,7 @@ public class PlayerActivity extends AppCompatActivity {
     @Override
     protected void onStop() {
         super.onStop();
+        this.mHandler.removeCallbacks(mRunnable);
     }
 
     @Override
@@ -125,6 +116,22 @@ public class PlayerActivity extends AppCompatActivity {
         super.onDestroy();
         doUnbindService();
     }
+
+    ServiceConnection serviceConnection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            SongService.SongBinder songBinder = (SongService.SongBinder) service;
+            // Permet de récupérer le service
+            songService = songBinder.getService();
+
+            connectionEstablished = true;
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+            connectionEstablished = false;
+        }
+    };
 
     /**
      * bind service to obtain a persistent connection
@@ -185,6 +192,7 @@ public class PlayerActivity extends AppCompatActivity {
     }
 
     private void installListener() {
+
         this.ivControlPlaySong.setOnClickListener(v -> pushPlayControl());
         this.ivControlNextSong.setOnClickListener(v -> pushNextControl());
         this.ivControlPreviousSong.setOnClickListener((v -> pushPreviousControl()));
@@ -322,7 +330,7 @@ public class PlayerActivity extends AppCompatActivity {
     }
 
     private void runUIThreadToSetProgressSeekBar() {
-        this.runOnUiThread(new Runnable() { // UI Thread
+        this.mRunnable = new Runnable() { // UI Thread
             @Override
             public void run() {
                 currentSongLength = songService.getSongDuration();
@@ -332,19 +340,22 @@ public class PlayerActivity extends AppCompatActivity {
                 tvElapsedTime.setText(Utility.convertDuration(songService.getCurrentPositionPlayer())); // Put the current time in the tv
                 mHandler.postDelayed(this, 1000); // Every second
             }
-        });
+        };
+
+        this.runOnUiThread(mRunnable);
     }
 
     private void pushPlayControl() {
-        this.songService.setToolbarPushed(true);
+        //this.songService.setToolbarPushed(true);
+        Log.i("PlayerActivity av", this.songService.toString());
         if (!songService.playOrPauseSong()) {
             Toast.makeText(this, "State : Pause", Toast.LENGTH_SHORT).show();
             ivControlPlaySong.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_play_white_2x));
         } else {
             Toast.makeText(this, "State : Play", Toast.LENGTH_SHORT).show();
             ivControlPlaySong.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_pause_white_2x));
-            runUIThreadToSetProgressSeekBar();
         }
+        Log.i("PlayerActivity aft", this.songService.toString());
     }
 
     private void pushNextControl() {
@@ -357,7 +368,6 @@ public class PlayerActivity extends AppCompatActivity {
                 this.songService.getPlaylistSongs().get(this.songService.getSongIndex()).getArtwork(),
                 this.songService.getPlaylistSongs().get(this.songService.getSongIndex()).getDuration()
         );
-        this.runUIThreadToSetProgressSeekBar();
     }
 
     private void pushPreviousControl() {
@@ -370,7 +380,6 @@ public class PlayerActivity extends AppCompatActivity {
                 this.songService.getPlaylistSongs().get(this.songService.getSongIndex()).getArtwork(),
                 this.songService.getPlaylistSongs().get(this.songService.getSongIndex()).getDuration()
         );
-        this.runUIThreadToSetProgressSeekBar();
     }
 
     /**

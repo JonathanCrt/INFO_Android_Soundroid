@@ -1,5 +1,7 @@
 package fr.crt.dc.ngn.soundroid.database.entity;
 
+import java.util.Locale;
+
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.ForeignKey;
@@ -176,7 +178,13 @@ public class Song {
     public void setPlaylistId(long playlistId) {
         this.playlistId = playlistId;
     }
-        
+
+    public static String convertDuration(long duration){
+        long minutes = (duration / 1000 ) / 60;
+        long seconds = (duration / 1000 ) % 60;
+        // met en forme -> EX : 3:03
+        return String.format(Locale.getDefault(),"%d:%02d", minutes, seconds);
+    }
     
     public static Song[] populateData() {
         return new Song[] {

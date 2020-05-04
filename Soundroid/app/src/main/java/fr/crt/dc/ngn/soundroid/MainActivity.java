@@ -107,11 +107,13 @@ public class MainActivity extends AppCompatActivity {
 
         Log.i("MainActivity SIZE" , "" + database.playlistDao().getAllPlayLists().size());
 
-
+        /*
         for(int i = 0; i < database.playlistDao().getAllPlayLists().size(); i++) {
             Log.i("increment", " " + i);
             Log.i("MainActivity NAME" , "" + database.playlistDao().getAllPlayLists().get(i).getName());
         }
+
+         */
 
         //Log.i("MainActivity DB" , "" + database.playlistDao().getAllPlayLists());
 
