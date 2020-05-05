@@ -40,23 +40,36 @@ public class RootList {
     public static void callAsyncTask(SongAdapter songAdapter, ArrayList<Song> rootSongs) throws ExecutionException, InterruptedException {
         RootList.setSongAdapter(songAdapter);
         RootList.setRootList(rootSongs);
-        synchronized (MUTEX){
-            AsyncTask<Void, Song, ArrayList<Song>> task = new CursorAsyncTask(MainActivity.getAppContext(), rootSongs, rootPlaylist -> {
-                // Sort the list of songs by alphabetical order
-                //Log.d("Rootlist before sorting", rootList.toString());
-                Collections.sort(rootPlaylist, (a, b) -> a.getTitle().compareTo(b.getTitle()));
-                //Log.d("Rootlist after sorting", rootList.toString());
-                RootList.setRootList(rootPlaylist);
-                // put in the adapter all the sorted songs
-                songAdapter.clear();
-                for(Song song: rootPlaylist){
-                    songAdapter.add(song);
-                }
-                Log.i("TASK", "END ASYNC TASK");
-                songAdapter.notifyDataSetChanged();
-                return rootPlaylist;
-            }).execute();
+        if(!rootSongs.isEmpty()){
+            Collections.sort(rootSongs, (a, b) -> a.getTitle().compareTo(b.getTitle()));
+            RootList.setRootList(rootSongs);
+            songAdapter.clear();
+            for(Song song: rootSongs){
+                songAdapter.add(song);
+            }
+            songAdapter.notifyDataSetChanged();
+
+        }else {
+            synchronized (MUTEX){
+                AsyncTask<Void, Song, ArrayList<Song>> task = new CursorAsyncTask(MainActivity.getAppContext(), rootSongs, rootPlaylist -> {
+                    // Sort the list of songs by alphabetical order
+                    //Log.d("Rootlist before sorting", rootList.toString());
+                    Collections.sort(rootPlaylist, (a, b) -> a.getTitle().compareTo(b.getTitle()));
+                    //Log.d("Rootlist after sorting", rootList.toString());
+                    RootList.setRootList(rootPlaylist);
+                    // put in the adapter all the sorted songs
+                    songAdapter.clear();
+                    for(Song song: rootPlaylist){
+                        songAdapter.add(song);
+                    }
+                    Log.i("TASK", "END ASYNC TASK");
+                    songAdapter.notifyDataSetChanged();
+                    return rootPlaylist;
+                }).execute();
+            }
+
         }
+
     }
 
     public static ArrayList<Song> getRootList() {

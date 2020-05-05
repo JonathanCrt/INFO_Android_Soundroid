@@ -155,10 +155,12 @@ public class CursorAsyncTask extends AsyncTask<Void, Song, ArrayList<Song>> {
                         // add in rootSongs values of treeset continually to assures that there are unique songs
                         rootSongs.clear();
                         rootSongs.addAll(treeSetSong);
-                        Log.d("CursorAsyncT rootS", rootSongs.toString());
                         idSong++;
 
-                        soundroidDatabase.songDao().insertSong(song);
+                        if(soundroidDatabase.songDao().findById(song.getId()) != null){
+                            // song doesn't exist in BDD
+                            soundroidDatabase.songDao().insertSong(song);
+                        }
 
                         // update adapter
                         publishProgress(song);

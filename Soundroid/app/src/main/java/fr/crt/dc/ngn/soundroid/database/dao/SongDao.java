@@ -22,6 +22,9 @@ public interface SongDao {
     @Query("SELECT * FROM Song WHERE title= :title")
     Song findByTitle(String title);
 
+    @Query("SELECT * FROM Song WHERE id= :id")
+    Song findById(long id);
+
     @Query("SELECT * FROM Song WHERE artist= :artist")
     List<Song> findAllByArtist(String artist);
 
