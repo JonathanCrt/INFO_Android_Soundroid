@@ -98,33 +98,15 @@ public class MainActivity extends AppCompatActivity {
         toolbarPlayer.setOnClickListener(v -> this.launchPlayerActivity());
 
         // launch async task
-            /*
         try {
             //Playlist p = new Playlist("Root");
             ArrayList<Song> listSongs = (ArrayList<Song>) soundroidDatabase.songDao().getAllSongs();
             if(listSongs.isEmpty()){
                 // first launch of the app
             }else{
-                //Collections.sort(listSongs, (a, b) -> a.getTitle().compareTo(b.getTitle()));
+                Collections.sort(listSongs, (a, b) -> a.getTitle().compareTo(b.getTitle()));
                 Log.i("LOG", "already LAUNCHED");
             }
-
-
-            SongAdapter adapter = new SongAdapter(getAppContext(), listSongs);
-            Log.i("LOG", "listsongs size = " + String.valueOf(listSongs.size()));
-            Log.i("LOG", "adapter size = " + String.valueOf(adapter.getCount()));
-            RootList.callAsyncTask(adapter, listSongs);
-            //RootList.getSongAdapter().notifyDataSetChanged();
-
-        } catch (ExecutionException | InterruptedException e) {
-            Log.e("MainActivity", Objects.requireNonNull(e.getMessage()));
-        }
-             */
-
-        try {
-            //Playlist p = new Playlist("Root");
-            ArrayList<Song> listSongs = (ArrayList<Song>) soundroidDatabase.songDao().getAllSongs();
-            Collections.sort(listSongs, (a, b) -> a.getTitle().compareTo(b.getTitle()));
             SongAdapter adapter = new SongAdapter(getAppContext(), listSongs);
             RootList.callAsyncTask(adapter, listSongs);
         } catch (ExecutionException | InterruptedException e) {

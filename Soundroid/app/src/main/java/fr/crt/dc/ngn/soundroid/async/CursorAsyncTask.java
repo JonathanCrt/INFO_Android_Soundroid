@@ -71,7 +71,10 @@ public class CursorAsyncTask extends AsyncTask<Void, Song, ArrayList<Song>> {
     @Override
     protected ArrayList<Song> doInBackground(Void... voids) {
         // add songs in this treeset to guarantee unicity of songs
+        /*
+        not needed anymore -> DB instead
         TreeSet<Song> treeSetSong = new TreeSet<>((song1, song2) -> song1.getFootprint().toString().compareTo(song2.getFootprint().toString()));
+         */
 
         Uri uri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
         // TODO: uri to get the genre
@@ -106,6 +109,14 @@ public class CursorAsyncTask extends AsyncTask<Void, Song, ArrayList<Song>> {
                 //Log.i("LOG", "style = " + style);
 
                 do {
+
+                    if(soundroidDatabase.songDao().findById(idSong) != null){
+                        // song already exist in DB
+                        Log.i("LOG", "Song with id = " + idSong + " already exist in DB");
+                        idSong++;   // try to find next Song
+                        continue;
+                    }
+
                     long thisId = cursor.getLong(idColumn);
                     //Log.i("LOG", "ID SONG " + thisId);
                     //long idSong = cursor.getLong(idColumn);
@@ -151,19 +162,21 @@ public class CursorAsyncTask extends AsyncTask<Void, Song, ArrayList<Song>> {
                         Song song = new Song(idSong, titleSong, artistSong, Long.parseLong(String.valueOf(durationSong)), byteArray, null, albumSong, songLink, messageDigest.toString());
                         //Log.i("CursorAsyncTask song:", song.toString());
                         // add in treeset
+                        /*
+                        not needed anymore -> DB instead
                         treeSetSong.add(song);
                         // add in rootSongs values of treeset continually to assures that there are unique songs
                         rootSongs.clear();
                         rootSongs.addAll(treeSetSong);
-                        idSong++;
-
-                        if(soundroidDatabase.songDao().findById(song.getId()) != null){
-                            // song doesn't exist in BDD
-                            soundroidDatabase.songDao().insertSong(song);
-                        }
+                        */
+                        // insert song in DB
+                        soundroidDatabase.songDao().insertSong(song);
+                        Log.i("LOG", "Song with id = " + idSong + " inserted in DB");
 
                         // update adapter
                         publishProgress(song);
+
+                        idSong++;
 
                     } catch (NoSuchAlgorithmException e) {
                         e.getMessage();
