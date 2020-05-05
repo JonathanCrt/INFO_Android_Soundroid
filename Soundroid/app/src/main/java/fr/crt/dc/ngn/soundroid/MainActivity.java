@@ -22,6 +22,7 @@ import com.google.android.material.navigation.NavigationView;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.ExecutionException;
@@ -41,6 +42,7 @@ import fr.crt.dc.ngn.soundroid.controller.ToolbarController;
 import fr.crt.dc.ngn.soundroid.database.SoundroidDatabase;
 import fr.crt.dc.ngn.soundroid.database.SoundroidDatabase_Impl;
 import fr.crt.dc.ngn.soundroid.database.dao.SongDao;
+import fr.crt.dc.ngn.soundroid.fragment.AllTracksFragment;
 import fr.crt.dc.ngn.soundroid.fragment.PlayerFragment;
 import fr.crt.dc.ngn.soundroid.helpers.RootList;
 import fr.crt.dc.ngn.soundroid.database.entity.Playlist;
@@ -98,10 +100,24 @@ public class MainActivity extends AppCompatActivity {
         // launch async task
         try {
             //Playlist p = new Playlist("Root");
-            ArrayList<Song> arrayList = (ArrayList<Song>) soundroidDatabase.songDao().getAllSongs();
-
-            SongAdapter adapter = new SongAdapter(getAppContext(), arrayList);
-            RootList.callAsyncTask(adapter, new ArrayList<>());
+            ArrayList<Song> listSongs = (ArrayList<Song>) soundroidDatabase.songDao().getAllSongs();
+            if(listSongs.isEmpty()){
+                // first launch of the app
+                Log.i("LOG", "First launch of the app");
+            }else{
+                /*
+               // test to delete all in DB and restart with a new DB clean
+                soundroidDatabase.songDao().getAllSongs().forEach(s->{
+                    Log.i("LOG", "delete song");
+                    soundroidDatabase.songDao().deleteSong(s);
+                });
+                return;
+                */
+                Collections.sort(listSongs, (a, b) -> a.getTitle().compareTo(b.getTitle()));
+                Log.i("LOG", "already LAUNCHED");
+            }
+            SongAdapter adapter = new SongAdapter(getAppContext(), listSongs);
+            RootList.callAsyncTask(adapter, listSongs);
         } catch (ExecutionException | InterruptedException e) {
             Log.e("MainActivity", Objects.requireNonNull(e.getMessage()));
         }
