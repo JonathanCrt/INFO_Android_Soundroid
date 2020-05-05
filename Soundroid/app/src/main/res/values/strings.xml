@@ -42,4 +42,11 @@
     <string name="temps">Temps</string>
     <string name="plus_courtes">Plus courtes</string>
     <string name="plus_longues">Plus Longues</string>
+    <string name="automatique">Automatique</string>
+    <string name="personnalis_es">Personnalisées</string>
+    <string name="ic_ne_repr_sentant_l_acc_s_au_playlist_de_morceaux_favoris">icône représentant l\'accés au playlist de morceaux favoris</string>
+    <string name="icone_repr_sentant_l_acc_s_la_playlist_de_morceaux_les_plus_cout_s">Icone représentant l\'accés à la playlist de morceaux les plus écoutés</string>
+    <string name="les_cout_s">Les plus écoutés</string>
+    <string name="avec_tag">Avec tag</string>
+    <string name="_0_chansons">0 chansons</string>
 </resources>
