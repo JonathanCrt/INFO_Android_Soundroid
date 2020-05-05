@@ -192,8 +192,8 @@ public class CursorAsyncTask extends AsyncTask<Void, Song, ArrayList<Song>> {
     @Override
     protected void onProgressUpdate(Song... values) {
         super.onProgressUpdate(values);
-        this.songAdapter.add(values[0]);
         Log.i("ASYNC", values[0].toString());
+        this.songAdapter.add(values[0]);
         this.songAdapter.notifyDataSetChanged();
         // update number of songs as things progress
         TextView textView = ( AllTracksFragment.getAppContext()).getActivity().findViewById(R.id.tv_list_number_songs);

@@ -103,7 +103,16 @@ public class MainActivity extends AppCompatActivity {
             ArrayList<Song> listSongs = (ArrayList<Song>) soundroidDatabase.songDao().getAllSongs();
             if(listSongs.isEmpty()){
                 // first launch of the app
+                Log.i("LOG", "First launch of the app");
             }else{
+                /*
+               // test to delete all in DB and restart with a new DB clean
+                soundroidDatabase.songDao().getAllSongs().forEach(s->{
+                    Log.i("LOG", "delete song");
+                    soundroidDatabase.songDao().deleteSong(s);
+                });
+                return;
+                */
                 Collections.sort(listSongs, (a, b) -> a.getTitle().compareTo(b.getTitle()));
                 Log.i("LOG", "already LAUNCHED");
             }
