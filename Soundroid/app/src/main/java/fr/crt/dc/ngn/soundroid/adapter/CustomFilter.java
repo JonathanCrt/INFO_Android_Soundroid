@@ -4,7 +4,9 @@ import android.util.Log;
 import android.widget.Filter;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 
 import fr.crt.dc.ngn.soundroid.database.entity.Song;
 
@@ -18,6 +20,7 @@ public class CustomFilter extends Filter {
 
     CustomFilter(ArrayList<Song> filteredList, SongAdapter adapter) {
         this.filteredList = filteredList;
+        Log.d("CustomFilter", filteredList.toString());
         this.adapter = adapter;
     }
 
@@ -39,26 +42,19 @@ public class CustomFilter extends Filter {
             for (int i = 0; i < filteredList.size(); i++) {
                 // filter
                 filteredSongs.add(filteredList.get(i));
+                Log.i("CustomFilter", filteredSongs.toString());
                 switch (constraint.toString()) {
                     case "TITLE":
-                        Collections.sort(filteredSongs, (a, b) -> {
-                            return a.getTitle().compareTo(b.getTitle());
-                        });
+                        Collections.sort(filteredSongs, (a, b) -> a.getTitle().compareTo(b.getTitle()));
                         break;
                     case "ARTISTE":
-                        Collections.sort(filteredSongs, (a, b) -> {
-                            return a.getArtist().compareTo(b.getArtist());
-                        });
+                        Collections.sort(filteredSongs, (a, b) -> a.getArtist().compareTo(b.getArtist()));
                         break;
                     case "PLUS COURTES":
-                        Collections.sort(filteredSongs, (a, b) -> {
-                            return String.valueOf(a.getDuration()).compareTo(String.valueOf(b.getDuration()));
-                        });
+                        Collections.sort(filteredSongs, (a, b) -> String.valueOf(a.getDuration()).compareTo(String.valueOf(b.getDuration())));
                         break;
                     case "PLUS_LONGUES":
-                        Collections.sort(filteredSongs, (a, b) -> {
-                            return String.valueOf(b.getDuration()).compareTo(String.valueOf(a.getDuration()));
-                        });
+                        Collections.sort(filteredSongs, (a, b) -> String.valueOf(b.getDuration()).compareTo(String.valueOf(a.getDuration())));
                         break;
 
                     //if(filteredList.get(i).getTitle().toUpperCase().contains(constraint)) {
@@ -67,8 +63,8 @@ public class CustomFilter extends Filter {
                 }
             }
             results.count = filteredSongs.size();
-            Log.i("CustomFilter sorting", " " + filteredSongs);
             results.values = filteredSongs;
+            Log.i("CustomFilter sorting", " " + filteredSongs.toString());
         } else {
             results.count = filteredList.size();
             results.values = filteredList;
@@ -81,6 +77,7 @@ public class CustomFilter extends Filter {
     protected void publishResults(CharSequence constraint, FilterResults results) {
         Log.i("CustomFilter", " " + results.values);
         adapter.filteredPlayList = (ArrayList<Song>) results.values;
+
         adapter.notifyDataSetChanged();
     }
 }

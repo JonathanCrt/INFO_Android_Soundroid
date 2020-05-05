@@ -46,6 +46,7 @@ import fr.crt.dc.ngn.soundroid.helpers.RootList;
 import fr.crt.dc.ngn.soundroid.database.entity.Playlist;
 import fr.crt.dc.ngn.soundroid.database.entity.Song;
 import fr.crt.dc.ngn.soundroid.service.SongService;
+import fr.crt.dc.ngn.soundroid.utility.Utility;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -100,16 +101,16 @@ public class MainActivity extends AppCompatActivity {
             ArrayList<Song> arrayList = (ArrayList<Song>) soundroidDatabase.songDao().getAllSongs();
 
             SongAdapter adapter = new SongAdapter(getAppContext(), arrayList);
-            RootList.callAsyncTask(adapter, new ArrayList<Song>());
+            RootList.callAsyncTask(adapter, new ArrayList<>());
         } catch (ExecutionException | InterruptedException e) {
             Log.e("MainActivity", Objects.requireNonNull(e.getMessage()));
         }
 
-        SoundroidDatabase database = SoundroidDatabase.getInstance(this);
-        database.playlistDao().createPlayList(new fr.crt.dc.ngn.soundroid.database.entity.Playlist("poooooooooop"));
+        //SoundroidDatabase database = SoundroidDatabase.getInstance(this);
+        //database.playlistDao().createPlayList(new fr.crt.dc.ngn.soundroid.database.entity.Playlist("poooooooooop"));
         //database.songDao().insertSong(new fr.crt.dc.ngn.soundroid.database.entity.Song(1, "Billie Jean", "Michael Jackson", 2503, "rep/artwork", "pop", "King of pop", "rep/...",  "89+79gs76g"));
 
-        Log.i("MainActivity SIZE" , "" + database.playlistDao().getAllPlayLists().size());
+        //Log.i("MainActivity SIZE" , "" + database.playlistDao().getAllPlayLists().size());
 
         /*
         for(int i = 0; i < database.playlistDao().getAllPlayLists().size(); i++) {
@@ -174,7 +175,7 @@ public class MainActivity extends AppCompatActivity {
         it.putExtra("TITLE_SONG", this.songService.getPlaylistSongs().get(this.songService.getSongIndex()).getTitle());
         it.putExtra("ARTIST_SONG", this.songService.getPlaylistSongs().get(this.songService.getSongIndex()).getArtist());
         it.putExtra("RATING_SONG", this.songService.getPlaylistSongs().get(this.songService.getSongIndex()).getRating());
-        it.putExtra("ARTWORK_SONG", this.songService.getPlaylistSongs().get(this.songService.getSongIndex()).getArtwork());
+        it.putExtra("ARTWORK_SONG", Utility.convertByteToBitmap(this.songService.getPlaylistSongs().get(this.songService.getSongIndex()).getArtwork()));
         it.putExtra("DURATION_SONG", this.songService.getPlaylistSongs().get(this.songService.getSongIndex()).getDuration());
         startActivity(it);
     }

@@ -1,5 +1,6 @@
 package fr.crt.dc.ngn.soundroid.database.entity;
 
+import java.util.Arrays;
 import java.util.Locale;
 
 import androidx.room.ColumnInfo;
@@ -194,10 +195,13 @@ public class Song {
         };
     }
 
-
-
-
-
-     
-
+    @Override
+    public String toString() {
+        return "Song{" +
+                "id=" + id +
+                ", title='" + title + '\'' +
+                ", artist='" + artist + '\'' +
+                ", rating='" + rating + '\'' +
+                '}';
+    }
 }

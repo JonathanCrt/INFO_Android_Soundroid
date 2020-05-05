@@ -5,6 +5,7 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
 import fr.crt.dc.ngn.soundroid.controller.PlayerController;
 import fr.crt.dc.ngn.soundroid.controller.ToolbarController;
+import fr.crt.dc.ngn.soundroid.database.SoundroidDatabase;
 import fr.crt.dc.ngn.soundroid.service.SongService;
 import fr.crt.dc.ngn.soundroid.utility.Utility;
 
@@ -54,6 +55,8 @@ public class PlayerActivity extends AppCompatActivity {
     private Runnable mRunnable;
     private long currentSongLength;
 
+    private SoundroidDatabase soundroidDatabaseInstance;
+
 
     private void initializeViews() {
         this.ivBack = findViewById(R.id.iv_player_back);
@@ -78,7 +81,6 @@ public class PlayerActivity extends AppCompatActivity {
     }
 
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -90,6 +92,7 @@ public class PlayerActivity extends AppCompatActivity {
         this.setIvBackListener();
         this.setTextViewSelected();
         this.installListener();
+        this.soundroidDatabaseInstance = SoundroidDatabase.getInstance(this);
     }
 
     @Override
@@ -215,6 +218,14 @@ public class PlayerActivity extends AppCompatActivity {
         this.songService.getPlaylistSongs().get(this.songService.getSongIndex()).setRating(0);
     }
 
+    private void clearRating() {
+        ivNoteStarOne.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_outline_star_note));
+        ivNoteStarTwo.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_outline_star_note));
+        ivNoteStarThree.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_outline_star_note));
+        ivNoteStarFour.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_outline_star_note));
+        ivNoteStarFive.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_outline_star_note));
+    }
+
 
     private void setRatingToOne() {
         ivNoteStarOne.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_filled_star_note));
@@ -223,6 +234,7 @@ public class PlayerActivity extends AppCompatActivity {
         ivNoteStarFour.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_outline_star_note));
         ivNoteStarFive.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_outline_star_note));
         this.songService.getPlaylistSongs().get(this.songService.getSongIndex()).setRating(1);
+        this.soundroidDatabaseInstance.songDao().updateSongRatingByTitle(1, this.songService.getPlaylistSongs().get(this.songService.getSongIndex()).getTitle());
     }
 
     private void setRatingToTwo() {
@@ -232,6 +244,7 @@ public class PlayerActivity extends AppCompatActivity {
         ivNoteStarFour.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_outline_star_note));
         ivNoteStarFive.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_outline_star_note));
         this.songService.getPlaylistSongs().get(this.songService.getSongIndex()).setRating(2);
+        this.soundroidDatabaseInstance.songDao().updateSongRatingByTitle(2, this.songService.getPlaylistSongs().get(this.songService.getSongIndex()).getTitle());
     }
 
     private void setRatingToThree() {
@@ -241,6 +254,7 @@ public class PlayerActivity extends AppCompatActivity {
         ivNoteStarFour.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_outline_star_note));
         ivNoteStarFive.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_outline_star_note));
         this.songService.getPlaylistSongs().get(this.songService.getSongIndex()).setRating(3);
+        this.soundroidDatabaseInstance.songDao().updateSongRatingByTitle(3, this.songService.getPlaylistSongs().get(this.songService.getSongIndex()).getTitle());
     }
 
     private void setRatingToFour() {
@@ -250,6 +264,7 @@ public class PlayerActivity extends AppCompatActivity {
         ivNoteStarFour.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_filled_star_note));
         ivNoteStarFive.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_outline_star_note));
         this.songService.getPlaylistSongs().get(this.songService.getSongIndex()).setRating(4);
+        this.soundroidDatabaseInstance.songDao().updateSongRatingByTitle(4, this.songService.getPlaylistSongs().get(this.songService.getSongIndex()).getTitle());
     }
 
     private void setRatingToFive() {
@@ -259,6 +274,7 @@ public class PlayerActivity extends AppCompatActivity {
         ivNoteStarFour.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_filled_star_note));
         ivNoteStarFive.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_filled_star_note));
         this.songService.getPlaylistSongs().get(this.songService.getSongIndex()).setRating(5);
+        this.soundroidDatabaseInstance.songDao().updateSongRatingByTitle(5, this.songService.getPlaylistSongs().get(this.songService.getSongIndex()).getTitle());
     }
 
 
@@ -354,6 +370,7 @@ public class PlayerActivity extends AppCompatActivity {
         } else {
             Toast.makeText(this, "State : Play", Toast.LENGTH_SHORT).show();
             ivControlPlaySong.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_pause_white_2x));
+            runUIThreadToSetProgressSeekBar();
         }
         Log.i("PlayerActivity aft", this.songService.toString());
     }
@@ -361,6 +378,8 @@ public class PlayerActivity extends AppCompatActivity {
     private void pushNextControl() {
         this.songService.playNextSong();
         ivControlPlaySong.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_pause_white_2x));
+        Log.d("PlayerActivity pushNext", " " + this.songService.getPlaylistSongs().get(this.songService.getSongIndex()).getRating());
+        this.clearRating();
         setWidgetsValues(
                 this.songService.getPlaylistSongs().get(songService.getSongIndex()).getTitle(),
                 this.songService.getPlaylistSongs().get(songService.getSongIndex()).getArtist(),
@@ -368,11 +387,14 @@ public class PlayerActivity extends AppCompatActivity {
                 Utility.convertByteToBitmap(this.songService.getPlaylistSongs().get(this.songService.getSongIndex()).getArtwork()),
                 this.songService.getPlaylistSongs().get(this.songService.getSongIndex()).getDuration()
         );
+        runUIThreadToSetProgressSeekBar();
     }
 
     private void pushPreviousControl() {
         this.songService.playPreviousSong();
         ivControlPlaySong.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_pause_white_2x));
+        Log.d("PlayerActivity pushPrevious", " " + this.songService.getPlaylistSongs().get(this.songService.getSongIndex()).getRating());
+        this.clearRating();
         setWidgetsValues(
                 this.songService.getPlaylistSongs().get(songService.getSongIndex()).getTitle(),
                 this.songService.getPlaylistSongs().get(songService.getSongIndex()).getArtist(),
@@ -380,6 +402,7 @@ public class PlayerActivity extends AppCompatActivity {
                 Utility.convertByteToBitmap(this.songService.getPlaylistSongs().get(this.songService.getSongIndex()).getArtwork()),
                 this.songService.getPlaylistSongs().get(this.songService.getSongIndex()).getDuration()
         );
+        runUIThreadToSetProgressSeekBar();
     }
 
     /**

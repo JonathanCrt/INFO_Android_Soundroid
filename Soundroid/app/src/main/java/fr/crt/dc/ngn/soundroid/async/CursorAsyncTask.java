@@ -149,12 +149,13 @@ public class CursorAsyncTask extends AsyncTask<Void, Song, ArrayList<Song>> {
                         bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
                         byte[] byteArray = stream.toByteArray();
                         Song song = new Song(idSong, titleSong, artistSong, Long.parseLong(String.valueOf(durationSong)), byteArray, null, albumSong, songLink, messageDigest.toString());
-                        Log.i("CursorAsyncTask song:", song.toString());
+                        //Log.i("CursorAsyncTask song:", song.toString());
                         // add in treeset
                         treeSetSong.add(song);
                         // add in rootSongs values of treeset continually to assures that there are unique songs
                         rootSongs.clear();
                         rootSongs.addAll(treeSetSong);
+                        Log.d("CursorAsyncT rootS", rootSongs.toString());
                         idSong++;
 
                         soundroidDatabase.songDao().insertSong(song);

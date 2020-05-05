@@ -40,6 +40,7 @@ public class SongAdapter extends ArrayAdapter<Song>  implements Filterable {
     public SongAdapter(Context context, List<Song> listSongs) {
         super(context, 0);
         this.listSongs = (ArrayList<Song>) listSongs;
+        Log.d("SongAdapter", listSongs.toString());
         this.songInflater = LayoutInflater.from(context);
         this.context = context;
         this.filteredPlayList = (ArrayList<Song>) listSongs;
@@ -58,7 +59,7 @@ public class SongAdapter extends ArrayAdapter<Song>  implements Filterable {
 
         // holder of the views to be reused.
         ViewHolder mViewHolder;
-
+        this.listSongs.sort((a, b) -> a.getTitle().compareTo(b.getTitle()));
         if (convertView == null) {
             // create the container ViewHolder
             mViewHolder = new ViewHolder();
