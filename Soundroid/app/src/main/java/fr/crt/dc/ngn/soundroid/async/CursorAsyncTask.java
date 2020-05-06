@@ -88,7 +88,6 @@ public class CursorAsyncTask extends AsyncTask<Void, Song, ArrayList<Song>> {
         String where = MediaStore.Audio.Media.IS_MUSIC + "=1";
         try (Cursor cursor = contentResolver.query(uri,
                 cursor_cols, where, null, null)) {
-            long idSong = 0L;
 
             if (cursor != null && cursor.moveToFirst()) {
                 int titleColumn = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.TITLE);
@@ -97,11 +96,11 @@ public class CursorAsyncTask extends AsyncTask<Void, Song, ArrayList<Song>> {
                 int albumIdColumn = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.ALBUM_ID);
                 int durationColumn = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DURATION);
 
-                int idColumn = cursor.getColumnIndex
-                        (android.provider.MediaStore.Audio.Media._ID);
 
                 int linkColumn = cursor.getColumnIndex
                         (MediaStore.Audio.Media.DATA);
+
+
                 /*
                 String style = cursor.getString(cursor
                         .getColumnIndex(MediaStore.Audio.Genres.NAME));
@@ -110,16 +109,16 @@ public class CursorAsyncTask extends AsyncTask<Void, Song, ArrayList<Song>> {
 
                 do {
 
+                    int idColumn = cursor.getColumnIndex
+                            (android.provider.MediaStore.Audio.Media._ID);
+                    long idSong = cursor.getLong(idColumn);
+                    Log.i("LOG", "ID SONG " + idSong);
                     if(soundroidDatabase.songDao().findById(idSong) != null){
                         // song already exist in DB
                         Log.i("LOG", "Song with id = " + idSong + " already exist in DB");
-                        idSong++;   // try to find next Song
+                        cursor.moveToNext();
                         continue;
                     }
-
-                    long thisId = cursor.getLong(idColumn);
-                    //Log.i("LOG", "ID SONG " + thisId);
-                    //long idSong = cursor.getLong(idColumn);
                     String titleSong = cursor.getString(titleColumn);
                     String artistSong = cursor.getString(artistColumn);
                     long albumId = cursor.getLong(albumIdColumn);
@@ -175,9 +174,6 @@ public class CursorAsyncTask extends AsyncTask<Void, Song, ArrayList<Song>> {
 
                         // update adapter
                         publishProgress(song);
-
-                        idSong++;
-
                     } catch (NoSuchAlgorithmException e) {
                         e.getMessage();
                     }

@@ -107,8 +107,8 @@ public class MainActivity extends AppCompatActivity {
                 // first launch of the app
                 Log.i("LOG", "First launch of the app");
             }else{
-                /*
                // test to delete all in DB and restart with a new DB clean
+                /*
                 soundroidDatabase.songDao().getAllSongs().forEach(s->{
                     Log.i("LOG", "delete song");
                     soundroidDatabase.songDao().deleteSong(s);

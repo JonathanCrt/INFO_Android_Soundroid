@@ -16,6 +16,7 @@ import android.widget.TextView;
 
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -44,7 +45,6 @@ public class SongAdapter extends ArrayAdapter<Song>  implements Filterable {
         this.songInflater = LayoutInflater.from(context);
         this.context = context;
         this.filteredPlayList = (ArrayList<Song>) listSongs;
-
     }
 
     static class ViewHolder {
@@ -59,7 +59,6 @@ public class SongAdapter extends ArrayAdapter<Song>  implements Filterable {
 
         // holder of the views to be reused.
         ViewHolder mViewHolder;
-        this.listSongs.sort((a, b) -> a.getTitle().compareTo(b.getTitle()));
         if (convertView == null) {
             // create the container ViewHolder
             mViewHolder = new ViewHolder();
@@ -81,7 +80,7 @@ public class SongAdapter extends ArrayAdapter<Song>  implements Filterable {
         }
 
         // Retrieve song using position index
-        Song currentSong = listSongs.get(position);
+        Song currentSong = filteredPlayList.get(position);
         //Song currentSong = playlist.getSongList().get(position);
 
         // now we can set populate the data via the ViewHolder into views
@@ -95,8 +94,6 @@ public class SongAdapter extends ArrayAdapter<Song>  implements Filterable {
         return convertView;
     }
 
-
-
     @Override
     public int getCount() {
         return listSongs.size();
@@ -109,5 +106,11 @@ public class SongAdapter extends ArrayAdapter<Song>  implements Filterable {
             filter=new CustomFilter(filteredPlayList,this);
         }
         return filter;
+    }
+
+    @Override
+    public void add(@Nullable Song object) {
+        super.add(object);
+        filteredPlayList.add(object);
     }
 }

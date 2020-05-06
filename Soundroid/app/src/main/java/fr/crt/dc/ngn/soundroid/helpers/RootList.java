@@ -48,10 +48,12 @@ public class RootList {
                 //Log.d("Rootlist after sorting", rootList.toString());
                 RootList.setRootList(rootPlaylist);
                 // put in the adapter all the sorted songs
+                /*
                 songAdapter.clear();
                 for(Song song: rootPlaylist){
                     songAdapter.add(song);
                 }
+                 */
                 Log.i("TASK", "END ASYNC TASK");
                 songAdapter.notifyDataSetChanged();
                 return rootPlaylist;
