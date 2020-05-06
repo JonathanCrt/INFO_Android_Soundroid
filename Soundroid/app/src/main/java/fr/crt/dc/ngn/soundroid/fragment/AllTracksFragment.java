@@ -2,6 +2,7 @@ package fr.crt.dc.ngn.soundroid.fragment;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.content.ClipData;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -60,6 +61,7 @@ public class AllTracksFragment extends Fragment {
     private PopupMenu popupMenu;
     private ImageView ivButtonFilter;
     private SongAdapter adapter;
+    private View vSearchButton;
 
     private static AllTracksFragment context;
 
@@ -117,8 +119,6 @@ public class AllTracksFragment extends Fragment {
         this.shuffleButton = v.findViewById(R.id.button2);
         this.toShuffle();
 
-
-
         this.constraintLayout = Objects.requireNonNull(getActivity()).findViewById(R.id.crt_layout);
         this.toolbarController = new ToolbarController(getActivity(), constraintLayout);
         int sizeAdapter = this.lv.getAdapter().getCount();
@@ -142,6 +142,7 @@ public class AllTracksFragment extends Fragment {
             popup.show(); //showing popup menu
 
         });
+
     }
 
     private void installOnItemClickListener () {
@@ -275,5 +276,6 @@ public class AllTracksFragment extends Fragment {
             connectionEstablished = false;
         }
     };
+
 
 }

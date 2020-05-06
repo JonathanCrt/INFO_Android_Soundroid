@@ -10,6 +10,8 @@ import android.os.IBinder;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
@@ -199,6 +201,12 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.main, menu);
+        MenuItem item = menu.findItem(R.id.action_search);
+        item.setOnMenuItemClickListener(l->{
+            Toast.makeText(this,"FOUND IT",Toast.LENGTH_SHORT);
+            Log.d("SEARCH", "onCreateOptionsMenu: HERE");
+            return true;
+        });
         return true;
     }
 
@@ -231,4 +239,6 @@ public class MainActivity extends AppCompatActivity {
 
         }
     };
+
+
 }
