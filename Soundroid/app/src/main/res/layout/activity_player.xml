@@ -217,7 +217,9 @@
         app:layout_constraintStart_toEndOf="@+id/iv_player_note_star_5"
         app:layout_constraintTop_toBottomOf="@+id/iv_player_artwork"
         app:layout_constraintVertical_bias="0.478"
-        app:srcCompat="@drawable/ic_add_white" />
+        app:srcCompat="@drawable/ic_player_add_tag"
+        android:tint="@android:color/white"
+        />
 
     <TextView
         android:id="@+id/tv_player_elapsed_time"

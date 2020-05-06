@@ -43,25 +43,26 @@ public class CustomFilter extends Filter {
                 // filter
                 filteredSongs.add(filteredList.get(i));
                 Log.i("CustomFilter", filteredSongs.toString());
-                switch (constraint.toString()) {
-                    case "TITLE":
-                        Collections.sort(filteredSongs, (a, b) -> a.getTitle().compareTo(b.getTitle()));
-                        break;
-                    case "ARTISTE":
-                        Collections.sort(filteredSongs, (a, b) -> a.getArtist().compareTo(b.getArtist()));
-                        break;
-                    case "PLUS COURTES":
-                        Collections.sort(filteredSongs, (a, b) -> String.valueOf(a.getDuration()).compareTo(String.valueOf(b.getDuration())));
-                        break;
-                    case "PLUS_LONGUES":
-                        Collections.sort(filteredSongs, (a, b) -> String.valueOf(b.getDuration()).compareTo(String.valueOf(a.getDuration())));
-                        break;
-
-                    //if(filteredList.get(i).getTitle().toUpperCase().contains(constraint)) {
-                    // filteredSongs.add(filteredList.get(i));
-                    // }
-                }
             }
+            switch (constraint.toString()) {
+                case "TITLE":
+                    Collections.sort(filteredSongs, (a, b) -> a.getTitle().compareTo(b.getTitle()));
+                    break;
+                case "ARTISTE":
+                    Collections.sort(filteredSongs, (a, b) -> a.getArtist().compareTo(b.getArtist()));
+                    break;
+                case "PLUS COURTES":
+                    Collections.sort(filteredSongs, (a, b) -> String.valueOf(a.getDuration()).compareTo(String.valueOf(b.getDuration())));
+                    break;
+                case "PLUS_LONGUES":
+                    Collections.sort(filteredSongs, (a, b) -> String.valueOf(b.getDuration()).compareTo(String.valueOf(a.getDuration())));
+                    break;
+
+                //if(filteredList.get(i).getTitle().toUpperCase().contains(constraint)) {
+                // filteredSongs.add(filteredList.get(i));
+                // }
+            }
+
             results.count = filteredSongs.size();
             results.values = filteredSongs;
             Log.i("CustomFilter sorting", " " + filteredSongs.toString());
@@ -75,7 +76,7 @@ public class CustomFilter extends Filter {
 
     @Override
     protected void publishResults(CharSequence constraint, FilterResults results) {
-        Log.i("CustomFilter", " " + results.values);
+        Log.i("CustomFilter pusblishResults", " " + results.values);
         adapter.filteredPlayList = (ArrayList<Song>) results.values;
 
         adapter.notifyDataSetChanged();

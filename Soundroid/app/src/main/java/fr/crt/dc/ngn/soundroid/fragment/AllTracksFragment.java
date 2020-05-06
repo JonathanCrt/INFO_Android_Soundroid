@@ -58,7 +58,6 @@ public class AllTracksFragment extends Fragment {
     private ConstraintLayout constraintLayout;
     private ToolbarController toolbarController;
     private Button shuffleButton;
-    private PopupMenu popupMenu;
     private ImageView ivButtonFilter;
     private SongAdapter adapter;
     private View vSearchButton;
@@ -114,7 +113,7 @@ public class AllTracksFragment extends Fragment {
         lv = v.findViewById(R.id.list_songs);
         adapter = RootList.getSongAdapter();
         lv.setAdapter(adapter);
-        Log.i("LOG", "" + adapter.getCount());
+        //Log.i("LOG", "" + adapter.getCount());
 
         this.shuffleButton = v.findViewById(R.id.button2);
         this.toShuffle();
