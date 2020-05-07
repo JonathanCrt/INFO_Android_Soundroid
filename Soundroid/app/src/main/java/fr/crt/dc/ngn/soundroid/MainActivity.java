@@ -3,6 +3,7 @@ package fr.crt.dc.ngn.soundroid;
 import android.annotation.SuppressLint;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.Bundle;
@@ -10,6 +11,9 @@ import android.os.IBinder;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.webkit.URLUtil;
+import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.google.android.material.navigation.NavigationView;
@@ -19,6 +23,7 @@ import java.util.Collections;
 import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
@@ -48,6 +53,9 @@ public class MainActivity extends AppCompatActivity {
     private SongService songService;
     private boolean connectionEstablished;
     private SoundroidDatabase soundroidDatabase;
+    private String[] listCriteria;
+    private boolean[] checkedItems;
+    private ArrayList<Integer> userItems = new ArrayList<>();
 
     public static Context getAppContext() {
         return MainActivity.context;
@@ -91,7 +99,8 @@ public class MainActivity extends AppCompatActivity {
             if (listSongs.isEmpty()) {
                 // first launch of the app
                 Log.i("LOG", "First launch of the app");
-            } else {
+
+            } else{
                 Log.i("LOG", "already LAUNCHED");
                 // test to delete all in DB and restart with a new DB clean
                 /*
@@ -127,6 +136,11 @@ public class MainActivity extends AppCompatActivity {
          */
 
         //Log.i("MainActivity DB" , "" + database.playlistDao().getAllPlayLists());
+
+
+
+        this.listCriteria = getResources().getStringArray(R.array.search_criteria);
+        this.checkedItems = new boolean[listCriteria.length];
 
     }
 
@@ -190,11 +204,7 @@ public class MainActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.main, menu);
         MenuItem item = menu.findItem(R.id.action_search);
-        item.setOnMenuItemClickListener(l->{
-            Toast.makeText(this,"FOUND IT",Toast.LENGTH_SHORT);
-            Log.d("SEARCH", "onCreateOptionsMenu: HERE");
-            return true;
-        });
+        monoSearch(item);
         return true;
     }
 
@@ -229,4 +239,28 @@ public class MainActivity extends AppCompatActivity {
     };
 
 
+    public void monoSearch(MenuItem item){
+        item = item.setOnMenuItemClickListener(l->{
+            Log.d("SEARCH", "onCreateOptionsMenu: HERE");
+            AlertDialog.Builder mBuilder =  new AlertDialog.Builder(this);
+            mBuilder.setTitle("search a song");
+
+            final EditText input = new EditText(this);
+            LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    LinearLayout.LayoutParams.MATCH_PARENT);
+            input.setLayoutParams(lp);
+            mBuilder.setView(input);
+            //String userInput = input.getText().toString();
+
+            mBuilder.setMultiChoiceItems(this.listCriteria, this.checkedItems, new DialogInterface.OnMultiChoiceClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int position, boolean isChecked) {
+                    Toast.makeText(MainActivity.this, "criteria selected", Toast.LENGTH_SHORT).show();
+                }
+            }).show();
+            return true;
+        });
+
+    }
 }

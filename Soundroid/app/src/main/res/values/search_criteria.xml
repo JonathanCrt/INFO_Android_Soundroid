@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="search_criteria">
+        <item>title</item>
+        <item>author</item>
+        <item>album</item>
+    </string-array>
+</resources>
