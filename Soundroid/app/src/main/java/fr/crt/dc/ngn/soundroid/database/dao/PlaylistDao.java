@@ -23,7 +23,7 @@ public interface PlaylistDao {
     Playlist findByName(String name);
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    void createPlayList(Playlist playlist);
+    void insertPlayList(Playlist playlist);
 
     @Update
     void updatePlayList(Playlist playlist);
@@ -31,6 +31,6 @@ public interface PlaylistDao {
     @Delete
     void deletePlaylist(Playlist playlist);
 
-
-
+    @Query("DELETE FROM Playlist")
+    void deleteAll();
 }

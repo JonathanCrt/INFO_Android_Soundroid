@@ -1,6 +1,6 @@
 package fr.crt.dc.ngn.soundroid;
 
-import android.app.Activity;
+import android.annotation.SuppressLint;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -8,29 +8,17 @@ import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.animation.AnimationUtils;
-import android.widget.Button;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.material.navigation.NavigationView;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
-import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
@@ -40,14 +28,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
 import fr.crt.dc.ngn.soundroid.adapter.SongAdapter;
-import fr.crt.dc.ngn.soundroid.controller.ToolbarController;
 import fr.crt.dc.ngn.soundroid.database.SoundroidDatabase;
-import fr.crt.dc.ngn.soundroid.database.SoundroidDatabase_Impl;
-import fr.crt.dc.ngn.soundroid.database.dao.SongDao;
-import fr.crt.dc.ngn.soundroid.fragment.AllTracksFragment;
-import fr.crt.dc.ngn.soundroid.fragment.PlayerFragment;
-import fr.crt.dc.ngn.soundroid.helpers.RootList;
-import fr.crt.dc.ngn.soundroid.database.entity.Playlist;
+import fr.crt.dc.ngn.soundroid.utility.RootList;
 import fr.crt.dc.ngn.soundroid.database.entity.Song;
 import fr.crt.dc.ngn.soundroid.service.SongService;
 import fr.crt.dc.ngn.soundroid.utility.Utility;
@@ -71,11 +53,13 @@ public class MainActivity extends AppCompatActivity {
         return MainActivity.context;
     }
 
+    @SuppressLint("WrongThread")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        this.soundroidDatabase = SoundroidDatabase.getInstance(this);
+        this.soundroidDatabase = SoundroidDatabase.getInstance(getApplicationContext());
+        Log.i("LOG", this.soundroidDatabase.toString());
 
         setContentView(R.layout.activity_main);
 
@@ -97,27 +81,31 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbarPlayer = findViewById(R.id.toolbar_player);
 
         //launch Player Activity
-        toolbarPlayer.setOnClickListener(v -> this.launchPlayerActivity());
+        //toolbarPlayer.setOnClickListener(v -> this.launchPlayerActivity());
 
         // launch async task
         try {
             //Playlist p = new Playlist("Root");
             ArrayList<Song> listSongs = (ArrayList<Song>) soundroidDatabase.songDao().getAllSongs();
-            if(listSongs.isEmpty()){
+            Log.d("LOG", String.valueOf(soundroidDatabase.playlistDao().getAllPlayLists().size()));
+            if (listSongs.isEmpty()) {
                 // first launch of the app
                 Log.i("LOG", "First launch of the app");
-            }else{
-               // test to delete all in DB and restart with a new DB clean
+            } else {
+                Log.i("LOG", "already LAUNCHED");
+                // test to delete all in DB and restart with a new DB clean
                 /*
-                soundroidDatabase.songDao().getAllSongs().forEach(s->{
-                    Log.i("LOG", "delete song");
+                this.deleteDatabase("Soundroid.db_");
+                soundroidDatabase.clearAllTables();
+                soundroidDatabase.songDao().getAllSongs().forEach(s -> {
+                    Log.i("LOG", "delete song id : " + s.getId());
                     soundroidDatabase.songDao().deleteSong(s);
                 });
                 return;
                 */
                 Collections.sort(listSongs, (a, b) -> a.getTitle().compareTo(b.getTitle()));
-                Log.i("LOG", "already LAUNCHED");
             }
+
             SongAdapter adapter = new SongAdapter(getAppContext(), listSongs);
             RootList.callAsyncTask(adapter, listSongs);
         } catch (ExecutionException | InterruptedException e) {

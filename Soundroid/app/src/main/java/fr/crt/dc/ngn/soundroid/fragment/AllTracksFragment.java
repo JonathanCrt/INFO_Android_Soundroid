@@ -2,7 +2,6 @@ package fr.crt.dc.ngn.soundroid.fragment;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
-import android.content.ClipData;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -19,7 +18,6 @@ import androidx.fragment.app.Fragment;
 import android.os.IBinder;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -32,12 +30,10 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.Objects;
 
-import fr.crt.dc.ngn.soundroid.MainActivity;
 import fr.crt.dc.ngn.soundroid.R;
-import fr.crt.dc.ngn.soundroid.helpers.RootList;
+import fr.crt.dc.ngn.soundroid.utility.RootList;
 import fr.crt.dc.ngn.soundroid.adapter.SongAdapter;
 import fr.crt.dc.ngn.soundroid.controller.ToolbarController;
-import fr.crt.dc.ngn.soundroid.database.entity.Playlist;
 import fr.crt.dc.ngn.soundroid.database.entity.Song;
 import fr.crt.dc.ngn.soundroid.service.SongService;
 

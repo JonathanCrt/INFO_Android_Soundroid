@@ -1,6 +1,5 @@
 package fr.crt.dc.ngn.soundroid.async;
 
-import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.Context;
@@ -16,19 +15,16 @@ import android.widget.TextView;
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.HashMap;
-import java.util.TreeSet;
-
 import fr.crt.dc.ngn.soundroid.R;
 import fr.crt.dc.ngn.soundroid.adapter.SongAdapter;
 import fr.crt.dc.ngn.soundroid.database.SoundroidDatabase;
 import fr.crt.dc.ngn.soundroid.fragment.AllTracksFragment;
-import fr.crt.dc.ngn.soundroid.helpers.RootList;
-//import fr.crt.dc.ngn.soundroid.model.Song;
+import fr.crt.dc.ngn.soundroid.utility.RootList;
 import fr.crt.dc.ngn.soundroid.database.entity.Song;
 
 public class CursorAsyncTask extends AsyncTask<Void, Song, ArrayList<Song>> {
@@ -70,12 +66,6 @@ public class CursorAsyncTask extends AsyncTask<Void, Song, ArrayList<Song>> {
 
     @Override
     protected ArrayList<Song> doInBackground(Void... voids) {
-        // add songs in this treeset to guarantee unicity of songs
-        /*
-        not needed anymore -> DB instead
-        TreeSet<Song> treeSetSong = new TreeSet<>((song1, song2) -> song1.getFootprint().toString().compareTo(song2.getFootprint().toString()));
-         */
-
         Uri uri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
         // TODO: uri to get the genre
         //Uri uri = MediaStore.Audio.Genres.EXTERNAL_CONTENT_URI;
@@ -95,11 +85,8 @@ public class CursorAsyncTask extends AsyncTask<Void, Song, ArrayList<Song>> {
                 int albumColumn = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.ALBUM);
                 int albumIdColumn = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.ALBUM_ID);
                 int durationColumn = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DURATION);
-
-
                 int linkColumn = cursor.getColumnIndex
                         (MediaStore.Audio.Media.DATA);
-
 
                 /*
                 String style = cursor.getString(cursor
@@ -112,7 +99,6 @@ public class CursorAsyncTask extends AsyncTask<Void, Song, ArrayList<Song>> {
                     int idColumn = cursor.getColumnIndex
                             (android.provider.MediaStore.Audio.Media._ID);
                     long idSong = cursor.getLong(idColumn);
-                    Log.i("LOG", "ID SONG " + idSong);
                     if(soundroidDatabase.songDao().findById(idSong) != null){
                         // song already exist in DB
                         Log.i("LOG", "Song with id = " + idSong + " already exist in DB");
@@ -154,24 +140,14 @@ public class CursorAsyncTask extends AsyncTask<Void, Song, ArrayList<Song>> {
                         MessageDigest digest = java.security.MessageDigest.getInstance("MD5");
                         digest.update(titleSong.getBytes());
                         byte[] messageDigest = digest.digest();
-                        //Song song = new Song(idSong, titleSong, artistSong, Long.parseLong(String.valueOf(durationSong)), albumArtUri.toString(), null, albumSong, songLink, messageDigest.toString());
-                        ByteArrayOutputStream stream = new ByteArrayOutputStream();
-                        bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
-                        byte[] byteArray = stream.toByteArray();
-                        Song song = new Song(idSong, titleSong, artistSong, Long.parseLong(String.valueOf(durationSong)), byteArray, null, albumSong, songLink, messageDigest.toString());
-                        //Log.i("CursorAsyncTask song:", song.toString());
-                        // add in treeset
-                        /*
-                        not needed anymore -> DB instead
-                        treeSetSong.add(song);
-                        // add in rootSongs values of treeset continually to assures that there are unique songs
-                        rootSongs.clear();
-                        rootSongs.addAll(treeSetSong);
-                        */
+                        // Convert bitmap to Byte []
+                        ByteArrayOutputStream bitmapStream = new ByteArrayOutputStream();
+                        // quality 100 means no compress for max visual quality
+                        bitmap.compress(Bitmap.CompressFormat.PNG, 100, bitmapStream);
+                        Song song = new Song(idSong, titleSong, artistSong, Long.parseLong(String.valueOf(durationSong)), bitmapStream.toByteArray(), null, albumSong, songLink, messageDigest.toString());
                         // insert song in DB
                         soundroidDatabase.songDao().insertSong(song);
                         Log.i("LOG", "Song with id = " + idSong + " inserted in DB");
-
                         // update adapter
                         publishProgress(song);
                     } catch (NoSuchAlgorithmException e) {
@@ -188,7 +164,6 @@ public class CursorAsyncTask extends AsyncTask<Void, Song, ArrayList<Song>> {
     @Override
     protected void onProgressUpdate(Song... values) {
         super.onProgressUpdate(values);
-        Log.i("ASYNC", values[0].toString());
         this.songAdapter.add(values[0]);
         this.songAdapter.notifyDataSetChanged();
         // update number of songs as things progress

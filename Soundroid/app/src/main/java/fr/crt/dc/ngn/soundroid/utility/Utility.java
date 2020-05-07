@@ -26,6 +26,11 @@ public class Utility {
 
     }
 
+    /**
+     * Convert a byte array to a bitmap
+     * @param byteArray
+     * @return
+     */
     public static Bitmap convertByteToBitmap(byte[] byteArray){
         return BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);
     }

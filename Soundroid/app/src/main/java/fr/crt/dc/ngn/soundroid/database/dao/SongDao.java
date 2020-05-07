@@ -54,4 +54,7 @@ public interface SongDao {
 
     @Delete
     void deleteSong(Song song);
+
+    @Query("DELETE FROM Song")
+    void deleteAll();
 }
