@@ -6,12 +6,14 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.webkit.URLUtil;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Toast;
@@ -55,7 +57,7 @@ public class MainActivity extends AppCompatActivity {
     private SoundroidDatabase soundroidDatabase;
     private String[] listCriteria;
     private boolean[] checkedItems;
-    private ArrayList<Integer> userItems = new ArrayList<>();
+    private ArrayList<Integer> selectedCriteria = new ArrayList<>();
 
     public static Context getAppContext() {
         return MainActivity.context;
@@ -253,12 +255,26 @@ public class MainActivity extends AppCompatActivity {
             mBuilder.setView(input);
             //String userInput = input.getText().toString();
 
-            mBuilder.setMultiChoiceItems(this.listCriteria, this.checkedItems, new DialogInterface.OnMultiChoiceClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int position, boolean isChecked) {
-                    Toast.makeText(MainActivity.this, "criteria selected", Toast.LENGTH_SHORT).show();
+            mBuilder.setMultiChoiceItems(this.listCriteria, this.checkedItems, (dialog, position, isChecked) -> {
+                if(isChecked){
+                    selectedCriteria.add(position);
+                    Log.i("SELECT", "onClick: position : " + position);
                 }
-            }).show();
+            });
+
+            mBuilder.setPositiveButton("GO", (dialog, which) -> {
+                Toast.makeText(MainActivity.this, "GO", Toast.LENGTH_SHORT).show();
+            });
+
+            AlertDialog dialog = mBuilder.create();
+            dialog.setOnShowListener(arg0 -> dialog.getButton(AlertDialog.BUTTON_POSITIVE).setBackgroundColor(Color.RED));
+            mBuilder.show();
+
+           // Button positiveButton = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
+           // positiveButton.setTextColor(Color.parseColor("#FF0B8B42"));
+           // positiveButton.setBackgroundColor(Color.parseColor("#FFE1FCEA"));
+
+
             return true;
         });
 
