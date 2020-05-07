@@ -128,9 +128,8 @@ public class AllTracksFragment extends Fragment {
             PopupMenu popup = new PopupMenu(this.getContext(), ivButtonFilter);
             popup.getMenuInflater().inflate(R.menu.popup_filter, popup.getMenu());
             popup.setOnMenuItemClickListener(item -> {
-                Toast.makeText(this.getContext(), "You Clicked : " + item.getTitle(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(this.getContext(), "You clicked on : " + item.getTitle(), Toast.LENGTH_SHORT).show();
                 Log.d("AllTracksFragment item", " " + item.getTitle());
-
                 adapter.getFilter().filter(item.getTitle());
                 return true;
             });
