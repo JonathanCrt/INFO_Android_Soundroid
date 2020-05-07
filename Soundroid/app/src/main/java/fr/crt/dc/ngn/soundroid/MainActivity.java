@@ -91,8 +91,12 @@ public class MainActivity extends AppCompatActivity {
             if (listSongs.isEmpty()) {
                 // first launch of the app
                 Log.i("LOG", "First launch of the app");
+<<<<<<< HEAD
             } else {
                 Log.i("LOG", "already LAUNCHED");
+=======
+            }else{
+>>>>>>> 3471a789c30f4da64d16043ba6b11dd7b1cef2cf
                 // test to delete all in DB and restart with a new DB clean
                 /*
                 this.deleteDatabase("Soundroid.db_");

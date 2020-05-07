@@ -202,6 +202,7 @@ public class Song {
                 ", title='" + title + '\'' +
                 ", artist='" + artist + '\'' +
                 ", rating='" + rating + '\'' +
+                ", tag='" + tag + '\'' +
                 '}';
     }
 }
