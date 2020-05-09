@@ -22,6 +22,7 @@ import com.google.android.material.navigation.NavigationView;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 
@@ -57,7 +58,8 @@ public class MainActivity extends AppCompatActivity {
     private SoundroidDatabase soundroidDatabase;
     private String[] listCriteria;
     private boolean[] checkedItems;
-    private ArrayList<Integer> selectedCriteria = new ArrayList<>();
+    private int selectedCriteria = 0;
+
 
     public static Context getAppContext() {
         return MainActivity.context;
@@ -257,13 +259,17 @@ public class MainActivity extends AppCompatActivity {
 
             mBuilder.setMultiChoiceItems(this.listCriteria, this.checkedItems, (dialog, position, isChecked) -> {
                 if(isChecked){
-                    selectedCriteria.add(position);
+                    selectedCriteria = position;
                     Log.i("SELECT", "onClick: position : " + position);
+
                 }
             });
 
             mBuilder.setPositiveButton("GO", (dialog, which) -> {
                 Toast.makeText(MainActivity.this, "GO", Toast.LENGTH_SHORT).show();
+                //doit faire appelle a methode annexe et passe en aparametre la position
+                requestToDatabase(selectedCriteria);
+
             });
 
             AlertDialog dialog = mBuilder.create();
@@ -278,5 +284,24 @@ public class MainActivity extends AppCompatActivity {
             return true;
         });
 
+    }
+
+
+    public void requestToDatabase(int position){
+        Song currentSong = null;
+        switch (position){
+            case 0:
+                currentSong = this.soundroidDatabase.songDao().findByTitle("Centuries");
+                Log.i("RESULT", "CURRENT SONG PLAYED by TITLE: " + currentSong);
+                break;
+            case 1:
+                List<Song> list = this.soundroidDatabase.songDao().findAllByArtist("Sia");
+                Log.i("RESULT", "CURRENT SONG PLAYED by ARTIST: " + list);
+                break;
+            case 2:
+                List<Song> list2 = this.soundroidDatabase.songDao().findAllByAlbum("WINGS");
+                Log.i("RESULT", "CURRENT SONG PLAYED by ARTIST: " + list2);
+                break;
+        }
     }
 }
