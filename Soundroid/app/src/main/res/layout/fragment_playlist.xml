@@ -17,25 +17,12 @@
             android:layout_width="match_parent"
             android:layout_height="2dp" />
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="60dp"
-            android:background="@drawable/gradient_color_2"
-            android:fontFamily="cursive"
-            android:text="@string/automatique"
-            android:textAlignment="center"
-            android:textColor="@color/colorPrimaryFlash"
-            android:textSize="36sp"
-            android:textStyle="bold" />
-        <View
-            android:background="@android:color/darker_gray"
-            android:layout_width="match_parent"
-            android:layout_height="2dp" />
-
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="160dp"
-            android:padding="10dp">
+            android:padding="10dp"
+            android:background="@drawable/gradient_color_2"
+            >
 
             <ImageView
                 android:id="@+id/iv_playlist_most_played"
@@ -111,7 +98,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/_0_chansons"
-                android:textColor="@android:color/tertiary_text_light"
+                android:textColor="@color/colorPrimaryFlash"
                 android:textSize="14sp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -125,7 +112,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/_0_chansons"
-                android:textColor="@android:color/tertiary_text_dark"
+                android:textColor="@color/colorPrimaryFlash"
                 android:textSize="14sp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -139,7 +126,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/_0_chansons"
-                android:textColor="@android:color/tertiary_text_light"
+                android:textColor="@color/colorPrimaryFlash"
                 android:textSize="14sp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -168,16 +155,37 @@
             android:layout_width="match_parent"
             android:layout_height="2dp" />
 
-        <TextView
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/con_layout_all_tracks_filter_rand_playback"
             android:layout_width="match_parent"
-            android:layout_height="60dp"
-            android:background="@drawable/gradient_color_2"
-            android:fontFamily="cursive"
-            android:text="@string/personnalis_es"
-            android:textAlignment="center"
-            android:textColor="@color/colorPrimaryFlash"
-            android:textSize="36sp"
-            android:textStyle="bold" />
+            android:layout_height="50dp"
+            android:padding="10dp">
+
+            <Button
+                android:id="@+id/btn_add_playlist"
+                android:layout_width="wrap_content"
+                android:layout_height="35dp"
+                android:text="@string/ajouter_une_playlist"
+                android:textSize="12sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.986"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <ImageView
+                android:id="@+id/iv_playlist_filter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:contentDescription="@string/button_to_select_filter_for_listview"
+                android:src="@drawable/ic_filter_black"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.013"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
         <View
             android:background="@android:color/darker_gray"
             android:layout_width="match_parent"

@@ -30,6 +30,8 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.Objects;
 
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import fr.crt.dc.ngn.soundroid.R;
 import fr.crt.dc.ngn.soundroid.utility.RootList;
 import fr.crt.dc.ngn.soundroid.adapter.SongAdapter;
@@ -57,6 +59,8 @@ public class AllTracksFragment extends Fragment {
     private ImageView ivButtonFilter;
     private SongAdapter adapter;
     private View vSearchButton;
+    private ImageView ivButtonAccessHistory;
+    private ImageView ivButtonAccessPlaylists;
 
     private static AllTracksFragment context;
 
@@ -114,6 +118,9 @@ public class AllTracksFragment extends Fragment {
         this.shuffleButton = v.findViewById(R.id.button2);
         this.toShuffle();
 
+        this.ivButtonAccessHistory = v.findViewById(R.id.iv_list_go_history);
+        this.ivButtonAccessPlaylists = v.findViewById(R.id.iv_list_go_playlists);
+
         this.constraintLayout = Objects.requireNonNull(getActivity()).findViewById(R.id.crt_layout);
         this.toolbarController = new ToolbarController(getActivity(), constraintLayout);
         int sizeAdapter = this.lv.getAdapter().getCount();
@@ -139,13 +146,28 @@ public class AllTracksFragment extends Fragment {
 
     }
 
-    private void installOnItemClickListener () {
+    private void installOnItemClickListener() {
 
         lv.setOnItemClickListener((parent, view, position, id) -> {
             this.songService.setCurrentSong(position);
             this.songService.playOrPauseSong();
             this.toolbarController.setImagePauseFromFragment();
             this.toolbarController.setWidgetsValues();
+        });
+
+
+        this.ivButtonAccessHistory.setOnClickListener(v -> {
+            FragmentTransaction fragmentTransaction = getParentFragmentManager().beginTransaction();
+            Log.d("AlltracksFragment", "click here ! ");
+            fragmentTransaction.replace(R.id.nav_host_fragment, new HistoryFragment());
+            fragmentTransaction.commit();
+        });
+
+        this.ivButtonAccessPlaylists.setOnClickListener(v -> {
+            FragmentTransaction fragmentTransaction = getParentFragmentManager().beginTransaction();
+            Log.d("AlltracksFragment", "click here ! ");
+            fragmentTransaction.replace(R.id.nav_host_fragment, new PlaylistFragment());
+            fragmentTransaction.commit();
         });
     }
 
@@ -196,13 +218,13 @@ public class AllTracksFragment extends Fragment {
     public void onDestroy() {
         Log.d("cycle life of fragment", "i'm inside onDestroy");
         this.toolbarController = null;
-        this.doUnbindService();
+        //this.doUnbindService();
         super.onDestroy();
     }
 
 
     private void doBindService() {
-        if(intent == null) {
+        if (intent == null) {
             intent = new Intent(getContext(), SongService.class);
             Objects.requireNonNull(getContext()).bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
         }
@@ -233,8 +255,8 @@ public class AllTracksFragment extends Fragment {
         songService.playPreviousSong();
     }
 
-    private void toShuffle(){
-        this.shuffleButton.setOnClickListener(e->{
+    private void toShuffle() {
+        this.shuffleButton.setOnClickListener(e -> {
             this.songService.toShuffle();
             this.songService.playOrPauseSong();
             this.toolbarController.setWidgetsValues();

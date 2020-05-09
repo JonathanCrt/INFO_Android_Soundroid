@@ -49,4 +49,6 @@
     <string name="les_cout_s">Les plus écoutés</string>
     <string name="avec_tag">Avec tag</string>
     <string name="_0_chansons">0 chansons</string>
+    <string name="bouton_pour_ajouter_une_playlist">Bouton pour ajouter une playlist</string>
+    <string name="ajouter_une_playlist">Ajouter une playlist</string>
 </resources>

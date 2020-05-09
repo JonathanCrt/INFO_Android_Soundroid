@@ -1,6 +1,7 @@
 package fr.crt.dc.ngn.soundroid;
 
 import android.annotation.SuppressLint;
+import android.app.FragmentManager;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -93,7 +94,7 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbarPlayer = findViewById(R.id.toolbar_player);
 
         //launch Player Activity
-        //toolbarPlayer.setOnClickListener(v -> this.launchPlayerActivity());
+        toolbarPlayer.setOnClickListener(v -> this.launchPlayerActivity());
 
         // launch async task
         try {
@@ -285,7 +286,6 @@ public class MainActivity extends AppCompatActivity {
         });
 
     }
-
 
     public void requestToDatabase(int position){
         Song currentSong = null;

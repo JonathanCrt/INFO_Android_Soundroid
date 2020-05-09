@@ -64,14 +64,14 @@ public class SongService extends Service implements MediaPlayer.OnPreparedListen
 
     /**
      * Class that returns an instance of service
-      */
+     */
     public class SongBinder extends Binder {
         public SongService getService() {
             return SongService.this;
         }
     }
 
-    public SongService getSongService()  {
+    public SongService getSongService() {
         return SongService.this;
     }
 
@@ -79,13 +79,14 @@ public class SongService extends Service implements MediaPlayer.OnPreparedListen
     public void onCreate() {
         super.onCreate();
         this.songIndex = 0;
-        this.rand =new Random();
+        this.rand = new Random();
         this.player = new MediaPlayer();
         this.player.setAudioAttributes(new AudioAttributes.Builder()
                 .setUsage(AudioAttributes.USAGE_MEDIA)
                 .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
                 .build());
         this.createNotificationChannel();
+
     }
 
     @Nullable
@@ -194,9 +195,7 @@ public class SongService extends Service implements MediaPlayer.OnPreparedListen
     }
 
     @Override
-    public void onCompletion(MediaPlayer mp) {
-
-    }
+    public void onCompletion(MediaPlayer mp) { }
 
     @Override
     public boolean onError(MediaPlayer mp, int what, int extra) {
@@ -204,8 +203,6 @@ public class SongService extends Service implements MediaPlayer.OnPreparedListen
         this.player.reset();
         return false;
     }
-
-
 
 
     private void initializeSong() {
@@ -263,16 +260,17 @@ public class SongService extends Service implements MediaPlayer.OnPreparedListen
     }
 
     /**
-     *  permet de gerer le mode aleatoire des music a lancer
+     * permet de gerer le mode aleatoire des music a lancer
      * Permet de gérer le contrôle suivant
      * On incrémente  l'index de la chanson,
      * vérifier que nous ne sommes pas allés en dehors de la plage de la liste,
      * et on appelle la méthode playSong()
      */
     public void playNextSong() {
-        if(this.isShuffled){
+
+        if (this.isShuffled) {
             int currentSong = this.songIndex;
-            while(currentSong == this.songIndex){
+            while (currentSong == this.songIndex) {
                 currentSong = rand.nextInt(playlistSongs.size());
             }
             this.songIndex = currentSong;
@@ -300,39 +298,38 @@ public class SongService extends Service implements MediaPlayer.OnPreparedListen
 
 
     //public void shuffleSongList(){
-       //ArrayList<Song> playlistSongToBeShuffled = new ArrayList<>();
+    //ArrayList<Song> playlistSongToBeShuffled = new ArrayList<>();
 
-        //playlistSongToBeShuffled.addAll(this.playlistSongs); //copy playListSong in it, try to UNSHUFFLE
-        //if(this.isShuffled == false){
-            //Collections.shuffle(playlistSongToBeShuffled); //shuffle the copy
-            //setPlaylistSongs(playlistSongToBeShuffled); //set the copy
-          //  this.isShuffled = true;
+    //playlistSongToBeShuffled.addAll(this.playlistSongs); //copy playListSong in it, try to UNSHUFFLE
+    //if(this.isShuffled == false){
+    //Collections.shuffle(playlistSongToBeShuffled); //shuffle the copy
+    //setPlaylistSongs(playlistSongToBeShuffled); //set the copy
+    //  this.isShuffled = true;
 
-        //}else{
-            //hos to reset the playlistSong
-          //  setPlaylistSongs(this.playlistSongs);   //set the initial playListSong to unshuffle
-        //    this.isShuffled = false;                //is not shuffled anymore
-      //  }
+    //}else{
+    //hos to reset the playlistSong
+    //  setPlaylistSongs(this.playlistSongs);   //set the initial playListSong to unshuffle
+    //    this.isShuffled = false;                //is not shuffled anymore
+    //  }
 
     //}
 
 
-    public void toShuffle(){
-        if(this.isShuffled) {
-            this.isShuffled=false;
-        }
-        else{
+    public void toShuffle() {
+        if (this.isShuffled) {
+            this.isShuffled = false;
+        } else {
             this.isShuffled = true;
         }
         Log.d("SHUFFLE", "to shuffle " + this.isShuffled);
 
     }
+
     public void handleSeekBar(int progression, boolean isfromUser) {
-        if(player != null && isfromUser) {
+        if (player != null && isfromUser) {
             player.seekTo(progression * 1000);
         }
     }
-
 
 
     public int getSongIndex() {

@@ -145,6 +145,18 @@ public class PlayerActivity extends AppCompatActivity {
             connectionEstablished = true;
             runUIThreadToSetProgressSeekBar();
             setWidgetsValues(currentTitleReceived, currentArtisteReceived, currentNoteReceived, currentArtworkReceived, currentDurationReceived);
+            songService.getPlayer().setOnCompletionListener(mp -> {
+                if(songService.getSongIndex() + 1 < songService.getPlaylistSongs().size()) {
+                    songService.playNextSong();
+                    setWidgetsValues(
+                            songService.getPlaylistSongs().get(songService.getSongIndex()).getTitle(),
+                            songService.getPlaylistSongs().get(songService.getSongIndex()).getArtist(),
+                            songService.getPlaylistSongs().get(songService.getSongIndex()).getRating(),
+                            Utility.convertByteToBitmap(songService.getPlaylistSongs().get(songService.getSongIndex()).getArtwork()),
+                            songService.getPlaylistSongs().get(songService.getSongIndex()).getDuration()
+                    );
+                }
+            });
         }
 
         @Override
