@@ -2,22 +2,32 @@ package fr.crt.dc.ngn.soundroid;
 
 import android.annotation.SuppressLint;
 import android.app.FragmentManager;
+import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.ServiceConnection;
+import android.database.Cursor;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.provider.ContactsContract;
+import android.speech.tts.TextToSpeech;
+import android.telephony.SmsMessage;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.webkit.URLUtil;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.RadioGroup;
 import android.widget.Toast;
+import android.widget.ToggleButton;
 
 import com.google.android.material.navigation.NavigationView;
 
@@ -27,6 +37,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
@@ -38,6 +49,7 @@ import androidx.appcompat.widget.Toolbar;
 
 import fr.crt.dc.ngn.soundroid.adapter.SongAdapter;
 import fr.crt.dc.ngn.soundroid.database.SoundroidDatabase;
+import fr.crt.dc.ngn.soundroid.tts.Speaker;
 import fr.crt.dc.ngn.soundroid.utility.RootList;
 import fr.crt.dc.ngn.soundroid.database.entity.Song;
 import fr.crt.dc.ngn.soundroid.service.SongService;
@@ -61,6 +73,14 @@ public class MainActivity extends AppCompatActivity {
     private boolean[] checkedItems;
     private int selectedCriteria = 0;
 
+    //TextToSpeech API
+    private final int CHECK_CODE = 0x1;
+    private final int LONG_DURATION = 10000;
+    private final int SHORT_DURATION = 2000;
+    private Speaker speaker;
+    private Button toggleButton;
+
+    private BroadcastReceiver smsReceiver;
 
     public static Context getAppContext() {
         return MainActivity.context;
@@ -105,7 +125,7 @@ public class MainActivity extends AppCompatActivity {
                 // first launch of the app
                 Log.i("LOG", "First launch of the app");
 
-            } else{
+            } else {
                 Log.i("LOG", "already LAUNCHED");
                 // test to delete all in DB and restart with a new DB clean
                 /*
@@ -143,12 +163,19 @@ public class MainActivity extends AppCompatActivity {
         //Log.i("MainActivity DB" , "" + database.playlistDao().getAllPlayLists());
 
 
-
         this.listCriteria = getResources().getStringArray(R.array.search_criteria);
         this.checkedItems = new boolean[listCriteria.length];
 
-    }
+        this.toggleButton = findViewById(R.id.speechToogle);
 
+        this.toggleButton.setOnClickListener(v-> {
+            speaker.speakText("Bonjour !");
+        });
+        this.checkTTS();
+        this.initializeSMSReceiver();
+        this.registerSMSReceiver();
+
+    }
 
     @Override
     protected void onStart() {
@@ -175,6 +202,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         doUnbindService();
+        unregisterReceiver(this.smsReceiver);
+        this.speaker.shutdownTTS();
     }
 
     public void doBindService() {
@@ -244,10 +273,10 @@ public class MainActivity extends AppCompatActivity {
     };
 
 
-    public void monoSearch(MenuItem item){
-        item = item.setOnMenuItemClickListener(l->{
+    public void monoSearch(MenuItem item) {
+        item = item.setOnMenuItemClickListener(l -> {
             Log.d("SEARCH", "onCreateOptionsMenu: HERE");
-            AlertDialog.Builder mBuilder =  new AlertDialog.Builder(this);
+            AlertDialog.Builder mBuilder = new AlertDialog.Builder(this);
             mBuilder.setTitle("search a song");
 
             final EditText input = new EditText(this);
@@ -259,7 +288,7 @@ public class MainActivity extends AppCompatActivity {
             //String userInput = input.getText().toString();
 
             mBuilder.setMultiChoiceItems(this.listCriteria, this.checkedItems, (dialog, position, isChecked) -> {
-                if(isChecked){
+                if (isChecked) {
                     selectedCriteria = position;
                     Log.i("SELECT", "onClick: position : " + position);
 
@@ -277,9 +306,9 @@ public class MainActivity extends AppCompatActivity {
             dialog.setOnShowListener(arg0 -> dialog.getButton(AlertDialog.BUTTON_POSITIVE).setBackgroundColor(Color.RED));
             mBuilder.show();
 
-           // Button positiveButton = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
-           // positiveButton.setTextColor(Color.parseColor("#FF0B8B42"));
-           // positiveButton.setBackgroundColor(Color.parseColor("#FFE1FCEA"));
+            // Button positiveButton = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
+            // positiveButton.setTextColor(Color.parseColor("#FF0B8B42"));
+            // positiveButton.setBackgroundColor(Color.parseColor("#FFE1FCEA"));
 
 
             return true;
@@ -287,9 +316,9 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    public void requestToDatabase(int position){
+    public void requestToDatabase(int position) {
         Song currentSong = null;
-        switch (position){
+        switch (position) {
             case 0:
                 currentSong = this.soundroidDatabase.songDao().findByTitle("Centuries");
                 Log.i("RESULT", "CURRENT SONG PLAYED by TITLE: " + currentSong);
@@ -304,4 +333,72 @@ public class MainActivity extends AppCompatActivity {
                 break;
         }
     }
+
+    private void checkTTS() {
+        Log.d("MainActivity tts", "checkTTS");
+        Intent intentCheck = new Intent();
+        intentCheck.setAction(TextToSpeech.Engine.ACTION_CHECK_TTS_DATA);
+        startActivityForResult(intentCheck, CHECK_CODE);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        Log.d("Mainctivity tts", "onActivityResult");
+        if (requestCode == CHECK_CODE) {
+            if (resultCode == TextToSpeech.Engine.CHECK_VOICE_DATA_PASS) {
+                Log.d("Mainctivity tts", "new Speaker");
+                this.speaker = new Speaker(this);
+            } else {
+                Intent install = new Intent();
+                install.setAction(TextToSpeech.Engine.ACTION_INSTALL_TTS_DATA);
+                startActivity(install);
+            }
+        }
+    }
+
+    private void initializeSMSReceiver() {
+        Log.d("Mainctivity tts", "initializeSMSReceiver");
+        this.smsReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                Log.d("Mainctivity tts", "onReceive");
+                Bundle bundle = intent.getExtras();
+                if (bundle != null) {
+                    Object[] pdus = (Object[]) bundle.get("pdus");
+                    assert pdus != null;
+                    for (Object o : pdus) {
+                        byte[] pdu = (byte[]) o;
+                        SmsMessage message = SmsMessage.createFromPdu(pdu);
+                        String text = message.getDisplayMessageBody();
+                        String sender = getContactName(message.getOriginatingAddress());
+                        speaker.pause(LONG_DURATION);
+                        speaker.speakText("Vous avez reçu un message de " + sender + "!");
+                        speaker.pause(SHORT_DURATION);
+                        speaker.speakText(text);
+                    }
+                }
+
+            }
+        };
+    }
+
+    private String getContactName(String phone) {
+        Uri uri = Uri.withAppendedPath(ContactsContract.PhoneLookup.CONTENT_FILTER_URI, Uri.encode(phone));
+        String[] projection = new String[]{ContactsContract.Data.DISPLAY_NAME};
+        Cursor cursor = getContentResolver().query(uri, projection, null, null, null);
+        assert cursor != null;
+        if (cursor.moveToFirst()) {
+            return cursor.getString(0);
+        } else {
+            return "numéro inconuu";
+        }
+    }
+
+    private void registerSMSReceiver() {
+        Log.d("Mainctivity tts", "registerSMSReceiver");
+        IntentFilter intentFilter = new IntentFilter("android.provider.Telephony.SMS_RECEIVED");
+        registerReceiver(smsReceiver, intentFilter);
+    }
+
 }
