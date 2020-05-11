@@ -3,6 +3,8 @@ package fr.crt.dc.ngn.soundroid.fragment;
 import android.app.AlertDialog;
 import android.os.Bundle;
 
+import androidx.appcompat.app.AlertDialog;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
 import android.os.Handler;
