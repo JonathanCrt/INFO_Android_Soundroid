@@ -51,4 +51,11 @@ public class Playlist {
     public void setAutomatic(boolean automatic) {
         isAutomatic = automatic;
     }
+
+    @Override
+    public String toString() {
+        return "Playlist{" +
+                " name='" + name + '\'' +
+                '}';
+    }
 }

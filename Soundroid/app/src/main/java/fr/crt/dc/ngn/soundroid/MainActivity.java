@@ -161,7 +161,7 @@ public class MainActivity extends AppCompatActivity {
          */
 
         //Log.i("MainActivity DB" , "" + database.playlistDao().getAllPlayLists());
-
+        //this.soundroidDatabase.playlistDao().deleteOnePlayList("poooooooooop");
 
         this.listCriteria = getResources().getStringArray(R.array.search_criteria);
         this.checkedItems = new boolean[listCriteria.length];

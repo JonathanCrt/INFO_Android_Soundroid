@@ -51,9 +51,7 @@ public class AllTracksFragment extends Fragment {
     private Intent intent;
     private boolean connectionEstablished;
     private boolean isOnBackground;
-    private TextView tvNumberOfSongs;
     private ListView lv;
-    private ConstraintLayout constraintLayout;
     private ToolbarController toolbarController;
     private Button shuffleButton;
     private ImageView ivButtonFilter;
@@ -87,6 +85,7 @@ public class AllTracksFragment extends Fragment {
         super.onCreate(savedInstanceState);
         initialization();
 
+        /*
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (checkSelfPermission(Objects.requireNonNull(this.getContext()), Manifest.permission.READ_EXTERNAL_STORAGE)
                     != PackageManager.PERMISSION_GRANTED) {
@@ -97,33 +96,29 @@ public class AllTracksFragment extends Fragment {
                 requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
             }
         }
+         */
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         this.playlistSongs = RootList.getRootList();
-        //Playlist playlist = new Playlist("Root");
-        // create personal adapter
-        //playlist.setSongList(this.playlistSongs);
+
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_all_tracks, container, false);
-        this.tvNumberOfSongs = v.findViewById(R.id.tv_list_number_songs);
 
         lv = v.findViewById(R.id.list_songs);
+        // create personal adapter
         adapter = RootList.getSongAdapter();
         lv.setAdapter(adapter);
-        //Log.i("LOG", "" + adapter.getCount());
 
         this.shuffleButton = v.findViewById(R.id.button2);
         this.toShuffle();
 
         this.ivButtonAccessHistory = v.findViewById(R.id.iv_list_go_history);
         this.ivButtonAccessPlaylists = v.findViewById(R.id.iv_list_go_playlists);
-
-        this.constraintLayout = Objects.requireNonNull(getActivity()).findViewById(R.id.crt_layout);
+        ConstraintLayout constraintLayout = Objects.requireNonNull(getActivity()).findViewById(R.id.crt_layout);
         this.toolbarController = new ToolbarController(getActivity(), constraintLayout);
-        int sizeAdapter = this.lv.getAdapter().getCount();
         this.installOnItemClickListener();
         return v;
     }
@@ -155,7 +150,6 @@ public class AllTracksFragment extends Fragment {
             this.toolbarController.setWidgetsValues();
         });
 
-
         this.ivButtonAccessHistory.setOnClickListener(v -> {
             FragmentTransaction fragmentTransaction = getParentFragmentManager().beginTransaction();
             Log.d("AlltracksFragment", "click here ! ");
@@ -182,8 +176,6 @@ public class AllTracksFragment extends Fragment {
         Log.i("intent value: ", "" + intent);
         this.doBindService();
         Toast.makeText(this.getContext(), "PlayList size: " + RootList.getRootList().size(), Toast.LENGTH_SHORT).show();
-        //this.tvNumberOfSongs.setText(String.valueOf(RootList.getRootList().size()));
-
     }
 
     /**
@@ -262,12 +254,6 @@ public class AllTracksFragment extends Fragment {
             this.toolbarController.setWidgetsValues();
         });
     }
-    /**
-     * set the song position
-     * as a flag for each element of view from the list
-     * it is associated with the tag onclick from the layout
-     */
-
 
     /**
      * Connection to service
@@ -280,9 +266,9 @@ public class AllTracksFragment extends Fragment {
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
             SongService.SongBinder songBinder = (SongService.SongBinder) service;
-            // Permet de récupérer le service
+            // Retrieves service
             songService = songBinder.getService();
-            // Permet de passer au service l'ArrayList
+            // Toggles serving the arraylist
             songService.setPlaylistSongs(playlistSongs);
             connectionEstablished = true;
         }
