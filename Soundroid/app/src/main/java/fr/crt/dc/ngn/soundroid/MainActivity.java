@@ -25,6 +25,8 @@ import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.ListAdapter;
+import android.widget.ListView;
 import android.widget.RadioGroup;
 import android.widget.Toast;
 import android.widget.ToggleButton;
@@ -72,6 +74,7 @@ public class MainActivity extends AppCompatActivity {
     private String[] listCriteria;
     private boolean[] checkedItems;
     private int selectedCriteria = 0;
+    private ListView searchList;
 
     //TextToSpeech API
     private final int CHECK_CODE = 0x1;
@@ -164,6 +167,7 @@ public class MainActivity extends AppCompatActivity {
 
         this.listCriteria = getResources().getStringArray(R.array.search_criteria);
         this.checkedItems = new boolean[listCriteria.length];
+        this.searchList = findViewById(R.id.list_songs);
 
         this.toggleButton = findViewById(R.id.speechToogle);
 
@@ -326,6 +330,7 @@ public class MainActivity extends AppCompatActivity {
                 break;
             case 1:
                 List<Song> list = this.soundroidDatabase.songDao().findAllByArtist(userInput);
+               // this.searchList.setAdapter((ListAdapter) list);
                 Log.i("RESULT", "CURRENT SONG PLAYED by ARTIST: " + list);
                 break;
             case 2:
