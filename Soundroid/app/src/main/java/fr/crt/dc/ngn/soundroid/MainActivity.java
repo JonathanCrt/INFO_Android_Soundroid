@@ -329,13 +329,15 @@ public class MainActivity extends AppCompatActivity {
                 Log.i("RESULT", "CURRENT SONG PLAYED by TITLE: " + currentSong);
                 break;
             case 1:
-                List<Song> list = this.soundroidDatabase.songDao().findAllByArtist(userInput);
+                List<Song> artistList = this.soundroidDatabase.songDao().findAllByArtist(userInput);
+                Intent intent = new Intent(this, SearchActivity.class);
+                startActivity(intent);
                // this.searchList.setAdapter((ListAdapter) list);
-                Log.i("RESULT", "CURRENT SONG PLAYED by ARTIST: " + list);
+                Log.i("RESULT", "CURRENT SONG PLAYED by ARTIST: " + artistList);
                 break;
             case 2:
-                List<Song> list2 = this.soundroidDatabase.songDao().findAllByAlbum(userInput);
-                Log.i("RESULT", "CURRENT SONG PLAYED by ARTIST: " + list2);
+                List<Song> albumList = this.soundroidDatabase.songDao().findAllByAlbum(userInput);
+                Log.i("RESULT", "CURRENT SONG PLAYED by ARTIST: " + albumList);
                 break;
         }
     }
