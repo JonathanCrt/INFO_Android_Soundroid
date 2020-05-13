@@ -3,7 +3,6 @@ package fr.crt.dc.ngn.soundroid.fragment;
 import android.app.AlertDialog;
 import android.os.Bundle;
 
-import androidx.appcompat.app.AlertDialog;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
@@ -12,11 +11,13 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.w3c.dom.Text;
 
@@ -81,6 +82,7 @@ public class PlaylistFragment extends Fragment {
         this.playlistAdapter = new PlaylistAdapter(getContext(), playlists);
         this.lvPlayLists.setAdapter(this.playlistAdapter);
         this.installOnAddPlaylistButtonListener();
+        this.installOnLongItemClickListener();
         return v;
     }
 
@@ -103,7 +105,8 @@ public class PlaylistFragment extends Fragment {
                 } else {
                     this.soundroidDatabaseInstance.playlistDao().insertPlayList(new Playlist(playlistName));
                     Log.d("PlaylistFragment add playlist", this.soundroidDatabaseInstance.playlistDao().getAllPlayLists().toString());
-                    this.playlistAdapter.clear();
+                    this.playlists.clear();
+                    this.playlists.addAll(this.soundroidDatabaseInstance.playlistDao().getAllPlayLists());
                     this.playlistAdapter.notifyDataSetChanged();
                 }
 
@@ -116,5 +119,12 @@ public class PlaylistFragment extends Fragment {
 
     }
 
+    private void installOnLongItemClickListener() {
 
+        this.lvPlayLists.setOnItemLongClickListener((arg0, arg1, pos, id) -> {
+            Log.d("long clicked","pos: " + pos);
+            String res = "long clicked" + " pos: " + pos;
+            return true;
+        });
+    }
 }
