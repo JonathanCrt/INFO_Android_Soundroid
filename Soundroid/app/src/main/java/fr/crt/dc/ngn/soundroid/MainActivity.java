@@ -166,7 +166,10 @@ public class MainActivity extends AppCompatActivity {
          */
 
 
+        //Log.i("MainActivity DB Junction" , "" + this.soundroidDatabase.junctionDAO().getAllJunctions());
         //Log.i("MainActivity DB" , "" + database.playlistDao().getAllPlayLists());
+
+        //this.soundroidDatabase.playlistDao().deleteOnePlayListByName("Playlist test");
 
         this.listCriteria = getResources().getStringArray(R.array.search_criteria);
         this.checkedItems = new boolean[listCriteria.length];
@@ -281,7 +284,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void monoSearch(MenuItem item) {
         item = item.setOnMenuItemClickListener(l -> {
-            Log.d("SEARCH", "onCreateOptionsMenu: HERE");
+            //Log.d("SEARCH", "onCreateOptionsMenu: HERE");
             AlertDialog.Builder mBuilder = new AlertDialog.Builder(this);
             mBuilder.setTitle("search a song");
 
@@ -347,7 +350,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void checkTTS() {
-        Log.d("MainActivity tts", "checkTTS");
+        //Log.d("MainActivity tts", "checkTTS");
         Intent intentCheck = new Intent();
         intentCheck.setAction(TextToSpeech.Engine.ACTION_CHECK_TTS_DATA);
         startActivityForResult(intentCheck, CHECK_CODE);
@@ -356,10 +359,10 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        Log.d("Mainctivity tts", "onActivityResult");
+        //Log.d("Mainctivity tts", "onActivityResult");
         if (requestCode == CHECK_CODE) {
             if (resultCode == TextToSpeech.Engine.CHECK_VOICE_DATA_PASS) {
-                Log.d("Mainctivity tts", "new Speaker");
+                //Log.d("Mainctivity tts", "new Speaker");
                 this.speaker = new Speaker(this);
             } else {
                 Intent install = new Intent();
@@ -370,11 +373,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initializeSMSReceiver() {
-        Log.d("Mainctivity tts", "initializeSMSReceiver");
+        //Log.d("Mainctivity tts", "initializeSMSReceiver");
         this.smsReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
-                Log.d("Mainctivity tts", "onReceive");
+                //Log.d("Mainctivity tts", "onReceive");
                 Bundle bundle = intent.getExtras();
                 if (bundle != null) {
                     Object[] pdus = (Object[]) bundle.get("pdus");
@@ -408,7 +411,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void registerSMSReceiver() {
-        Log.d("Mainctivity tts", "registerSMSReceiver");
+        //Log.d("Mainctivity tts", "registerSMSReceiver");
         IntentFilter intentFilter = new IntentFilter("android.provider.Telephony.SMS_RECEIVED");
         registerReceiver(smsReceiver, intentFilter);
     }

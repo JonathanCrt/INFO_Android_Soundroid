@@ -32,7 +32,7 @@ public interface PlaylistDao {
     void deletePlaylist(Playlist playlist);
 
     @Query("DELETE FROM Playlist WHERE name = :name")
-    void deleteOnePlayList(String name);
+    void deleteOnePlayListByName(String name);
 
     @Query("DELETE FROM Playlist")
     void deleteAll();

@@ -7,8 +7,11 @@ import androidx.room.Delete;
 import androidx.room.Insert;
 import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
+import androidx.room.Transaction;
 import androidx.room.Update;
 import fr.crt.dc.ngn.soundroid.database.entity.Song;
+import fr.crt.dc.ngn.soundroid.database.relation.PlaylistWithSongs;
+import fr.crt.dc.ngn.soundroid.database.relation.SongWithPlaylists;
 
 /**
  * Created by CRETE JONATHAN on 01/05/2020.
@@ -22,8 +25,8 @@ public interface SongDao {
     @Query("SELECT * FROM Song WHERE title= :title")
     Song findByTitle(String title);
 
-    @Query("SELECT * FROM Song WHERE id= :id")
-    Song findById(long id);
+    @Query("SELECT * FROM Song WHERE songId= :songId")
+    Song findById(long songId);
 
     @Query("SELECT * FROM Song WHERE artist= :artist")
     List<Song> findAllByArtist(String artist);
@@ -51,14 +54,14 @@ public interface SongDao {
     @Update
     void updateSong(Song song);
 
-    @Query("UPDATE Song SET rating = :rating WHERE id = :id")
-    void updateSongRatingById(int rating, long id);
+    @Query("UPDATE Song SET rating = :rating WHERE songId = :songId")
+    void updateSongRatingById(int rating, long songId);
 
     @Query("UPDATE Song SET rating = :rating WHERE title = :title")
     void updateSongRatingByTitle(int rating, String title);
 
-    @Query("UPDATE Song SET tag = :tag WHERE id = :id")
-    void updateSongTagById(String tag, long id);
+    @Query("UPDATE Song SET tag = :tag WHERE songId = :songId")
+    void updateSongTagById(String tag, long songId);
 
     @Query("UPDATE Song SET tag = :tag WHERE title = :title")
     void updateSongTagByTitle(String tag, String title);
@@ -68,4 +71,13 @@ public interface SongDao {
 
     @Query("DELETE FROM Song")
     void deleteAll();
+
+    @Transaction
+    @Query("SELECT * FROM Playlist")
+    public List<PlaylistWithSongs> getPlaylistsWithSongs();
+
+    @Transaction
+    @Query("SELECT * FROM Song")
+    public List<SongWithPlaylists> getSongsWithPlaylists();
+
 }

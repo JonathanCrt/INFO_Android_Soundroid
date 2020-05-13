@@ -13,13 +13,17 @@ import androidx.room.PrimaryKey;
  * Created by CRETE JONATHAN on 01/05/2020.
  */
 
+/*
 @Entity(foreignKeys = @ForeignKey(entity = Playlist.class, parentColumns = "id", childColumns = "playlist_id"), indices = {
         @Index("title"), @Index("playlist_id")
 })
+
+ */
+@Entity(indices = @Index("title"))
 public class Song {
 
     @PrimaryKey
-    private long id;
+    private long songId;
 
     @ColumnInfo(name= "title")
     private String title;
@@ -50,9 +54,11 @@ public class Song {
 
     @ColumnInfo(name = "footprint")
     private String footprint;
-
+    /*
     @ColumnInfo(name = "playlist_id")
     private long playlistId;
+
+     */
 
     @ColumnInfo(name = "artwork")
     private byte[] artwork;
@@ -60,7 +66,7 @@ public class Song {
     public Song() {}
 
     public Song(long ID, String title, String artist, long duration, byte[] artwork, String style, String album, String link, String footprint) {
-        this.id = ID;
+        this.songId = ID;
         this.title = title;
         this.artist = artist;
         this.duration = duration;
@@ -72,16 +78,16 @@ public class Song {
         this.rating = 0;
         this.link = link;
         this.footprint = footprint;
-        this.playlistId = 1;
+        //this.playlistId = 1;
     }
 
 
-    public long getId() {
-        return id;
+    public long getSongId() {
+        return songId;
     }
 
-    public void setId(long id) {
-        this.id = id;
+    public void setSongId(long songId) {
+        this.songId = songId;
     }
 
     public String getTitle() {
@@ -172,6 +178,7 @@ public class Song {
         this.footprint = footprint;
     }
 
+    /*
     public long getPlaylistId() {
         return playlistId;
     }
@@ -180,6 +187,7 @@ public class Song {
         this.playlistId = playlistId;
     }
 
+     */
     public static String convertDuration(long duration){
         long minutes = (duration / 1000 ) / 60;
         long seconds = (duration / 1000 ) % 60;
@@ -198,7 +206,7 @@ public class Song {
     @Override
     public String toString() {
         return "Song{" +
-                "id=" + id +
+                "id=" + songId +
                 ", title='" + title + '\'' +
                 ", artist='" + artist + '\'' +
                 ", rating='" + rating + '\'' +

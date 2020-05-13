@@ -6,6 +6,5 @@ import androidx.room.Entity;
 public class JunctionPlaylistSong {
     public long playlistId;
     public long songId;
-
 }
 

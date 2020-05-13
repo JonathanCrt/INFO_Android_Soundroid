@@ -36,7 +36,7 @@ public class DBAsyncTask extends AsyncTask<Void, Void, PlaylistDao> {
         playlistDao.deleteAll();
         songDao.deleteAll();
         Playlist playlist = new Playlist("root");
-        Log.d("LOG", "playlist ID = " + playlist.getId());
+        Log.d("LOG", "playlist ID = " + playlist.getPlaylistId());
         playlistDao.insertPlayList(playlist);
         Log.d("LOG SIZE", String.valueOf(playlistDao.getAllPlayLists().size()));
         return playlistDao;

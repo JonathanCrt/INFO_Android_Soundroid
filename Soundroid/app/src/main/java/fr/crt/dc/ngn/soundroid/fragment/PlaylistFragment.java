@@ -24,6 +24,7 @@ import org.w3c.dom.Text;
 import java.util.ArrayList;
 import java.util.List;
 
+import androidx.fragment.app.FragmentTransaction;
 import fr.crt.dc.ngn.soundroid.R;
 import fr.crt.dc.ngn.soundroid.adapter.PlaylistAdapter;
 import fr.crt.dc.ngn.soundroid.database.SoundroidDatabase;
@@ -83,6 +84,11 @@ public class PlaylistFragment extends Fragment {
         this.lvPlayLists.setAdapter(this.playlistAdapter);
         this.installOnAddPlaylistButtonListener();
         this.installOnLongItemClickListener();
+
+        Log.d("PlaylistFragment all songs", this.soundroidDatabaseInstance.songDao().getAllSongs().toString());
+        Log.d("PlaylistFragment all playlists", this.soundroidDatabaseInstance.playlistDao().getAllPlayLists().toString());
+        Log.d("PlaylistFragment songs into Playlist", this.soundroidDatabaseInstance.junctionDAO().getPlaylistsWithSongs().toString());
+        Log.d("PlaylistFragment songs for playlist n°2", this.soundroidDatabaseInstance.junctionDAO().findAllSongsByPlaylistId(2).toString());
         return v;
     }
 
@@ -105,6 +111,7 @@ public class PlaylistFragment extends Fragment {
                 } else {
                     this.soundroidDatabaseInstance.playlistDao().insertPlayList(new Playlist(playlistName));
                     Log.d("PlaylistFragment add playlist", this.soundroidDatabaseInstance.playlistDao().getAllPlayLists().toString());
+                    Log.d("PlaylistFragment songs into Playlist", this.soundroidDatabaseInstance.junctionDAO().getPlaylistsWithSongs().toString());
                     this.playlists.clear();
                     this.playlists.addAll(this.soundroidDatabaseInstance.playlistDao().getAllPlayLists());
                     this.playlistAdapter.notifyDataSetChanged();
@@ -123,7 +130,10 @@ public class PlaylistFragment extends Fragment {
 
         this.lvPlayLists.setOnItemLongClickListener((arg0, arg1, pos, id) -> {
             Log.d("long clicked","pos: " + pos);
-            String res = "long clicked" + " pos: " + pos;
+            FragmentTransaction fragmentTransaction = getParentFragmentManager().beginTransaction();
+            fragmentTransaction.replace(R.id.nav_host_fragment, new PlaylistFragmentDetail())
+            .addToBackStack(null)
+            .commit();
             return true;
         });
     }

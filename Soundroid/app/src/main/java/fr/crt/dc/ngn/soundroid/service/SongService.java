@@ -208,7 +208,7 @@ public class SongService extends Service implements MediaPlayer.OnPreparedListen
     private void initializeSong() {
         this.player.reset();
         Song currentSong = playlistSongs.get(songIndex);
-        long currentSongID = currentSong.getId();
+        long currentSongID = currentSong.getSongId();
         Log.i("SongService", "Current song to play = " + currentSong);
         Uri songUri = Uri.parse(currentSong.getLink());
 

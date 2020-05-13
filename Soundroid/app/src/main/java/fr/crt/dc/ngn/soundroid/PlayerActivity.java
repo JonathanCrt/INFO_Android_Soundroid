@@ -236,7 +236,7 @@ public class PlayerActivity extends AppCompatActivity {
                         .setMessage("Le tag saisi est supérieur à 25 caractères ! ")
                         .show();
             } else {
-                this.soundroidDatabaseInstance.songDao().updateSongTagById(tag, this.songService.getPlaylistSongs().get(songService.getSongIndex()).getId());
+                this.soundroidDatabaseInstance.songDao().updateSongTagById(tag, this.songService.getPlaylistSongs().get(songService.getSongIndex()).getSongId());
                 Log.d("PlayerActivity add tag", this.soundroidDatabaseInstance.songDao().getAllSongs().toString());
             }
 
@@ -286,7 +286,7 @@ public class PlayerActivity extends AppCompatActivity {
                 ivNoteStarFour.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_outline_star_note));
                 ivNoteStarFive.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_outline_star_note));
                 this.songService.getPlaylistSongs().get(this.songService.getSongIndex()).setRating(1);
-                this.soundroidDatabaseInstance.songDao().updateSongRatingById(1, this.songService.getPlaylistSongs().get(this.songService.getSongIndex()).getId());
+                this.soundroidDatabaseInstance.songDao().updateSongRatingById(1, this.songService.getPlaylistSongs().get(this.songService.getSongIndex()).getSongId());
                 Log.d("PlayerActivity update Rating 1.", this.soundroidDatabaseInstance.songDao().getAllSongs().toString());
                 break;
             case 2:
@@ -296,7 +296,7 @@ public class PlayerActivity extends AppCompatActivity {
                 ivNoteStarFour.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_outline_star_note));
                 ivNoteStarFive.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_outline_star_note));
                 this.songService.getPlaylistSongs().get(this.songService.getSongIndex()).setRating(2);
-                this.soundroidDatabaseInstance.songDao().updateSongRatingById(2, this.songService.getPlaylistSongs().get(this.songService.getSongIndex()).getId());
+                this.soundroidDatabaseInstance.songDao().updateSongRatingById(2, this.songService.getPlaylistSongs().get(this.songService.getSongIndex()).getSongId());
                 Log.d("PlayerActivity update Rating 2.", this.soundroidDatabaseInstance.songDao().getAllSongs().toString());
                 break;
             case 3:
@@ -306,7 +306,7 @@ public class PlayerActivity extends AppCompatActivity {
                 ivNoteStarFour.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_outline_star_note));
                 ivNoteStarFive.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_outline_star_note));
                 this.songService.getPlaylistSongs().get(this.songService.getSongIndex()).setRating(3);
-                this.soundroidDatabaseInstance.songDao().updateSongRatingById(3, this.songService.getPlaylistSongs().get(this.songService.getSongIndex()).getId());
+                this.soundroidDatabaseInstance.songDao().updateSongRatingById(3, this.songService.getPlaylistSongs().get(this.songService.getSongIndex()).getSongId());
                 Log.d("PlayerActivity update Rating 3.", this.soundroidDatabaseInstance.songDao().getAllSongs().toString());
                 break;
             case 4:
@@ -316,7 +316,7 @@ public class PlayerActivity extends AppCompatActivity {
                 ivNoteStarFour.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_filled_star_note));
                 ivNoteStarFive.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_outline_star_note));
                 this.songService.getPlaylistSongs().get(this.songService.getSongIndex()).setRating(4);
-                this.soundroidDatabaseInstance.songDao().updateSongRatingById(4, this.songService.getPlaylistSongs().get(this.songService.getSongIndex()).getId());
+                this.soundroidDatabaseInstance.songDao().updateSongRatingById(4, this.songService.getPlaylistSongs().get(this.songService.getSongIndex()).getSongId());
                 Log.d("PlayerActivity update Rating 4.", this.soundroidDatabaseInstance.songDao().getAllSongs().toString());
                 break;
             case 5:
@@ -326,7 +326,7 @@ public class PlayerActivity extends AppCompatActivity {
                 ivNoteStarFour.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_filled_star_note));
                 ivNoteStarFive.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_filled_star_note));
                 this.songService.getPlaylistSongs().get(this.songService.getSongIndex()).setRating(5);
-                this.soundroidDatabaseInstance.songDao().updateSongRatingById(5, this.songService.getPlaylistSongs().get(this.songService.getSongIndex()).getId());
+                this.soundroidDatabaseInstance.songDao().updateSongRatingById(5, this.songService.getPlaylistSongs().get(this.songService.getSongIndex()).getSongId());
                 Log.d("PlayerActivity update Rating 5.", this.soundroidDatabaseInstance.songDao().getAllSongs().toString());
         }
 

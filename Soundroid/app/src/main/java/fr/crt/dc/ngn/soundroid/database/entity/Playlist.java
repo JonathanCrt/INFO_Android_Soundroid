@@ -12,7 +12,7 @@ import androidx.room.PrimaryKey;
 public class Playlist {
 
     @PrimaryKey(autoGenerate = true)
-    private long id;
+    private long playlistId;
 
     @ColumnInfo(name = "name")
     private String name;
@@ -28,12 +28,12 @@ public class Playlist {
         this.isAutomatic = false;   // playlist made with a search
     }
 
-    public long getId() {
-        return id;
+    public long getPlaylistId() {
+        return playlistId;
     }
 
-    public void setId(long id) {
-        this.id = id;
+    public void setPlaylistId(long playlistId) {
+        this.playlistId = playlistId;
     }
 
     public String getName() {
@@ -55,7 +55,8 @@ public class Playlist {
     @Override
     public String toString() {
         return "Playlist{" +
-                " name='" + name + '\'' +
+                "playlistId=" + playlistId +
+                ", name='" + name + '\'' +
                 '}';
     }
 }
