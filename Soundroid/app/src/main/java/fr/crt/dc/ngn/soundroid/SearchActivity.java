@@ -8,6 +8,8 @@ import android.widget.ListView;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 
+import fr.crt.dc.ngn.soundroid.adapter.SearchAdapter;
+
 public class SearchActivity extends AppCompatActivity {
 
     @Override
@@ -19,7 +21,7 @@ public class SearchActivity extends AppCompatActivity {
 
 
         //creation adapter
-
+        //SearchAdapter adapter = new SearchAdapter(this, R.layout.activity_search,)
         //on set adapter
 
     }

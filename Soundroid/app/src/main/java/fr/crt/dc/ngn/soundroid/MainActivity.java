@@ -331,6 +331,7 @@ public class MainActivity extends AppCompatActivity {
             case 1:
                 List<Song> artistList = this.soundroidDatabase.songDao().findAllByArtist(userInput);
                 Intent intent = new Intent(this, SearchActivity.class);
+                //intent.putExtra("artist",artistList);
                 startActivity(intent);
                // this.searchList.setAdapter((ListAdapter) list);
                 Log.i("RESULT", "CURRENT SONG PLAYED by ARTIST: " + artistList);
