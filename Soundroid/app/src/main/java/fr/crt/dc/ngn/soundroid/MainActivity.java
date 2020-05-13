@@ -25,6 +25,8 @@ import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.ListAdapter;
+import android.widget.ListView;
 import android.widget.RadioGroup;
 import android.widget.Toast;
 import android.widget.ToggleButton;
@@ -72,6 +74,7 @@ public class MainActivity extends AppCompatActivity {
     private String[] listCriteria;
     private boolean[] checkedItems;
     private int selectedCriteria = 0;
+    private ListView searchList;
 
     //TextToSpeech API
     private final int CHECK_CODE = 0x1;
@@ -161,10 +164,10 @@ public class MainActivity extends AppCompatActivity {
          */
 
         //Log.i("MainActivity DB" , "" + database.playlistDao().getAllPlayLists());
-        //this.soundroidDatabase.playlistDao().deleteOnePlayList("poooooooooop");
 
         this.listCriteria = getResources().getStringArray(R.array.search_criteria);
         this.checkedItems = new boolean[listCriteria.length];
+        this.searchList = findViewById(R.id.list_songs);
 
         this.toggleButton = findViewById(R.id.speechToogle);
 
@@ -285,7 +288,7 @@ public class MainActivity extends AppCompatActivity {
                     LinearLayout.LayoutParams.MATCH_PARENT);
             input.setLayoutParams(lp);
             mBuilder.setView(input);
-            //String userInput = input.getText().toString();
+
 
             mBuilder.setMultiChoiceItems(this.listCriteria, this.checkedItems, (dialog, position, isChecked) -> {
                 if (isChecked) {
@@ -298,7 +301,9 @@ public class MainActivity extends AppCompatActivity {
             mBuilder.setPositiveButton("GO", (dialog, which) -> {
                 Toast.makeText(MainActivity.this, "GO", Toast.LENGTH_SHORT).show();
                 //doit faire appelle a methode annexe et passe en aparametre la position
-                requestToDatabase(selectedCriteria);
+                String userInput = input.getText().toString();
+                Log.i("INPUT", "userInput:" + userInput);
+                requestToDatabase(selectedCriteria, userInput);
 
             });
 
@@ -316,20 +321,24 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    public void requestToDatabase(int position) {
+    public void requestToDatabase(int position, String userInput) {
         Song currentSong = null;
         switch (position) {
             case 0:
-                currentSong = this.soundroidDatabase.songDao().findByTitle("Centuries");
+                currentSong = this.soundroidDatabase.songDao().findByTitle(userInput);
                 Log.i("RESULT", "CURRENT SONG PLAYED by TITLE: " + currentSong);
                 break;
             case 1:
-                List<Song> list = this.soundroidDatabase.songDao().findAllByArtist("Sia");
-                Log.i("RESULT", "CURRENT SONG PLAYED by ARTIST: " + list);
+                List<Song> artistList = this.soundroidDatabase.songDao().findAllByArtist(userInput);
+                Intent intent = new Intent(this, SearchActivity.class);
+                //intent.putExtra("artist",artistList);
+                startActivity(intent);
+               // this.searchList.setAdapter((ListAdapter) list);
+                Log.i("RESULT", "CURRENT SONG PLAYED by ARTIST: " + artistList);
                 break;
             case 2:
-                List<Song> list2 = this.soundroidDatabase.songDao().findAllByAlbum("WINGS");
-                Log.i("RESULT", "CURRENT SONG PLAYED by ARTIST: " + list2);
+                List<Song> albumList = this.soundroidDatabase.songDao().findAllByAlbum(userInput);
+                Log.i("RESULT", "CURRENT SONG PLAYED by ARTIST: " + albumList);
                 break;
         }
     }
