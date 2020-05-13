@@ -154,14 +154,17 @@ public class MainActivity extends AppCompatActivity {
         //database.songDao().insertSong(new fr.crt.dc.ngn.soundroid.database.entity.Song(1, "Billie Jean", "Michael Jackson", 2503, "rep/artwork", "pop", "King of pop", "rep/...",  "89+79gs76g"));
 
         //Log.i("MainActivity SIZE" , "" + database.playlistDao().getAllPlayLists().size());
+        //soundroidDatabase.playlistDao().deleteAll();
 
         /*
-        for(int i = 0; i < database.playlistDao().getAllPlayLists().size(); i++) {
+        for(int i = 1; i < soundroidDatabase.playlistDao().getAllPlayLists().size(); i++) {
             Log.i("increment", " " + i);
-            Log.i("MainActivity NAME" , "" + database.playlistDao().getAllPlayLists().get(i).getName());
-        }
+            Log.i("MainActivity NAME" , "" + soundroidDatabase.playlistDao().getAllPlayLists().get(i).getName());
+            soundroidDatabase.playlistDao().deleteOnePlayList(soundroidDatabase.playlistDao().getAllPlayLists().get(i).getName());
 
+        }
          */
+
 
         //Log.i("MainActivity DB" , "" + database.playlistDao().getAllPlayLists());
 

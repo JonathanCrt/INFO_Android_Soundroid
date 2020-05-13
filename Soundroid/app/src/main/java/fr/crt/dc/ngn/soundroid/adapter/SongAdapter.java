@@ -113,4 +113,14 @@ public class SongAdapter extends ArrayAdapter<Song>  implements Filterable {
         super.add(object);
         filteredPlayList.add(object);
     }
+
+    @Nullable
+    @Override
+    public Song getItem(int position) {
+        if(filteredPlayList.isEmpty() || position > filteredPlayList.size()){
+            Log.w("SongAdapter", "List contains 0 elements or position > size list");
+            return null;
+        }
+        return filteredPlayList.get(position);
+    }
 }

@@ -1,13 +1,11 @@
 package fr.crt.dc.ngn.soundroid.fragment;
 
-import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
-import android.content.pm.PackageManager;
-import android.os.Build;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -21,25 +19,23 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.PopupMenu;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.Objects;
 
-import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import fr.crt.dc.ngn.soundroid.R;
+import fr.crt.dc.ngn.soundroid.database.entity.Playlist;
 import fr.crt.dc.ngn.soundroid.utility.RootList;
 import fr.crt.dc.ngn.soundroid.adapter.SongAdapter;
 import fr.crt.dc.ngn.soundroid.controller.ToolbarController;
 import fr.crt.dc.ngn.soundroid.database.entity.Song;
 import fr.crt.dc.ngn.soundroid.service.SongService;
-
-import static androidx.core.content.PermissionChecker.checkSelfPermission;
 
 /**
  * Classe représentant le fragment contenant toutes les pistes
@@ -55,7 +51,7 @@ public class AllTracksFragment extends Fragment {
     private ToolbarController toolbarController;
     private Button shuffleButton;
     private ImageView ivButtonFilter;
-    private SongAdapter adapter;
+    private SongAdapter songAdapter;
     private View vSearchButton;
     private ImageView ivButtonAccessHistory;
     private ImageView ivButtonAccessPlaylists;
@@ -109,8 +105,8 @@ public class AllTracksFragment extends Fragment {
 
         lv = v.findViewById(R.id.list_songs);
         // create personal adapter
-        adapter = RootList.getSongAdapter();
-        lv.setAdapter(adapter);
+        songAdapter = RootList.getSongAdapter();
+        lv.setAdapter(songAdapter);
 
         this.shuffleButton = v.findViewById(R.id.button2);
         this.toShuffle();
@@ -120,6 +116,7 @@ public class AllTracksFragment extends Fragment {
         ConstraintLayout constraintLayout = Objects.requireNonNull(getActivity()).findViewById(R.id.crt_layout);
         this.toolbarController = new ToolbarController(getActivity(), constraintLayout);
         this.installOnItemClickListener();
+        this.installOnLongItemClickListener();
         return v;
     }
 
@@ -132,7 +129,7 @@ public class AllTracksFragment extends Fragment {
             popup.setOnMenuItemClickListener(item -> {
                 Toast.makeText(this.getContext(), "You clicked on : " + item.getTitle(), Toast.LENGTH_SHORT).show();
                 Log.d("AllTracksFragment item", " " + item.getTitle());
-                adapter.getFilter().filter(item.getTitle());
+                songAdapter.getFilter().filter(item.getTitle());
                 return true;
             });
             popup.show(); //showing popup menu
@@ -165,6 +162,33 @@ public class AllTracksFragment extends Fragment {
         });
     }
 
+    private void installOnLongItemClickListener() {
+
+        this.lv.setOnItemLongClickListener((arg0, arg1, pos, id) -> {
+            Song songPressed = songAdapter.getItem(pos);
+            Log.d("long clicked","song " +songPressed.toString());
+            EditText editTextNamePlayList = new EditText(this.getContext());
+            AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this.getContext());
+
+            alertDialogBuilder.setView(editTextNamePlayList);
+            alertDialogBuilder.setIcon(R.drawable.ic_menu_playlists);
+            alertDialogBuilder.setTitle("Ajouter à une playlist");
+
+
+            alertDialogBuilder.setPositiveButton("OK", (dialog, whichButton) -> {
+                new AlertDialog.Builder(this.getContext())
+                        .setTitle("Erreur lors de l'ajout de la liste de lecture")
+                        .setMessage("Le nom de la liste de lecture est supérieur à 45 caractères ! ")
+                        .show();
+
+            }).create();
+            AlertDialog ad = alertDialogBuilder.create();
+            ad.show();
+            ad.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(getResources().getColor(R.color.colorPrimaryFlash));
+
+            return true;
+        });
+    }
 
     /**
      * Allow initialization of service's intance when fragment begin
