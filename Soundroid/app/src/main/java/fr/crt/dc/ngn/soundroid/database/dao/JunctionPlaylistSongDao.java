@@ -39,4 +39,13 @@ public interface JunctionPlaylistSongDao {
             "   ON Playlist.playlistId = JunctionPlayListSong.playlistId " +
             "WHERE Playlist.playlistId = :playlistId")
     List<Song> findAllSongsByPlaylistId(long playlistId);
+
+    @Query("SELECT COUNT(*) FROM Song " +
+            "JOIN JunctionPlayListSong " +
+            "   ON JunctionPlayListSong.songId = Song.songId " +
+            "JOIN Playlist " +
+            "   ON Playlist.playlistId = JunctionPlayListSong.playlistId " +
+            "WHERE Playlist.name = :name " +
+            "ORDER BY Song.songId")
+    int countNumberOfSongsByName(String name);
 }

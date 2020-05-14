@@ -23,6 +23,7 @@ import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import androidx.fragment.app.FragmentTransaction;
 import fr.crt.dc.ngn.soundroid.R;
@@ -84,6 +85,7 @@ public class PlaylistFragment extends Fragment {
         this.lvPlayLists.setAdapter(this.playlistAdapter);
         this.installOnAddPlaylistButtonListener();
         this.installOnLongItemClickListener();
+        this.installOnItemClickListener();
 
         Log.d("PlaylistFragment all songs", this.soundroidDatabaseInstance.songDao().getAllSongs().toString());
         Log.d("PlaylistFragment all playlists", this.soundroidDatabaseInstance.playlistDao().getAllPlayLists().toString());
@@ -129,12 +131,35 @@ public class PlaylistFragment extends Fragment {
     private void installOnLongItemClickListener() {
 
         this.lvPlayLists.setOnItemLongClickListener((arg0, arg1, pos, id) -> {
-            Log.d("long clicked","pos: " + pos);
-            FragmentTransaction fragmentTransaction = getParentFragmentManager().beginTransaction();
-            fragmentTransaction.replace(R.id.nav_host_fragment, new PlaylistFragmentDetail())
-            .addToBackStack(null)
-            .commit();
+            Log.d("long clicked pos","pos: " + pos);
+            Log.d("long clicked id","id: " + id);
+            Log.d("long clicked item","item: " + lvPlayLists.getItemAtPosition(pos));
+
             return true;
         });
     }
+
+    private void installOnItemClickListener() {
+        this.lvPlayLists.setOnItemClickListener((arg0, arg1, pos, id) -> {
+            Log.d("long clicked pos","pos: " + pos);
+            Log.d("long clicked id","id: " + id);
+            Log.d("long clicked item","item: " + lvPlayLists.getItemAtPosition(pos));
+
+            Playlist playlistSelected = (Playlist) lvPlayLists.getItemAtPosition(pos);
+            Log.d("long clicked playlist","Playlist name: " + playlistSelected.getName());
+            Bundle arguments = new Bundle();
+            arguments.putString("name of playlist", playlistSelected.getName());
+
+            PlaylistFragmentDetail playlistFragmentDetail = new PlaylistFragmentDetail();
+            playlistFragmentDetail.setArguments(arguments);
+            FragmentTransaction fragmentTransaction = getParentFragmentManager().beginTransaction();
+            fragmentTransaction
+                    .replace(R.id.nav_host_fragment, playlistFragmentDetail)
+                    .addToBackStack(null)
+                    .commit();
+        });
+    }
+
+
+
 }

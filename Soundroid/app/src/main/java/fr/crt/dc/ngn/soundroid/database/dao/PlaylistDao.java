@@ -22,6 +22,9 @@ public interface PlaylistDao {
     @Query("SELECT * FROM Playlist WHERE name = :name")
     Playlist findByName(String name);
 
+    @Query("SELECT playlistId FROM Playlist WHERE name = :name")
+    Long findPlaylistIdByName(String name);
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insertPlayList(Playlist playlist);
 

@@ -1,6 +1,7 @@
 package fr.crt.dc.ngn.soundroid.adapter;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,6 +14,7 @@ import java.util.zip.Inflater;
 
 import androidx.annotation.Nullable;
 import fr.crt.dc.ngn.soundroid.R;
+import fr.crt.dc.ngn.soundroid.database.SoundroidDatabase;
 import fr.crt.dc.ngn.soundroid.database.entity.Playlist;
 
 /**
@@ -23,6 +25,7 @@ public class PlaylistAdapter extends ArrayAdapter<Playlist> {
     private LayoutInflater playlistInflater;
     ArrayList<Playlist> playlists;
     ArrayList<Playlist> filteredPlayList;
+    SoundroidDatabase soundroidDatabaseInstance = SoundroidDatabase.getInstance(this.getContext());
 
     public PlaylistAdapter(Context context, List<Playlist> playlists) {
         super(context, 0);
@@ -64,7 +67,9 @@ public class PlaylistAdapter extends ArrayAdapter<Playlist> {
 
         // now we can set populate the data via the ViewHolder into views
         mViewHolder.tvPlayListName.setText(currentPlaylist.getName());
-        mViewHolder.tvPlaylistCounterSongs.setText("10");
+        Log.d("PlaylistAdapter count", ""  + this.soundroidDatabaseInstance.junctionDAO().countNumberOfSongsByName(currentPlaylist.getName()));
+        String numberSongs = String.valueOf(this.soundroidDatabaseInstance.junctionDAO().countNumberOfSongsByName(currentPlaylist.getName()));
+        mViewHolder.tvPlaylistCounterSongs.setText(numberSongs + " chansons");
 
         // Update position as position tag that will start the right song when the user clicks a list item
         return convertView;
@@ -79,6 +84,16 @@ public class PlaylistAdapter extends ArrayAdapter<Playlist> {
     public void add(@Nullable Playlist object) {
         super.add(object);
         playlists.add(object);
+    }
+
+    @Nullable
+    @Override
+    public Playlist getItem(int position) {
+        if(playlists.isEmpty() || position > playlists.size()){
+            Log.w("PlaylistsAdapter", "List contains 0 elements or position > size list");
+            return null;
+        }
+        return playlists.get(position);
     }
 
 }
