@@ -67,7 +67,7 @@ public class PlayerActivity extends AppCompatActivity {
 
     private SoundroidDatabase soundroidDatabaseInstance;
     public static int MAX_SIZE_TAG = 25;
-
+    private ImageView[] stars;
     private void initializeViews() {
         this.ivBack = findViewById(R.id.iv_player_back);
         this.tvTitleSong = findViewById(R.id.tv_player_title);
@@ -88,6 +88,8 @@ public class PlayerActivity extends AppCompatActivity {
         this.ivControlPlaySong = findViewById(R.id.iv_player_control_play);
         this.tvElapsedTime = findViewById(R.id.tv_player_elapsed_time);
         this.tvDuration = findViewById(R.id.tv_player_end_time);
+
+        this.stars = new ImageView[]{ivNoteStarOne, ivNoteStarTwo, ivNoteStarThree, ivNoteStarFour, ivNoteStarFive};
     }
 
 
@@ -258,20 +260,14 @@ public class PlayerActivity extends AppCompatActivity {
     }
 
     private void resetRating() {
-        ivNoteStarOne.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_outline_star_note));
-        ivNoteStarTwo.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_outline_star_note));
-        ivNoteStarThree.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_outline_star_note));
-        ivNoteStarFour.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_outline_star_note));
-        ivNoteStarFive.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_outline_star_note));
+        for(int i=0; i<this.stars.length; i++){
+            this.stars[i].setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_outline_star_note));
+        }
         this.songService.getPlaylistSongs().get(this.songService.getSongIndex()).setRating(0);
     }
 
     private void clearRating() {
-        ivNoteStarOne.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_outline_star_note));
-        ivNoteStarTwo.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_outline_star_note));
-        ivNoteStarThree.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_outline_star_note));
-        ivNoteStarFour.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_outline_star_note));
-        ivNoteStarFive.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_outline_star_note));
+        resetRating();
         Log.d("PlayerActivity clear rating", this.soundroidDatabaseInstance.songDao().getAllSongs().toString());
     }
 

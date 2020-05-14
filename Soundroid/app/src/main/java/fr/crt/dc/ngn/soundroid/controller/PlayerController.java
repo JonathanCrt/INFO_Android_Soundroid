@@ -56,7 +56,6 @@ public class PlayerController extends AbstractController {
 
     private ImageView[] stars;
 
-
     private void initializeViews() {
         this.ivBack = (ImageView) constraintLayout.getViewById(R.id.iv_player_back);
         this.tvTitleSong = (TextView) constraintLayout.getViewById(R.id.tv_player_title);
@@ -117,15 +116,13 @@ public class PlayerController extends AbstractController {
     }
 
     private void resetRating() {
-        ivNoteStarOne.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_outline_star_note));
-        ivNoteStarTwo.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_outline_star_note));
-        ivNoteStarThree.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_outline_star_note));
-        ivNoteStarFour.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_outline_star_note));
-        ivNoteStarFive.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_outline_star_note));
+        for(int i=0; i<this.stars.length; i++){
+            this.stars[i].setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_outline_star_note));
+        }
         this.songService.getPlaylistSongs().get(this.songService.getSongIndex()).setRating(0);
     }
 
-    private void setRatingNote(int nbStars){
+    private void setRating(int nbStars){
         for(int i=0; i<nbStars; i++){
             this.stars[i].setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_filled_star_note));
         }
@@ -134,67 +131,24 @@ public class PlayerController extends AbstractController {
         }
     }
 
-    private static void setRatingToOne() {
-        ivNoteStarOne.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_filled_star_note));
-        ivNoteStarTwo.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_outline_star_note));
-        ivNoteStarThree.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_outline_star_note));
-        ivNoteStarFour.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_outline_star_note));
-        ivNoteStarFive.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_outline_star_note));
-        this.songService.getPlaylistSongs().get(this.songService.getSongIndex()).setRating(1);
-    }
-
-    private void setRatingToTwo() {
-        ivNoteStarOne.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_filled_star_note));
-        ivNoteStarTwo.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_filled_star_note));
-        ivNoteStarThree.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_outline_star_note));
-        ivNoteStarFour.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_outline_star_note));
-        ivNoteStarFive.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_outline_star_note));
-        this.songService.getPlaylistSongs().get(this.songService.getSongIndex()).setRating(2);
-    }
-
-    private void setRatingToThree() {
-        ivNoteStarOne.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_filled_star_note));
-        ivNoteStarTwo.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_filled_star_note));
-        ivNoteStarThree.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_filled_star_note));
-        ivNoteStarFour.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_outline_star_note));
-        ivNoteStarFive.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_outline_star_note));
-        this.songService.getPlaylistSongs().get(this.songService.getSongIndex()).setRating(3);
-    }
-
-    private void setRatingToFour() {
-        ivNoteStarOne.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_filled_star_note));
-        ivNoteStarTwo.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_filled_star_note));
-        ivNoteStarThree.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_filled_star_note));
-        ivNoteStarFour.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_filled_star_note));
-        ivNoteStarFive.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_outline_star_note));
-        this.songService.getPlaylistSongs().get(this.songService.getSongIndex()).setRating(4);
-    }
-
-    private void setRatingToFive() {
-        ivNoteStarOne.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_filled_star_note));
-        ivNoteStarTwo.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_filled_star_note));
-        ivNoteStarThree.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_filled_star_note));
-        ivNoteStarFour.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_filled_star_note));
-        ivNoteStarFive.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_filled_star_note));
-        this.songService.getPlaylistSongs().get(this.songService.getSongIndex()).setRating(5);
-    }
-
-    private View.OnClickListener getStarsListeners(int nbStars){
-        return v -> {
-            if (!isNoteSet) {
-                this.setRatingNote(nbStars);
+    private View.OnClickListener getStarsListener(int nbStars){
+        return v->{
+            if(!isNoteSet) {
+                this.setRating(nbStars);
             } else {
                 isNoteSet = false;
                 resetRating();
             }
         };
     }
+
+    // TODO : pas utilisé ?
     public void setListenerRating() {
-        this.ivNoteStarOne.setOnClickListener(getStarsListeners(1));
-        this.ivNoteStarTwo.setOnClickListener(getStarsListeners(2));
-        this.ivNoteStarThree.setOnClickListener(getStarsListeners(3));
-        this.ivNoteStarFour.setOnClickListener(getStarsListeners(4));
-        this.ivNoteStarFive.setOnClickListener(getStarsListeners(5));
+        this.ivNoteStarOne.setOnClickListener(getStarsListener(1));
+        this.ivNoteStarTwo.setOnClickListener(getStarsListener(2));
+        this.ivNoteStarThree.setOnClickListener(getStarsListener(3));
+        this.ivNoteStarFour.setOnClickListener(getStarsListener(4));
+        this.ivNoteStarFive.setOnClickListener(getStarsListener(5));
     }
 
     public void unbindService() {
@@ -203,28 +157,11 @@ public class PlayerController extends AbstractController {
         }
     }
 
-
     public void setWidgetsValues(String title, String artist, int rating) {
         setTextSongInformation(title, this.tvTitleSong);
         setTextSongInformation(artist, this.tvArtistSong);
         //setArtworkSong(this.songService.getPlaylistSongs().get(this.songService.getSongIndex()).getArtwork(), this.ivArtworkSong);
-        switch (rating) {
-            case 1 :
-                setRatingToOne();
-                break;
-            case 2:
-                setRatingToTwo();
-                break;
-            case 3:
-                setRatingToThree();
-                break;
-            case 4:
-                setRatingToFour();
-                break;
-            case 5:
-                setRatingToFive();
-                break;
-        }
+        setRating(rating);
     }
 
     public void changeSeekBar() {
