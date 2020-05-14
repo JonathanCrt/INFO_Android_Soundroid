@@ -122,15 +122,26 @@ public class PlayerController extends AbstractController {
         this.songService.getPlaylistSongs().get(this.songService.getSongIndex()).setRating(0);
     }
 
+    /**
+     * Put an image of filled stars corresponding to the rating
+     * @param nbStars
+     */
     private void setRating(int nbStars){
+        // fill the stars
         for(int i=0; i<nbStars; i++){
             this.stars[i].setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_filled_star_note));
         }
+        // reset stars if the note has been decreased
         for(int i=nbStars; i>=0; i--){
             this.stars[i].setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_outline_star_note));
         }
     }
 
+    /**
+     * Return a listener to put on image view of stars
+     * @param nbStars
+     * @return
+     */
     private View.OnClickListener getStarsListener(int nbStars){
         return v->{
             if(!isNoteSet) {
@@ -144,11 +155,9 @@ public class PlayerController extends AbstractController {
 
     // TODO : pas utilisé ?
     public void setListenerRating() {
-        this.ivNoteStarOne.setOnClickListener(getStarsListener(1));
-        this.ivNoteStarTwo.setOnClickListener(getStarsListener(2));
-        this.ivNoteStarThree.setOnClickListener(getStarsListener(3));
-        this.ivNoteStarFour.setOnClickListener(getStarsListener(4));
-        this.ivNoteStarFive.setOnClickListener(getStarsListener(5));
+        for(int i=0; i<this.stars.length; i++){
+            this.stars[i].setOnClickListener(getStarsListener(i+1));
+        }
     }
 
     public void unbindService() {
