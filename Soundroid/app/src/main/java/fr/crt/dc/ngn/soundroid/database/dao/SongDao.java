@@ -43,6 +43,9 @@ public interface SongDao {
     @Query("SELECT * FROM Song WHERE tag = :tag")
     Song findByTag(String tag);
 
+    @Query("SELECT * FROM Song WHERE footprint = :footprint")
+    Song findByFootprint(String footprint);
+
     //String findTagOfSong()
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
