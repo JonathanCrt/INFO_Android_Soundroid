@@ -47,7 +47,7 @@ public interface SongDao {
     Song findByFootprint(String footprint);
 
     @Query("SELECT rating FROM Song WHERE songId = :songId")
-    long findRatingBySongId(long songId);
+    int findRatingBySongId(long songId);
 
     @Query("SELECT tag FROM Song WHERE songId = :songId")
     String findTagBySongId(long songId);
