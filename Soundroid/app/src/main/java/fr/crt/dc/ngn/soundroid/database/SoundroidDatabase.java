@@ -53,7 +53,6 @@ public abstract class SoundroidDatabase extends RoomDatabase {
     private static SoundroidDatabase buildDatabase(final Context context) {
         Log.d("SoundroidDatabase", "Building database");
         synchronized (MUTEX) {
-            Log.d("LOG", "COUCOU1");
             DB_INSTANCE = Room.databaseBuilder(context, SoundroidDatabase.class, DB_NAME).addCallback(new RoomDatabase.Callback() {
                 @Override
                 public void onCreate(@NonNull SupportSQLiteDatabase db) {

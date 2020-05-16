@@ -142,6 +142,7 @@ public class CursorAsyncTask extends AsyncTask<Void, Song, ArrayList<Song>> {
                             Uri sArtworkUri = Uri
                                     .parse("content://media/external/audio/albumart");
                             albumArtUri = ContentUris.withAppendedId(sArtworkUri, albumId);
+                            Log.d("LOGIIII", albumArtUri.toString());
                             bitmap = getBitmapFromURI(albumArtUri);
                             this.artworkMap.put(albumId, bitmap);
                         }
@@ -192,6 +193,7 @@ public class CursorAsyncTask extends AsyncTask<Void, Song, ArrayList<Song>> {
      * @throws IOException
      */
     private Bitmap getBitmapFromURI(Uri albumArtUri) throws IOException {
+        Log.d("CursorAsyncTask", "getBitmap");
         Bitmap myBitmap;
         if (Build.VERSION.SDK_INT < 28){
             myBitmap = MediaStore.Images.Media.getBitmap(

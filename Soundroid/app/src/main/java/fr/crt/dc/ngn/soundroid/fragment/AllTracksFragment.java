@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.Bundle;
@@ -13,11 +14,16 @@ import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 
+import android.os.Handler;
 import android.os.IBinder;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -26,10 +32,13 @@ import android.widget.PopupMenu;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 
 import androidx.fragment.app.FragmentTransaction;
 import fr.crt.dc.ngn.soundroid.R;
+import fr.crt.dc.ngn.soundroid.database.SoundroidDatabase;
 import fr.crt.dc.ngn.soundroid.database.entity.Playlist;
 import fr.crt.dc.ngn.soundroid.utility.RootList;
 import fr.crt.dc.ngn.soundroid.adapter.SongAdapter;
@@ -162,29 +171,51 @@ public class AllTracksFragment extends Fragment {
         });
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     private void installOnLongItemClickListener() {
 
         this.lv.setOnItemLongClickListener((arg0, arg1, pos, id) -> {
             Song songPressed = songAdapter.getItem(pos);
             Log.d("long clicked","song " +songPressed.toString());
-            EditText editTextNamePlayList = new EditText(this.getContext());
-            AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this.getContext());
-
-            alertDialogBuilder.setView(editTextNamePlayList);
-            alertDialogBuilder.setIcon(R.drawable.ic_menu_playlists);
+            androidx.appcompat.app.AlertDialog.Builder alertDialogBuilder = new androidx.appcompat.app.AlertDialog.Builder(this.getContext());
             alertDialogBuilder.setTitle("Ajouter à une playlist");
 
+            // Array adapter to show a list of playlist
+            List<Playlist> playlistList = SoundroidDatabase.getInstance(this.getContext()).playlistDao().getAllPlayLists();
+            // transform the list into an array of playlist
+            String[] playlistsNames = playlistList.stream().map(Playlist::getName).toArray(String[]::new);
+            ArrayAdapter<String> adapter = new ArrayAdapter<>(this.getContext(),
+                    android.R.layout.simple_dropdown_item_1line, playlistsNames);
+            final AutoCompleteTextView autoCompleteTextView = new AutoCompleteTextView(this.getContext());
+            autoCompleteTextView.setAdapter(adapter);
+            alertDialogBuilder.setView(autoCompleteTextView);
+            // DIsplay later the playlist name because it takes time to set the adapter
+            new Handler().postDelayed(autoCompleteTextView::showDropDown, 100);
+            alertDialogBuilder.setNegativeButton("Cancel", null);
+            alertDialogBuilder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    String playlistName = autoCompleteTextView.getText().toString();
+                    if (playlistName.length()==0){
+                        Toast.makeText(getContext(), "Click on an playlist name !", Toast.LENGTH_SHORT).show();
+                    }else{
+                        Log.d("LOG", "PlaylistName = " + playlistName);
+                        Playlist plailistClicked = playlistList.stream().filter(p->p.getName().equals(playlistName)).findAny().get();
+                        SoundroidDatabase.getInstance(getContext()).junctionDAO().insertSongIntoPlayList(songPressed.getSongId(), plailistClicked.getPlaylistId());
+                        Log.d("PlaylistCLicked", plailistClicked.toString());
+                        Log.d("PlaylistCLicked size ", String.valueOf(SoundroidDatabase.getInstance(getContext()).junctionDAO().findAllSongsByPlaylistId(plailistClicked.getPlaylistId()).size()));
+                    }
 
-            alertDialogBuilder.setPositiveButton("OK", (dialog, whichButton) -> {
-                new AlertDialog.Builder(this.getContext())
-                        .setTitle("Erreur lors de l'ajout de la liste de lecture")
-                        .setMessage("Le nom de la liste de lecture est supérieur à 45 caractères ! ")
-                        .show();
-
-            }).create();
-            AlertDialog ad = alertDialogBuilder.create();
-            ad.show();
+                }
+            });
+            alertDialogBuilder.setIcon(R.drawable.ic_menu_playlists);
+            // Add scroll in the dropdown list
+            androidx.appcompat.app.AlertDialog ad = alertDialogBuilder.show();
+            Objects.requireNonNull(ad.getWindow()).setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
             ad.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(getResources().getColor(R.color.colorPrimaryFlash));
+            ad.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(getResources().getColor(R.color.colorPrimaryFlash));
+
+
 
             return true;
         });
