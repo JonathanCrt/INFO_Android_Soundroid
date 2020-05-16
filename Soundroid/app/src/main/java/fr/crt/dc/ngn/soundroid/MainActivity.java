@@ -34,6 +34,7 @@ import android.widget.ToggleButton;
 
 import com.google.android.material.navigation.NavigationView;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -57,6 +58,7 @@ import fr.crt.dc.ngn.soundroid.tts.Speaker;
 import fr.crt.dc.ngn.soundroid.utility.RootList;
 import fr.crt.dc.ngn.soundroid.database.entity.Song;
 import fr.crt.dc.ngn.soundroid.service.SongService;
+import fr.crt.dc.ngn.soundroid.utility.StorageContainer;
 import fr.crt.dc.ngn.soundroid.utility.Utility;
 
 
@@ -368,24 +370,35 @@ public class MainActivity extends AppCompatActivity {
 
     public void requestToDatabase(int position, String userInput) {
         Song currentSong = null;
+        String tag = null;
+        List<Song> resultList = null;
+        Intent intent = new Intent(this, SearchActivity.class);
         switch (position) {
             case 0:
                 currentSong = this.soundroidDatabase.songDao().findByTitle(userInput);
+               // intent.putExtra("title", StorageContainer.getInstance().add(currentSong));
+                //intent.putExtra("title",(Serializable)currentSong);
                 Log.i("RESULT", "CURRENT SONG PLAYED by TITLE: " + currentSong);
                 break;
             case 1:
-                List<Song> artistList = this.soundroidDatabase.songDao().findAllByArtist(userInput);
-                Intent intent = new Intent(this, SearchActivity.class);
-                //intent.putExtra("artist",artistList);
-                startActivity(intent);
+                resultList = this.soundroidDatabase.songDao().findAllByArtist(userInput);
+                //Intent intent = new Intent(this, SearchActivity.class);
+                //intent.putExtra("artist", StorageContainer.getInstance().add(artistList));
+                //startActivity(intent);
                 // this.searchList.setAdapter((ListAdapter) list);
-                Log.i("RESULT", "CURRENT SONG PLAYED by ARTIST: " + artistList);
+                tag = "artist";
+                intent.putExtra(tag, StorageContainer.getInstance().add(resultList));
+                Log.i("RESULT", "CURRENT SONG PLAYED by ARTIST: " + resultList);
                 break;
             case 2:
-                List<Song> albumList = this.soundroidDatabase.songDao().findAllByAlbum(userInput);
-                Log.i("RESULT", "CURRENT SONG PLAYED by ALBUM: " + albumList);
+               resultList = this.soundroidDatabase.songDao().findAllByAlbum(userInput);
+                tag = "album";
+                intent.putExtra(tag, StorageContainer.getInstance().add(resultList));
+                Log.i("RESULT", "CURRENT SONG PLAYED by ALBUM: " + resultList);
                 break;
         }
+        startActivity(intent);
+
     }
 
     private void checkTTS() {
