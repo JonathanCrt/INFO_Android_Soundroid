@@ -383,7 +383,7 @@ public class MainActivity extends AppCompatActivity {
                 break;
             case 2:
                 List<Song> albumList = this.soundroidDatabase.songDao().findAllByAlbum(userInput);
-                Log.i("RESULT", "CURRENT SONG PLAYED by ARTIST: " + albumList);
+                Log.i("RESULT", "CURRENT SONG PLAYED by ALBUM: " + albumList);
                 break;
         }
     }
