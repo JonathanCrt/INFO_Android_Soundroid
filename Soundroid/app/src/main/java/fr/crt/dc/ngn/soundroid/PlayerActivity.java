@@ -10,7 +10,6 @@ import fr.crt.dc.ngn.soundroid.database.dao.SongDao;
 import fr.crt.dc.ngn.soundroid.database.entity.Song;
 import fr.crt.dc.ngn.soundroid.service.SongService;
 import fr.crt.dc.ngn.soundroid.utility.Utility;
-import jp.wasabeef.blurry.Blurry;
 
 import android.app.AlertDialog;
 import android.content.ComponentName;
