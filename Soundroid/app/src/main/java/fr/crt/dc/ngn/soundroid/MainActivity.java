@@ -129,18 +129,21 @@ public class MainActivity extends AppCompatActivity {
                 Log.i("LOG", "First launch of the app");
 
             } else {
+                /*
                 Log.i("LOG", "already LAUNCHED");
                 // test to delete all in DB and restart with a new DB clean
-                /*
+
                 this.deleteDatabase("Soundroid.db_");
                 soundroidDatabase.clearAllTables();
                 soundroidDatabase.songDao().getAllSongs().forEach(s -> {
-                    Log.i("LOG", "delete song id : " + s.getId());
+                    Log.i("LOG", "delete song id : " + s.getSongId());
                     soundroidDatabase.songDao().deleteSong(s);
                 });
                 return;
-                */
-                Collections.sort(listSongs, (a, b) -> a.getTitle().compareTo(b.getTitle()));
+
+                 */
+
+                //Collections.sort(listSongs, (a, b) -> a.getTitle().compareTo(b.getTitle()));
             }
 
             SongAdapter adapter = new SongAdapter(getAppContext(), listSongs);
@@ -175,11 +178,13 @@ public class MainActivity extends AppCompatActivity {
         this.checkedItems = new boolean[listCriteria.length];
         this.searchList = findViewById(R.id.list_songs);
 
+        /*
         this.toggleButton = findViewById(R.id.speechToogle);
 
-        this.toggleButton.setOnClickListener(v-> {
+        this.toggleButton.setOnClickListener(v -> {
             speaker.speakText("Bonjour !");
         });
+         */
         this.checkTTS();
         this.initializeSMSReceiver();
         this.registerSMSReceiver();
@@ -234,13 +239,16 @@ public class MainActivity extends AppCompatActivity {
 
 
     private void launchPlayerActivity() {
-        Intent it = new Intent(this, PlayerActivity.class);
-        it.putExtra("TITLE_SONG", this.songService.getPlaylistSongs().get(this.songService.getSongIndex()).getTitle());
-        it.putExtra("ARTIST_SONG", this.songService.getPlaylistSongs().get(this.songService.getSongIndex()).getArtist());
-        it.putExtra("RATING_SONG", this.songService.getPlaylistSongs().get(this.songService.getSongIndex()).getRating());
-        it.putExtra("ARTWORK_SONG", Utility.convertByteToBitmap(this.songService.getPlaylistSongs().get(this.songService.getSongIndex()).getArtwork()));
-        it.putExtra("DURATION_SONG", this.songService.getPlaylistSongs().get(this.songService.getSongIndex()).getDuration());
-        startActivity(it);
+        Intent currentSongIntent = new Intent(this, PlayerActivity.class);
+        Song currentSong = this.songService.getPlaylistSongs().get(this.songService.getSongIndex());
+        currentSongIntent
+                .putExtra("TITLE_SONG", currentSong.getTitle())
+                .putExtra("ARTIST_SONG", currentSong.getArtist())
+                .putExtra("RATING_SONG", currentSong.getRating())
+                .putExtra("ARTWORK_SONG", Utility.convertByteToBitmap(currentSong.getArtwork()))
+                .putExtra("DURATION_SONG", currentSong.getDuration())
+                .putExtra("TAG_SONG", currentSong.getTag());
+        startActivity(currentSongIntent);
     }
 
     @Override
@@ -339,7 +347,7 @@ public class MainActivity extends AppCompatActivity {
                 Intent intent = new Intent(this, SearchActivity.class);
                 //intent.putExtra("artist",artistList);
                 startActivity(intent);
-               // this.searchList.setAdapter((ListAdapter) list);
+                // this.searchList.setAdapter((ListAdapter) list);
                 Log.i("RESULT", "CURRENT SONG PLAYED by ARTIST: " + artistList);
                 break;
             case 2:

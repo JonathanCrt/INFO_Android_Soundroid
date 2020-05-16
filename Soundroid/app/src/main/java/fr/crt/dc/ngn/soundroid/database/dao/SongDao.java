@@ -46,7 +46,11 @@ public interface SongDao {
     @Query("SELECT * FROM Song WHERE footprint = :footprint")
     Song findByFootprint(String footprint);
 
-    //String findTagOfSong()
+    @Query("SELECT rating FROM Song WHERE songId = :songId")
+    long findRatingBySongId(long songId);
+
+    @Query("SELECT tag FROM Song WHERE songId = :songId")
+    String findTagBySongId(long songId);
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insertSong(Song song);
@@ -68,6 +72,9 @@ public interface SongDao {
 
     @Query("UPDATE Song SET tag = :tag WHERE title = :title")
     void updateSongTagByTitle(String tag, String title);
+
+    @Query("UPDATE SONG SET tag = null WHERE songId = :songId")
+    void updateSongWithNullTagBySongId(long songId);
 
     @Delete
     void deleteSong(Song song);

@@ -6,6 +6,8 @@ import androidx.core.content.ContextCompat;
 import fr.crt.dc.ngn.soundroid.controller.PlayerController;
 import fr.crt.dc.ngn.soundroid.controller.ToolbarController;
 import fr.crt.dc.ngn.soundroid.database.SoundroidDatabase;
+import fr.crt.dc.ngn.soundroid.database.dao.SongDao;
+import fr.crt.dc.ngn.soundroid.database.entity.Song;
 import fr.crt.dc.ngn.soundroid.service.SongService;
 import fr.crt.dc.ngn.soundroid.utility.Utility;
 
@@ -37,11 +39,6 @@ public class PlayerActivity extends AppCompatActivity {
     private TextView tvArtistSong;
     private ImageView ivArtworkSong;
     private ImageView ivRandomPlayback;
-    private ImageView ivNoteStarOne;
-    private ImageView ivNoteStarTwo;
-    private ImageView ivNoteStarThree;
-    private ImageView ivNoteStarFour;
-    private ImageView ivNoteStarFive;
     private ImageView ivAddTag;
     private SeekBar seekBarPlayback;
     private ImageView ivControlPlaySong;
@@ -50,7 +47,8 @@ public class PlayerActivity extends AppCompatActivity {
     private boolean isNoteSet;
     private TextView tvElapsedTime;
     private TextView tvDuration;
-
+    private TextView tvTag;
+    private ImageView ivDeleteTag;
 
     private SongService songService;
     private Intent intent;
@@ -59,15 +57,18 @@ public class PlayerActivity extends AppCompatActivity {
     int currentNoteReceived;
     Bitmap currentArtworkReceived;
     long currentDurationReceived;
+    String currentTagReceived;
     private boolean connectionEstablished;
     private Handler mHandler;
     private Runnable mRunnable;
     private long currentSongLength;
     private ToolbarController toolbarController;
+    private String currentTagOfSong = null;
 
-    private SoundroidDatabase soundroidDatabaseInstance;
+    private SongDao songDaoInstance;
     public static int MAX_SIZE_TAG = 25;
     private ImageView[] stars;
+
     private void initializeViews() {
         this.ivBack = findViewById(R.id.iv_player_back);
         this.tvTitleSong = findViewById(R.id.tv_player_title);
@@ -75,11 +76,11 @@ public class PlayerActivity extends AppCompatActivity {
         this.ivArtworkSong = findViewById(R.id.iv_player_artwork);
         this.ivRandomPlayback = findViewById(R.id.iv_player_shuffle_playback);
 
-        this.ivNoteStarOne = findViewById(R.id.iv_player_note_star_1);
-        this.ivNoteStarTwo = findViewById(R.id.iv_player_note_star_2);
-        this.ivNoteStarThree = findViewById(R.id.iv_player_note_star_3);
-        this.ivNoteStarFour = findViewById(R.id.iv_player_note_star_4);
-        this.ivNoteStarFive = findViewById(R.id.iv_player_note_star_5);
+        ImageView ivNoteStarOne = findViewById(R.id.iv_player_note_star_1);
+        ImageView ivNoteStarTwo = findViewById(R.id.iv_player_note_star_2);
+        ImageView ivNoteStarThree = findViewById(R.id.iv_player_note_star_3);
+        ImageView ivNoteStarFour = findViewById(R.id.iv_player_note_star_4);
+        ImageView ivNoteStarFive = findViewById(R.id.iv_player_note_star_5);
 
         this.ivAddTag = findViewById(R.id.iv_player_add_tag);
         this.seekBarPlayback = findViewById(R.id.seekBar_player);
@@ -88,6 +89,8 @@ public class PlayerActivity extends AppCompatActivity {
         this.ivControlPlaySong = findViewById(R.id.iv_player_control_play);
         this.tvElapsedTime = findViewById(R.id.tv_player_elapsed_time);
         this.tvDuration = findViewById(R.id.tv_player_end_time);
+        this.tvTag = findViewById(R.id.tv_player_tag);
+        this.ivDeleteTag = findViewById(R.id.iv_player_delete_tag);
 
         this.stars = new ImageView[]{ivNoteStarOne, ivNoteStarTwo, ivNoteStarThree, ivNoteStarFour, ivNoteStarFive};
     }
@@ -104,7 +107,9 @@ public class PlayerActivity extends AppCompatActivity {
         this.setIvBackListener();
         this.setTextViewSelected();
         this.installListener();
-        this.soundroidDatabaseInstance = SoundroidDatabase.getInstance(this);
+        SoundroidDatabase soundroidDatabaseInstance = SoundroidDatabase.getInstance(this);
+        this.songDaoInstance = soundroidDatabaseInstance.songDao();
+        this.installOnClickListenerButtonDeleteTag();
         /*
         final LayoutInflater factory = getLayoutInflater();
         final View mainActivityView = factory.inflate(R.layout.toolbar_player, null);
@@ -122,6 +127,7 @@ public class PlayerActivity extends AppCompatActivity {
         this.currentNoteReceived = getIntent().getIntExtra("RATING_SONG", 0);
         this.currentArtworkReceived = getIntent().getParcelableExtra("ARTWORK_SONG");
         this.currentDurationReceived = getIntent().getLongExtra("DURATION_SONG", 0L);
+        this.currentTagReceived = getIntent().getStringExtra("TAG_SONG");
     }
 
     @Override
@@ -146,19 +152,14 @@ public class PlayerActivity extends AppCompatActivity {
             songService = songBinder.getService();
             connectionEstablished = true;
             runUIThreadToSetProgressSeekBar();
-            setWidgetsValues(currentTitleReceived, currentArtisteReceived, currentNoteReceived, currentArtworkReceived, currentDurationReceived);
+            setWidgetsValues(currentTitleReceived, currentArtisteReceived, currentNoteReceived, currentArtworkReceived, currentDurationReceived, currentTagReceived);
             songService.getPlayer().setOnCompletionListener(mp -> {
-                if(songService.getSongIndex() + 1 < songService.getPlaylistSongs().size()) {
+                if (songService.getSongIndex() + 1 < songService.getPlaylistSongs().size()) {
                     songService.playNextSong();
-                    setWidgetsValues(
-                            songService.getPlaylistSongs().get(songService.getSongIndex()).getTitle(),
-                            songService.getPlaylistSongs().get(songService.getSongIndex()).getArtist(),
-                            songService.getPlaylistSongs().get(songService.getSongIndex()).getRating(),
-                            Utility.convertByteToBitmap(songService.getPlaylistSongs().get(songService.getSongIndex()).getArtwork()),
-                            songService.getPlaylistSongs().get(songService.getSongIndex()).getDuration()
-                    );
+                    setWidgetsValues();
                 }
             });
+            installDisplayOfTagWithDeleteButton();
         }
 
         @Override
@@ -195,16 +196,36 @@ public class PlayerActivity extends AppCompatActivity {
      * @param rating  rating of song
      * @param artwork artwork of song
      */
-    public void setWidgetsValues(String title, String artist, int rating, Bitmap artwork, long duration) {
+    private void setWidgetsValues(String title, String artist, int rating, Bitmap artwork, long duration, String tag) {
         this.tvTitleSong.setText(title);
         this.tvArtistSong.setText(artist);
         this.setRating(rating);
         this.ivArtworkSong.setImageBitmap(artwork);
         this.tvDuration.setText(Utility.convertDuration(duration));
-        if(songService.playerIsPlaying()){
+        if (songService.playerIsPlaying()) {
             ivControlPlaySong.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_pause_white_2x));
         }
+        this.tvTag.setText(tag);
+        if(tag != null && tag.length() > 0){
+            this.ivDeleteTag.setVisibility(View.VISIBLE);
+        } else {
+            this.ivDeleteTag.setVisibility(View.INVISIBLE);
+        }
     }
+
+    public void setWidgetsValues() {
+        Song currentSong = this.songService.getPlaylistSongs().get(this.songService.getSongIndex());
+        this.currentTagOfSong = this.songDaoInstance.findTagBySongId(currentSong.getSongId());
+        setWidgetsValues(
+                currentSong.getTitle(),
+                currentSong.getArtist(),
+                currentSong.getRating(),
+                Utility.convertByteToBitmap(currentSong.getArtwork()),
+                this.songDaoInstance.findRatingBySongId(currentSong.getSongId()),
+                this.currentTagOfSong
+        );
+    }
+
 
     private void setTextViewSelected() {
         this.tvTitleSong.setSelected(true);
@@ -222,14 +243,12 @@ public class PlayerActivity extends AppCompatActivity {
     private void openAlertDialogToAddTag() {
         EditText editTextTag = new EditText(this);
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+        long currentSongId = this.songService.getPlaylistSongs().get(songService.getSongIndex()).getSongId();
+        this.currentTagOfSong = this.songDaoInstance.findTagBySongId(currentSongId);
 
-        alertDialogBuilder.setView(editTextTag);
-        alertDialogBuilder.setIcon(R.drawable.ic_playlist_tag_black);
-        alertDialogBuilder.setTitle("Ajout d'un tag");
-
-        //String currentTag = this.soundroidDatabaseInstance.songDao().
-
-        alertDialogBuilder.setPositiveButton("OK", (dialog, whichButton) -> {
+        alertDialogBuilder.setView(editTextTag).setIcon(R.drawable.ic_playlist_tag_black).setTitle("Tag de la chanson (max 25 caractères)");
+        editTextTag.setText(this.currentTagOfSong);
+        alertDialogBuilder.setPositiveButton("VALIDER", (dialog, whichButton) -> {
             String tag = editTextTag.getText().toString();
             if (tag.length() > MAX_SIZE_TAG) {
                 new AlertDialog.Builder(this)
@@ -237,15 +256,16 @@ public class PlayerActivity extends AppCompatActivity {
                         .setMessage("Le tag saisi est supérieur à 25 caractères ! ")
                         .show();
             } else {
-                this.soundroidDatabaseInstance.songDao().updateSongTagById(tag, this.songService.getPlaylistSongs().get(songService.getSongIndex()).getSongId());
-                //Log.d("PlayerActivity add tag", this.soundroidDatabaseInstance.songDao().getAllSongs().toString());
+                this.currentTagOfSong = tag;
+                this.songDaoInstance.updateSongTagById(this.currentTagOfSong, currentSongId);
+                this.tvTag.setText(currentTagOfSong);
+                this.ivDeleteTag.setVisibility(View.VISIBLE);
             }
 
-        }).setNegativeButton("ANNULER", (dialog, whichButton) -> finish())
+        }).setNegativeButton("ANNULER", (dialog, whichButton) -> dialog.dismiss())
                 .create();
 
         AlertDialog ad = alertDialogBuilder.create();
-
         ad.show();
         ad.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(getResources().getColor(R.color.colorPrimaryFlash));
         ad.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(getResources().getColor(R.color.colorPrimaryFlash));
@@ -259,42 +279,44 @@ public class PlayerActivity extends AppCompatActivity {
     }
 
     private void resetRating() {
-        for(int i=0; i<this.stars.length; i++){
-            this.stars[i].setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_outline_star_note));
+        for (ImageView star : this.stars) {
+            star.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_outline_star_note));
         }
         this.songService.getPlaylistSongs().get(this.songService.getSongIndex()).setRating(0);
     }
 
     private void clearRating() {
         resetRating();
-        Log.d("PlayerActivity clear rating", this.soundroidDatabaseInstance.songDao().getAllSongs().toString());
+        Log.d("PlayerActivity clear rating", this.songDaoInstance.getAllSongs().toString());
     }
 
     /**
      * Put an image of filled stars corresponding to the rating
-     * @param nbStars
+     *
+     * @param nbStars number of stars
      */
-    private void setRating(int nbStars){
+    private void setRating(int nbStars) {
         // fill the stars
-        for(int i=0; i<nbStars; i++){
+        for (int i = 0; i < nbStars; i++) {
             this.stars[i].setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_filled_star_note));
         }
         // reset stars if the note has been decreased
-        for(int i=nbStars; i<this.stars.length; i++){
+        for (int i = nbStars; i < this.stars.length; i++) {
             this.stars[i].setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_outline_star_note));
         }
-        this.soundroidDatabaseInstance.songDao().updateSongRatingById(nbStars, this.songService.getPlaylistSongs().get(this.songService.getSongIndex()).getSongId());
-        Log.d("PlayerActivity update Rating : " + nbStars, this.soundroidDatabaseInstance.songDao().getAllSongs().toString());
+        this.songDaoInstance.updateSongRatingById(nbStars, this.songService.getPlaylistSongs().get(this.songService.getSongIndex()).getSongId());
+        Log.d("PlayerActivity update Rating : " + nbStars, this.songDaoInstance.getAllSongs().toString());
     }
 
     /**
      * Return a listener to put on image view of stars
-     * @param nbStars
-     * @return
+     *
+     * @param nbStars number of stars
+     * @return listener
      */
-    private View.OnClickListener getStarsListener(int nbStars){
-        return v->{
-            if(!isNoteSet) {
+    private View.OnClickListener getStarsListener(int nbStars) {
+        return v -> {
+            if (!isNoteSet) {
                 this.setRating(nbStars);
             } else {
                 isNoteSet = false;
@@ -304,8 +326,8 @@ public class PlayerActivity extends AppCompatActivity {
     }
 
     public void setListenerRating() {
-        for(int i=0; i<this.stars.length; i++){
-            this.stars[i].setOnClickListener(getStarsListener(i+1));
+        for (int i = 0; i < this.stars.length; i++) {
+            this.stars[i].setOnClickListener(getStarsListener(i + 1));
         }
     }
 
@@ -334,7 +356,7 @@ public class PlayerActivity extends AppCompatActivity {
             @Override
             public void run() {
                 // mediaPlayer is Playing ?
-                if(songService.playerIsPlaying()) {
+                if (songService.playerIsPlaying()) {
                     currentSongLength = songService.getSongDuration();
                     seekBarPlayback.setMax((int) currentSongLength / 1000); // To calculate the progress of the song
                     int mCurrentPosition = songService.getCurrentPositionPlayer() / 1000;
@@ -346,6 +368,37 @@ public class PlayerActivity extends AppCompatActivity {
         };
 
         this.runOnUiThread(mRunnable);
+    }
+
+    private void installDisplayOfTagWithDeleteButton() {
+        if (currentTagReceived != null && currentTagReceived.length() > 0) {
+            this.tvTag.setText(currentTagReceived);
+            this.ivDeleteTag.setVisibility(View.VISIBLE);
+        } else {
+            this.ivDeleteTag.setVisibility(View.INVISIBLE);
+        }
+    }
+
+    private void installOnClickListenerButtonDeleteTag() {
+        this.ivDeleteTag.setOnClickListener(v -> {
+
+            AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+            alertDialogBuilder
+                    .setTitle("Supression")
+                    .setMessage("Vouslez vous vraiment supprimer ce tag ?")
+                    .setPositiveButton("OUI, il est null!", ((dialog, which) -> {
+                        this.songDaoInstance.updateSongWithNullTagBySongId(this.songService.getPlaylistSongs().get(songService.getSongIndex()).getSongId());
+                        this.tvTag.setText(this.songDaoInstance.findTagBySongId(this.songService.getPlaylistSongs().get(songService.getSongIndex()).getSongId()));
+                        this.ivDeleteTag.setVisibility(View.INVISIBLE);
+                    }))
+                    .setNegativeButton("NON", (dialog, whichButton) -> dialog.dismiss());
+            AlertDialog ad = alertDialogBuilder.create();
+            ad.show();
+            ad.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(getResources().getColor(R.color.colorPrimaryFlash));
+            ad.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(getResources().getColor(R.color.colorPrimaryFlash));
+        });
+
+
     }
 
     private void pushPlayControl() {
@@ -366,13 +419,7 @@ public class PlayerActivity extends AppCompatActivity {
         ivControlPlaySong.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_pause_white_2x));
         Log.d("PlayerActivity pushNext", " " + this.songService.getPlaylistSongs().get(this.songService.getSongIndex()).getRating());
         this.clearRating();
-        setWidgetsValues(
-                this.songService.getPlaylistSongs().get(songService.getSongIndex()).getTitle(),
-                this.songService.getPlaylistSongs().get(songService.getSongIndex()).getArtist(),
-                this.songService.getPlaylistSongs().get(songService.getSongIndex()).getRating(),
-                Utility.convertByteToBitmap(this.songService.getPlaylistSongs().get(this.songService.getSongIndex()).getArtwork()),
-                this.songService.getPlaylistSongs().get(this.songService.getSongIndex()).getDuration()
-        );
+        this.setWidgetsValues();
     }
 
     private void pushPreviousControl() {
@@ -380,13 +427,7 @@ public class PlayerActivity extends AppCompatActivity {
         ivControlPlaySong.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_pause_white_2x));
         Log.d("PlayerActivity pushPrevious", " " + this.songService.getPlaylistSongs().get(this.songService.getSongIndex()).getRating());
         this.clearRating();
-        setWidgetsValues(
-                this.songService.getPlaylistSongs().get(songService.getSongIndex()).getTitle(),
-                this.songService.getPlaylistSongs().get(songService.getSongIndex()).getArtist(),
-                this.songService.getPlaylistSongs().get(songService.getSongIndex()).getRating(),
-                Utility.convertByteToBitmap(this.songService.getPlaylistSongs().get(this.songService.getSongIndex()).getArtwork()),
-                this.songService.getPlaylistSongs().get(this.songService.getSongIndex()).getDuration()
-        );
+        this.setWidgetsValues();
     }
 
     /**

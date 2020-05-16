@@ -52,4 +52,5 @@
     <string name="bouton_pour_ajouter_une_playlist">Bouton pour ajouter une playlist</string>
     <string name="ajouter_une_playlist">Ajouter une playlist</string>
     <string name="nom_de_la_liste_de_lecture">Nom de la liste de lecture</string>
+    <string name="mon_tag">mon tag</string>
 </resources>
