@@ -22,19 +22,19 @@ public interface SongDao {
     @Query("SELECT * FROM Song")
     List<Song> getAllSongs();
 
-    @Query("SELECT * FROM Song WHERE title= :title")
+    @Query("SELECT * FROM Song WHERE title LIKE '%'||:title ||'%'")
     Song findByTitle(String title);
 
     @Query("SELECT * FROM Song WHERE songId= :songId")
     Song findById(long songId);
 
-    @Query("SELECT * FROM Song WHERE artist= :artist")
+    @Query("SELECT * FROM Song WHERE artist LIKE '%'||:artist||'%'")
     List<Song> findAllByArtist(String artist);
 
     @Query("SELECT * FROM Song WHERE style= :style")
     List<Song> findAllByStyle(String style);
 
-    @Query("SELECT * FROM Song WHERE album = :album")
+    @Query("SELECT * FROM Song WHERE album LIKE '%'||:album ||'%'")
     List<Song> findAllByAlbum(String album);
 
     @Query("SELECT * FROM Song WHERE rating = :rating")
