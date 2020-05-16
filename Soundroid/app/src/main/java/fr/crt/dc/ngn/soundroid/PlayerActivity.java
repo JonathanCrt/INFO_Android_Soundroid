@@ -23,6 +23,7 @@ import android.os.IBinder;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.SeekBar;
@@ -110,6 +111,10 @@ public class PlayerActivity extends AppCompatActivity {
         SoundroidDatabase soundroidDatabaseInstance = SoundroidDatabase.getInstance(this);
         this.songDaoInstance = soundroidDatabaseInstance.songDao();
         this.installOnClickListenerButtonDeleteTag();
+
+
+
+
         /*
         final LayoutInflater factory = getLayoutInflater();
         final View mainActivityView = factory.inflate(R.layout.toolbar_player, null);
@@ -216,12 +221,14 @@ public class PlayerActivity extends AppCompatActivity {
     public void setWidgetsValues() {
         Song currentSong = this.songService.getPlaylistSongs().get(this.songService.getSongIndex());
         this.currentTagOfSong = this.songDaoInstance.findTagBySongId(currentSong.getSongId());
+        int currentRating  = this.songDaoInstance.findRatingBySongId(currentSong.getSongId());
+        Log.d("PlayerActivity rating", " val:" + this.songDaoInstance.findRatingBySongId(currentSong.getSongId()));
         setWidgetsValues(
                 currentSong.getTitle(),
                 currentSong.getArtist(),
-                currentSong.getRating(),
+                currentRating,
                 Utility.convertByteToBitmap(currentSong.getArtwork()),
-                this.songDaoInstance.findRatingBySongId(currentSong.getSongId()),
+                currentSong.getDuration(),
                 this.currentTagOfSong
         );
     }
