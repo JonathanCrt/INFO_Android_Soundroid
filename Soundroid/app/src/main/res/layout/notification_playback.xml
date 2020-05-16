@@ -85,7 +85,7 @@
                 android:orientation="horizontal"
                 android:showDividers="middle">
                 
-                
+                <!--
                 <Button
                     android:id="@+id/btn_panel_previous"
                     android:layout_width="42dp"
@@ -124,6 +124,7 @@
                     android:background="@drawable/ic_next_white"
                     style="@style/Widget.AppCompat.Button.Borderless">
                 </Button>
+                -->
 
 
             </LinearLayout>

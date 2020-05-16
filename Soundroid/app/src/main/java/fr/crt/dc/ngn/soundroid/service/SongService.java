@@ -168,6 +168,7 @@ public class SongService extends Service implements MediaPlayer.OnPreparedListen
         PendingIntent piDelete = PendingIntent.getBroadcast(this, 0, deleteIntent, PendingIntent.FLAG_UPDATE_CURRENT);
         PendingIntent piTest = PendingIntent.getBroadcast(this, 0, testIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
+        /*
         expandedView.setPendingIntentTemplate(R.id.btn_panel_previous, piPrevious);
         expandedView.setPendingIntentTemplate(R.id.btn_panel_next, piNext);
         expandedView.setPendingIntentTemplate(R.id.btn_panel_pause, piPause);
@@ -175,6 +176,8 @@ public class SongService extends Service implements MediaPlayer.OnPreparedListen
         expandedView.setPendingIntentTemplate(R.id.btn_expanded_panel_delete, piDelete);
 
         expandedView.setOnClickPendingIntent(R.id.btn_panel_play, piTest);
+
+         */
 
         // build a read notification to display it in the notifications panel
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID)
