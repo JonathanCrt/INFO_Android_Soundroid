@@ -48,19 +48,11 @@ public class PlaylistFragmentDetail extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-
+        // Inflate the layout for this fragmentapp
         View v = inflater.inflate(R.layout.fragment_playlist_detail, container, false);
-        CollapsingToolbarLayout appBarLayout = v.findViewById(R.id.toolbar_layout);
         Toolbar toolbar = v.findViewById(R.id.detail_toolbar);
-        appBarLayout.setTitle(namePlaylist);
-        appBarLayout.setTitleEnabled(true);
-        appBarLayout.setCollapsedTitleTextColor(getResources().getColor(R.color.colorAccent));
-        appBarLayout.setExpandedTitleColor(getResources().getColor(R.color.colorAccent));
-
-        //toolbar.setTitle("title");
-        //toolbar.setTitleTextColor(getResources().getColor(R.color.colorAccent));
-
+        // set the name of the playlist
+        toolbar.setTitle(namePlaylist);
         this.lvPlaylistDetail = v.findViewById(R.id.list_playlist_detail);
         this.songs = (ArrayList<Song>) this.soundroidDatabaseInstance.junctionDAO().findAllSongsByPlaylistId(this.soundroidDatabaseInstance.playlistDao().findPlaylistIdByName(namePlaylist));
         Toast.makeText(getContext(), "" + this.songs, Toast.LENGTH_LONG).show();

@@ -182,28 +182,28 @@ public class AllTracksFragment extends Fragment {
 
             // Array adapter to show a list of playlist
             List<Playlist> playlistList = SoundroidDatabase.getInstance(this.getContext()).playlistDao().getAllPlayLists();
-            // transform the list into an array of playlist
+            // transform the playlist list into an array of playlist name
             String[] playlistsNames = playlistList.stream().map(Playlist::getName).toArray(String[]::new);
             ArrayAdapter<String> adapter = new ArrayAdapter<>(this.getContext(),
                     android.R.layout.simple_dropdown_item_1line, playlistsNames);
             final AutoCompleteTextView autoCompleteTextView = new AutoCompleteTextView(this.getContext());
             autoCompleteTextView.setAdapter(adapter);
             alertDialogBuilder.setView(autoCompleteTextView);
-            // DIsplay later the playlist name because it takes time to set the adapter
+            // Display later the playlist name because it takes time to set the adapter
             new Handler().postDelayed(autoCompleteTextView::showDropDown, 100);
             alertDialogBuilder.setNegativeButton("Cancel", null);
             alertDialogBuilder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                     String playlistName = autoCompleteTextView.getText().toString();
-                    if (playlistName.length()==0){
-                        Toast.makeText(getContext(), "Click on an playlist name !", Toast.LENGTH_SHORT).show();
+                    // If the playlist name is not correct
+                    if (playlistName.length()==0 || !Arrays.asList(playlistsNames).contains(playlistName)){
+                        Toast.makeText(getContext(), "Click on a playlist name !", Toast.LENGTH_SHORT).show();
                     }else{
                         Log.d("LOG", "PlaylistName = " + playlistName);
-                        Playlist plailistClicked = playlistList.stream().filter(p->p.getName().equals(playlistName)).findAny().get();
-                        SoundroidDatabase.getInstance(getContext()).junctionDAO().insertSongIntoPlayList(songPressed.getSongId(), plailistClicked.getPlaylistId());
-                        Log.d("PlaylistCLicked", plailistClicked.toString());
-                        Log.d("PlaylistCLicked size ", String.valueOf(SoundroidDatabase.getInstance(getContext()).junctionDAO().findAllSongsByPlaylistId(plailistClicked.getPlaylistId()).size()));
+                        Playlist playlistClicked = playlistList.stream().filter(p->p.getName().equals(playlistName)).findAny().get();
+                        SoundroidDatabase.getInstance(getContext()).junctionDAO().insertSongIntoPlayList(songPressed.getSongId(), playlistClicked.getPlaylistId());
+                        Log.d("PlaylistCLicked size ", String.valueOf(SoundroidDatabase.getInstance(getContext()).junctionDAO().findAllSongsByPlaylistId(playlistClicked.getPlaylistId()).size()));
                     }
 
                 }
@@ -214,8 +214,6 @@ public class AllTracksFragment extends Fragment {
             Objects.requireNonNull(ad.getWindow()).setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
             ad.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(getResources().getColor(R.color.colorPrimaryFlash));
             ad.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(getResources().getColor(R.color.colorPrimaryFlash));
-
-
 
             return true;
         });
