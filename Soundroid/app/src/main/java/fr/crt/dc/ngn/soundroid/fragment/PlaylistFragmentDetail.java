@@ -19,6 +19,7 @@ import java.util.Arrays;
 
 import fr.crt.dc.ngn.soundroid.R;
 import fr.crt.dc.ngn.soundroid.adapter.PlaylistAdapter;
+import fr.crt.dc.ngn.soundroid.adapter.PlaylistDetailAdapter;
 import fr.crt.dc.ngn.soundroid.adapter.SongAdapter;
 import fr.crt.dc.ngn.soundroid.database.SoundroidDatabase;
 import fr.crt.dc.ngn.soundroid.database.entity.Playlist;
@@ -26,10 +27,7 @@ import fr.crt.dc.ngn.soundroid.database.entity.Song;
 
 public class PlaylistFragmentDetail extends Fragment {
 
-    private ListView lvPlaylistDetail;
-    private ArrayList<Song> songs;
     private SoundroidDatabase soundroidDatabaseInstance;
-    private SongAdapter songAdapter;
     private String namePlaylist;
 
     public PlaylistFragmentDetail() {
@@ -53,11 +51,11 @@ public class PlaylistFragmentDetail extends Fragment {
         Toolbar toolbar = v.findViewById(R.id.detail_toolbar);
         // set the name of the playlist
         toolbar.setTitle(namePlaylist);
-        this.lvPlaylistDetail = v.findViewById(R.id.list_playlist_detail);
-        this.songs = (ArrayList<Song>) this.soundroidDatabaseInstance.junctionDAO().findAllSongsByPlaylistId(this.soundroidDatabaseInstance.playlistDao().findPlaylistIdByName(namePlaylist));
-        Toast.makeText(getContext(), "" + this.songs, Toast.LENGTH_LONG).show();
-        this.songAdapter = new SongAdapter(getContext(), songs);
-        this.lvPlaylistDetail.setAdapter(songAdapter);
+        ListView lvPlaylistDetail = v.findViewById(R.id.list_playlist_detail);
+        ArrayList<Song> songs = (ArrayList<Song>) this.soundroidDatabaseInstance.junctionDAO().findAllSongsByPlaylistId(this.soundroidDatabaseInstance.playlistDao().findPlaylistIdByName(namePlaylist));
+        Toast.makeText(getContext(), "" + songs, Toast.LENGTH_LONG).show();
+        PlaylistDetailAdapter playlistDetailAdapter = new PlaylistDetailAdapter(getContext(), songs);
+        lvPlaylistDetail.setAdapter(playlistDetailAdapter);
         return v;
     }
 }
