@@ -22,6 +22,9 @@ public interface SongDao {
     @Query("SELECT * FROM Song")
     List<Song> getAllSongs();
 
+    @Query("SELECT * FROM Song WHERE tag not null and tag != ''")
+    List<Song> getAllSongsWithTag();
+
     @Query("SELECT * FROM Song WHERE title LIKE '%'||:title ||'%'")
     Song findByTitle(String title);
 

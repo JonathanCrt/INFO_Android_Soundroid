@@ -30,6 +30,7 @@ import fr.crt.dc.ngn.soundroid.R;
 import fr.crt.dc.ngn.soundroid.adapter.PlaylistAdapter;
 import fr.crt.dc.ngn.soundroid.database.SoundroidDatabase;
 import fr.crt.dc.ngn.soundroid.database.entity.Playlist;
+import fr.crt.dc.ngn.soundroid.database.entity.Song;
 
 public class PlaylistFragment extends Fragment {
 
@@ -45,6 +46,7 @@ public class PlaylistFragment extends Fragment {
 
     private ImageView ivPlaylistfilter;
     private Button btnAddPlaylist;
+    private ImageView iv_playlist_songs_with_tag;
     private SoundroidDatabase soundroidDatabaseInstance;
     public static int MAX_SIZE_NAME_PLAYLIST = 45;
     ArrayList<Playlist> playlists;
@@ -64,6 +66,7 @@ public class PlaylistFragment extends Fragment {
         this.tvPlaylistSongsWithTagCounter = view.findViewById(R.id.tv_playlist_label_songs_with_tag_counter);
         this.ivPlaylistfilter = view.findViewById(R.id.iv_playlist_filter);
         this.btnAddPlaylist = view.findViewById(R.id.btn_add_playlist);
+        this.iv_playlist_songs_with_tag = view.findViewById(R.id.iv_playlist_songs_with_tag);
     }
 
     @Override
@@ -86,12 +89,61 @@ public class PlaylistFragment extends Fragment {
         this.installOnAddPlaylistButtonListener();
         this.installOnLongItemClickListener();
         this.installOnItemClickListener();
+        this.installPlaylistTagButtonListener();
+        int nbSongsInPlaylistWithTag = this.createPlaylistWithTag();
+        // Put the number of songs in playlistWithTag
+        this.tvPlaylistSongsWithTagCounter.setText(String.valueOf(nbSongsInPlaylistWithTag) + " chansons");
 
         Log.d("PlaylistFragment all songs", this.soundroidDatabaseInstance.songDao().getAllSongs().toString());
         Log.d("PlaylistFragment all playlists", this.soundroidDatabaseInstance.playlistDao().getAllPlayLists().toString());
         Log.d("PlaylistFragment songs into Playlist", this.soundroidDatabaseInstance.junctionDAO().getPlaylistsWithSongs().toString());
         Log.d("PlaylistFragment songs for playlist n°2", this.soundroidDatabaseInstance.junctionDAO().findAllSongsByPlaylistId(2).toString());
         return v;
+    }
+
+    /**
+     *
+     * @return number of songs in playlist with tag
+     */
+    private int createPlaylistWithTag(){
+        List<Song> songWithTag = this.soundroidDatabaseInstance.songDao().getAllSongsWithTag();
+        Playlist playlistWithTag = this.soundroidDatabaseInstance.playlistDao().findByName("tag");
+        // No playlist with tag yet
+        if(playlistWithTag == null) {
+            playlistWithTag = new Playlist("tag");
+            this.soundroidDatabaseInstance.playlistDao().insertPlayList(playlistWithTag);
+        }
+
+        long playlistWithTagId = playlistWithTag.getPlaylistId();
+        List<Song> songInPlaylistWithTag = this.soundroidDatabaseInstance.junctionDAO().findAllSongsByPlaylistId(playlistWithTagId);
+        for (Song s : songWithTag) {
+            // Song not in the playlist with tag yet
+            if(!songInPlaylistWithTag.contains(s)){
+                this.soundroidDatabaseInstance.junctionDAO().insertSongIntoPlayList(s.getSongId(), playlistWithTagId);
+            }
+        }
+        Log.i("PLAYLIST TAG ", soundroidDatabaseInstance.junctionDAO().findAllSongsByPlaylistId(playlistWithTagId).toString());
+        return soundroidDatabaseInstance.junctionDAO().findAllSongsByPlaylistId(playlistWithTagId).size();
+    }
+
+
+    private void installPlaylistTagButtonListener(){
+        iv_playlist_songs_with_tag.setOnClickListener(v->{
+            Log.d("PLAYLIST", "WITH TAG");
+
+            Bundle arguments = new Bundle();
+            arguments.putString("name of playlist", "tag");
+
+            PlaylistFragmentDetail playlistFragmentDetail = new PlaylistFragmentDetail();
+            playlistFragmentDetail.setArguments(arguments);
+            FragmentTransaction fragmentTransaction = getParentFragmentManager().beginTransaction();
+            fragmentTransaction
+                    .replace(R.id.nav_host_fragment, playlistFragmentDetail)
+                    .addToBackStack(null)
+                    .commit();
+
+        });
+
     }
 
     private void installOnAddPlaylistButtonListener() {

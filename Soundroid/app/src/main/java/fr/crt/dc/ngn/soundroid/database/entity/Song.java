@@ -2,6 +2,7 @@ package fr.crt.dc.ngn.soundroid.database.entity;
 
 import java.util.Arrays;
 import java.util.Locale;
+import java.util.Objects;
 
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
@@ -212,5 +213,18 @@ public class Song {
                 ", rating='" + rating + '\'' +
                 ", tag='" + tag + '\'' +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Song song = (Song) o;
+        return songId == song.songId;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(songId);
     }
 }
