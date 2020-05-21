@@ -70,14 +70,10 @@ public class PlaylistFragmentDetail extends Fragment {
             Toolbar toolbar = v.findViewById(R.id.detail_toolbar);
             // set the name of the playlist
             toolbar.setTitle(namePlaylist);
-            ListView lvPlaylistDetail = v.findViewById(R.id.list_playlist_detail);
-            ArrayList<Song> songs = (ArrayList<Song>) this.soundroidDatabaseInstance.junctionDAO().findAllSongsByPlaylistId(this.soundroidDatabaseInstance.playlistDao().findPlaylistIdByName(namePlaylist));
-            PlaylistDetailAdapter playlistDetailAdapter = new PlaylistDetailAdapter(getContext(), songs);
-            lvPlaylistDetail.setAdapter(playlistDetailAdapter);
-            // populate listView
-            this.lvPlaylistDetail = v.findViewById(R.id.list_playlist_detail);
             this.songs = (ArrayList<Song>) this.soundroidDatabaseInstance.junctionDAO().findAllSongsByPlaylistId(this.soundroidDatabaseInstance.playlistDao().findPlaylistIdByName(namePlaylist));
-            this.lvPlaylistDetail.setAdapter(playlistDetailAdapter);
+            PlaylistDetailAdapter playlistDetailAdapter = new PlaylistDetailAdapter(getContext(), songs);
+            this.lvPlaylistDetail = v.findViewById(R.id.list_playlist_detail);
+            lvPlaylistDetail.setAdapter(playlistDetailAdapter);
         });
         t.start();
         try {
@@ -93,6 +89,10 @@ public class PlaylistFragmentDetail extends Fragment {
 
         // set the name of the playlist
         toolbar.setTitle(namePlaylist);
+
+        if(this.songs.size() == 0) {
+            Toast.makeText(getContext(), "Cette liste de lecture est vide", Toast.LENGTH_LONG).show();
+        }
 
         // listeners
         this.onClickOnFloatingButton();

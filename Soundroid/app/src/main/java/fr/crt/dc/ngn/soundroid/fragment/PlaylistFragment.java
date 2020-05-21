@@ -226,7 +226,8 @@ public class PlaylistFragment extends Fragment {
                             .show();
                 } else {
                     new Thread(()->{
-                        this.soundroidDatabaseInstance.playlistDao().insertPlayList(new Playlist(playlistName));
+                        String correctFormatPlaylistName = playlistName.substring(0, 1).toUpperCase() + playlistName.substring(1);
+                        this.soundroidDatabaseInstance.playlistDao().insertPlayList(new Playlist(correctFormatPlaylistName));
                         Log.d("PlaylistFragment add playlist", this.soundroidDatabaseInstance.playlistDao().getAllPlayLists().toString());
                         Log.d("PlaylistFragment songs into Playlist", this.soundroidDatabaseInstance.junctionDAO().getPlaylistsWithSongs().toString());
                         this.playlists.clear();
