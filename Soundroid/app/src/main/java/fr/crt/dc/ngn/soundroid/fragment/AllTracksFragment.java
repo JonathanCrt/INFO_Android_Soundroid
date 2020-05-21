@@ -91,19 +91,6 @@ public class AllTracksFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         initialization();
-
-        /*
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (checkSelfPermission(Objects.requireNonNull(this.getContext()), Manifest.permission.READ_EXTERNAL_STORAGE)
-                    != PackageManager.PERMISSION_GRANTED) {
-                requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
-            }
-            if (checkSelfPermission(Objects.requireNonNull(this.getContext()), Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                    != PackageManager.PERMISSION_GRANTED) {
-                requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
-            }
-        }
-         */
     }
 
     @Override
@@ -141,11 +128,12 @@ public class AllTracksFragment extends Fragment {
                 Toast.makeText(this.getContext(), "You clicked on : " + item.getTitle(), Toast.LENGTH_SHORT).show();
                 Log.d("AllTracksFragment item", " " + item.getTitle());
                 songAdapter.getFilter().filter(item.getTitle());
+                this.songAdapter.notifyDataSetChanged();
                 return true;
             });
             popup.show(); //showing popup menu
-
         });
+
 
     }
 
