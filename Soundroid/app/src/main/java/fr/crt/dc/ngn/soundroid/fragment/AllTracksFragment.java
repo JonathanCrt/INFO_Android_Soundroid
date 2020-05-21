@@ -31,6 +31,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.PopupMenu;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -66,6 +67,8 @@ public class AllTracksFragment extends Fragment {
     private View vSearchButton;
     private ImageView ivButtonAccessHistory;
     private ImageView ivButtonAccessPlaylists;
+    private int currentNumbersOfSongs;
+    private TextView tvNumberOfSongs;
 
     private static AllTracksFragment context;
 
@@ -109,6 +112,7 @@ public class AllTracksFragment extends Fragment {
         this.shuffleButton = v.findViewById(R.id.button2);
         this.toShuffle();
 
+        this.tvNumberOfSongs = v.findViewById(R.id.tv_list_number_songs);
         this.ivButtonAccessHistory = v.findViewById(R.id.iv_list_go_history);
         this.ivButtonAccessPlaylists = v.findViewById(R.id.iv_list_go_playlists);
         ConstraintLayout constraintLayout = requireActivity().findViewById(R.id.crt_layout);
@@ -219,7 +223,9 @@ public class AllTracksFragment extends Fragment {
         Log.i("intent value: ", "" + intent);
         this.doBindService();
         Toast.makeText(this.getContext(), "PlayList size: " + RootList.getRootList().size(), Toast.LENGTH_SHORT).show();
+        this.tvNumberOfSongs.setText(String.valueOf(RootList.getRootList().size()));
     }
+
 
     /**
      * Allow once the user returns to the application after you set the background
@@ -246,6 +252,7 @@ public class AllTracksFragment extends Fragment {
     @Override
     public void onStop() {
         Log.d("cycle life of fragment", "i'm inside onStop");
+        this.currentNumbersOfSongs =  Integer.parseInt(this.tvNumberOfSongs.getText().toString());
         super.onStop();
     }
 
