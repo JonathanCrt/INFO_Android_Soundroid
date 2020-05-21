@@ -1,29 +1,27 @@
 package fr.crt.dc.ngn.soundroid.fragment;
 
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
+import android.os.AsyncTask;
 import android.os.Bundle;
 
-import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
-import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
-
-import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import androidx.fragment.app.FragmentTransaction;
 import fr.crt.dc.ngn.soundroid.R;
@@ -77,6 +75,7 @@ public class PlaylistFragment extends Fragment {
         this.soundroidDatabaseInstance = SoundroidDatabase.getInstance(this.getContext());
     }
 
+    @SuppressLint("SetTextI18n")
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -93,13 +92,18 @@ public class PlaylistFragment extends Fragment {
         this.installOnItemClickListener();
         this.installPlaylistTagButtonListener();
         this.installPlaylistFavorisButtonListener();
-        int nbSongsInPlaylistWithTag = this.createPlaylistWithTag();
+        int nbSongsInPlaylistWithTag = 0;
         // Put the number of songs in playlistWithTag
-        this.tvPlaylistSongsWithTagCounter.setText(String.valueOf(nbSongsInPlaylistWithTag) + " chansons");
-        int nbSongsInPlaylistFavoris = this.createPlaylistInFavorites();
+        int nbSongsInPlaylistFavoris = 0;
+        try {
+            nbSongsInPlaylistWithTag = this.createPlaylistWithTag();
+            nbSongsInPlaylistFavoris = this.createPlaylistInFavorites();
+        } catch (ExecutionException | InterruptedException e) {
+            e.printStackTrace();
+        }
         // Put the number of songs in FavorisPlaylist
-        this.tvPlaylistFavouritesSongsCounter.setText(String.valueOf(nbSongsInPlaylistFavoris) + " chansons");
-
+        this.tvPlaylistSongsWithTagCounter.setText(nbSongsInPlaylistWithTag + " chansons");
+        this.tvPlaylistFavouritesSongsCounter.setText(nbSongsInPlaylistFavoris + " chansons");
 
         Log.d("PlaylistFragment all songs", this.soundroidDatabaseInstance.songDao().getAllSongs().toString());
         Log.d("PlaylistFragment all playlists", this.soundroidDatabaseInstance.playlistDao().getAllPlayLists().toString());
@@ -112,25 +116,27 @@ public class PlaylistFragment extends Fragment {
      *
      * @return number of songs in playlist with tag
      */
-    private int createPlaylistWithTag(){
-        List<Song> songWithTag = this.soundroidDatabaseInstance.songDao().getAllSongsWithTag();
-        Playlist playlistWithTag = this.soundroidDatabaseInstance.playlistDao().findByName("tag");
-        // No playlist with tag yet
-        if(playlistWithTag == null) {
-            playlistWithTag = new Playlist("tag");
-            this.soundroidDatabaseInstance.playlistDao().insertPlayList(playlistWithTag);
-        }
-
-        long playlistWithTagId = playlistWithTag.getPlaylistId();
-        List<Song> songInPlaylistWithTag = this.soundroidDatabaseInstance.junctionDAO().findAllSongsByPlaylistId(playlistWithTagId);
-        for (Song s : songWithTag) {
-            // Song not in the playlist with tag yet
-            if(!songInPlaylistWithTag.contains(s)){
-                this.soundroidDatabaseInstance.junctionDAO().insertSongIntoPlayList(s.getSongId(), playlistWithTagId);
+    private int createPlaylistWithTag() throws ExecutionException, InterruptedException {
+        return CompletableFuture.supplyAsync(() -> {
+            List<Song> songWithTag = this.soundroidDatabaseInstance.songDao().getAllSongsWithTag();
+            Playlist playlistWithTag = this.soundroidDatabaseInstance.playlistDao().findByName("tag");
+            // No playlist with tag yet
+            if (playlistWithTag == null) {
+                playlistWithTag = new Playlist("tag");
+                this.soundroidDatabaseInstance.playlistDao().insertPlayList(playlistWithTag);
             }
-        }
-        Log.i("PLAYLIST TAG ", soundroidDatabaseInstance.junctionDAO().findAllSongsByPlaylistId(playlistWithTagId).toString());
-        return soundroidDatabaseInstance.junctionDAO().findAllSongsByPlaylistId(playlistWithTagId).size();
+
+            long playlistWithTagId = playlistWithTag.getPlaylistId();
+            List<Song> songInPlaylistWithTag = this.soundroidDatabaseInstance.junctionDAO().findAllSongsByPlaylistId(playlistWithTagId);
+            for (Song s : songWithTag) {
+                // Song not in the playlist with tag yet
+                if (!songInPlaylistWithTag.contains(s)) {
+                    this.soundroidDatabaseInstance.junctionDAO().insertSongIntoPlayList(s.getSongId(), playlistWithTagId);
+                }
+            }
+            Log.i("PLAYLIST TAG ", soundroidDatabaseInstance.junctionDAO().findAllSongsByPlaylistId(playlistWithTagId).toString());
+            return soundroidDatabaseInstance.junctionDAO().findAllSongsByPlaylistId(playlistWithTagId).size();
+        }).get();
     }
 
     private void installPlaylistTagButtonListener(){
@@ -152,26 +158,29 @@ public class PlaylistFragment extends Fragment {
      *
      * @return number of songs in favorite playlist
      */
-    private int createPlaylistInFavorites(){
-        List<Song> songFavorites = this.soundroidDatabaseInstance.songDao().getAllSongsInFavorites();
-        Log.i("PLAYLIST FAV ", songFavorites.toString());
-        Playlist playlistFavoris = this.soundroidDatabaseInstance.playlistDao().findByName("favoris");
-        // No favoris playlist yet
-        if(playlistFavoris == null) {
-            playlistFavoris = new Playlist("favoris");
-            this.soundroidDatabaseInstance.playlistDao().insertPlayList(playlistFavoris);
-        }
-
-        long playlistFavorisId = playlistFavoris.getPlaylistId();
-        List<Song> songInFavorites = this.soundroidDatabaseInstance.junctionDAO().findAllSongsByPlaylistId(playlistFavorisId);
-        for (Song s : songFavorites) {
-            // Song not in the playlist favoris yet
-            if(!songInFavorites.contains(s)){
-                this.soundroidDatabaseInstance.junctionDAO().insertSongIntoPlayList(s.getSongId(), playlistFavorisId);
+    private int createPlaylistInFavorites() throws ExecutionException, InterruptedException {
+        return CompletableFuture.supplyAsync(() -> {
+            List<Song> songFavorites = this.soundroidDatabaseInstance.songDao().getAllSongsInFavorites();
+            Log.i("PLAYLIST FAV ", songFavorites.toString());
+            Playlist playlistFavoris = this.soundroidDatabaseInstance.playlistDao().findByName("favoris");
+            // No favoris playlist yet
+            if(playlistFavoris == null) {
+                playlistFavoris = new Playlist("favoris");
+                this.soundroidDatabaseInstance.playlistDao().insertPlayList(playlistFavoris);
             }
-        }
-        Log.i("PLAYLIST FAVORIS ", soundroidDatabaseInstance.junctionDAO().findAllSongsByPlaylistId(playlistFavorisId).toString());
-        return soundroidDatabaseInstance.junctionDAO().findAllSongsByPlaylistId(playlistFavorisId).size();
+
+            long playlistFavorisId = playlistFavoris.getPlaylistId();
+            List<Song> songInFavorites = this.soundroidDatabaseInstance.junctionDAO().findAllSongsByPlaylistId(playlistFavorisId);
+            for (Song s : songFavorites) {
+                // Song not in the playlist favoris yet
+                if(!songInFavorites.contains(s)){
+                    this.soundroidDatabaseInstance.junctionDAO().insertSongIntoPlayList(s.getSongId(), playlistFavorisId);
+                }
+            }
+            Log.i("PLAYLIST FAVORIS ", soundroidDatabaseInstance.junctionDAO().findAllSongsByPlaylistId(playlistFavorisId).toString());
+            return soundroidDatabaseInstance.junctionDAO().findAllSongsByPlaylistId(playlistFavorisId).size();
+        }).get();
+
     }
 
     private void installPlaylistFavorisButtonListener(){
@@ -207,12 +216,16 @@ public class PlaylistFragment extends Fragment {
                             .setMessage("Le nom de la liste de lecture est supérieur à 45 caractères ! ")
                             .show();
                 } else {
-                    this.soundroidDatabaseInstance.playlistDao().insertPlayList(new Playlist(playlistName));
-                    Log.d("PlaylistFragment add playlist", this.soundroidDatabaseInstance.playlistDao().getAllPlayLists().toString());
-                    Log.d("PlaylistFragment songs into Playlist", this.soundroidDatabaseInstance.junctionDAO().getPlaylistsWithSongs().toString());
-                    this.playlists.clear();
-                    this.playlists.addAll(this.soundroidDatabaseInstance.playlistDao().getAllPlayLists());
-                    this.playlistAdapter.notifyDataSetChanged();
+                    new Thread(()->{
+                        this.soundroidDatabaseInstance.playlistDao().insertPlayList(new Playlist(playlistName));
+                        Log.d("PlaylistFragment add playlist", this.soundroidDatabaseInstance.playlistDao().getAllPlayLists().toString());
+                        Log.d("PlaylistFragment songs into Playlist", this.soundroidDatabaseInstance.junctionDAO().getPlaylistsWithSongs().toString());
+                        this.playlists.clear();
+                        this.playlists.addAll(this.soundroidDatabaseInstance.playlistDao().getAllPlayLists());
+                        getActivity().runOnUiThread(()->{
+                            this.playlistAdapter.notifyDataSetChanged();
+                        });
+                    }).start();
                 }
 
             }).create();

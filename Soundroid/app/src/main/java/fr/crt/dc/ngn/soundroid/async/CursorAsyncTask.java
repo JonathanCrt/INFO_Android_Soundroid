@@ -123,7 +123,7 @@ public class CursorAsyncTask extends AsyncTask<Void, Song, ArrayList<Song>> {
                         cursor.moveToNext();
                         continue;
                     }
-                    
+
                     String artistSong = cursor.getString(artistColumn);
                     long albumId = cursor.getLong(albumIdColumn);
                     String albumSong = cursor.getString(albumColumn);
@@ -181,8 +181,10 @@ public class CursorAsyncTask extends AsyncTask<Void, Song, ArrayList<Song>> {
         this.songAdapter.add(values[0]);
         this.songAdapter.notifyDataSetChanged();
         // update number of songs as things progress
-        TextView textView = ( AllTracksFragment.getAppContext()).getActivity().findViewById(R.id.tv_list_number_songs);
-        textView.setText(String.valueOf(songAdapter.getCount()));
+        if(( AllTracksFragment.getAppContext()).getActivity() != null){
+            TextView textView = ( AllTracksFragment.getAppContext()).getActivity().findViewById(R.id.tv_list_number_songs);
+            textView.setText(String.valueOf(songAdapter.getCount()));
+        }
     }
 
     /**
@@ -224,7 +226,9 @@ public class CursorAsyncTask extends AsyncTask<Void, Song, ArrayList<Song>> {
         this.songAdapter.notifyDataSetChanged();
         delegate.processFinish(result);
         // update number of songs at the end
-        TextView t = ( AllTracksFragment.getAppContext()).getActivity().findViewById(R.id.tv_list_number_songs);
-        t.setText(String.valueOf(result.size()));
+        if(( AllTracksFragment.getAppContext()).getActivity() != null) {
+            TextView t = (AllTracksFragment.getAppContext()).getActivity().findViewById(R.id.tv_list_number_songs);
+            t.setText(String.valueOf(result.size()));
+        }
     }
 }

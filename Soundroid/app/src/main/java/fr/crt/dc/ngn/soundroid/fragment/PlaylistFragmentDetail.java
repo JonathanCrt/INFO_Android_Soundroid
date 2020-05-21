@@ -53,7 +53,6 @@ public class PlaylistFragmentDetail extends Fragment {
         toolbar.setTitle(namePlaylist);
         ListView lvPlaylistDetail = v.findViewById(R.id.list_playlist_detail);
         ArrayList<Song> songs = (ArrayList<Song>) this.soundroidDatabaseInstance.junctionDAO().findAllSongsByPlaylistId(this.soundroidDatabaseInstance.playlistDao().findPlaylistIdByName(namePlaylist));
-        Toast.makeText(getContext(), "" + songs, Toast.LENGTH_LONG).show();
         PlaylistDetailAdapter playlistDetailAdapter = new PlaylistDetailAdapter(getContext(), songs);
         lvPlaylistDetail.setAdapter(playlistDetailAdapter);
         return v;
