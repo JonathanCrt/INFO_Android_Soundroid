@@ -373,33 +373,41 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void requestToDatabase(int position, String userInput) {
-        Song currentSong = null;
-        List<Song> resultList = null;
-        int flag = 0;
+        SearchActivity.Criteria flag = null;
         Intent intent = new Intent(this, SearchActivity.class);
+        class Box {
+            // champs mutable
+            private List<Song>  resultList= null;
+        }
+        Runnable run = null;
+        Box box = new Box();
+
         switch (position) {
             case 0:
-                currentSong = this.soundroidDatabase.songDao().findByTitle(userInput);
-                flag = 0;
-                intent.putExtra("title", StorageContainer.getInstance().add(currentSong));
-                Log.i("RESULT", "CURRENT SONG PLAYED by TITLE: " + currentSong);
+                run = () ->{ box.resultList = this.soundroidDatabase.songDao().findByTitle(userInput);};
+                flag = SearchActivity.Criteria.TITLE;
+                Log.i("RESULT", "CURRENT SONG PLAYED by TITLE: " + box.resultList);
                 break;
             case 1:
-                resultList = this.soundroidDatabase.songDao().findAllByArtist(userInput);
-                flag = 1;
-                intent.putExtra("flag", flag);
-                intent.putExtra("artist", StorageContainer.getInstance().add(resultList));
-                Log.i("RESULT", "CURRENT SONG PLAYED by ARTIST: " + resultList);
+                run = () -> box.resultList = this.soundroidDatabase.songDao().findAllByArtist(userInput);
+                flag = SearchActivity.Criteria.ARTIST;
+                Log.i("RESULT", "CURRENT SONG PLAYED by ARTIST: " + box.resultList);
                 break;
             case 2:
-                resultList = this.soundroidDatabase.songDao().findAllByAlbum(userInput);
-                flag = 2;
-                intent.putExtra("flag", flag);
-                intent.putExtra("album", StorageContainer.getInstance().add(resultList));
-                Log.i("RESULT", "CURRENT SONG PLAYED by ALBUM: " + resultList);
+                run =() ->box.resultList = this.soundroidDatabase.songDao().findAllByAlbum(userInput);
+                flag = SearchActivity.Criteria.ALBUM;
+                Log.i("RESULT", "CURRENT SONG PLAYED by ALBUM: " + box.resultList);
                 break;
         }
-
+        Thread td = new Thread(run);
+        td.start();
+        try {
+            td.join();
+        } catch (InterruptedException e) {
+            return;
+        }
+        intent.putExtra("flag", flag);
+        intent.putExtra("storageID", StorageContainer.getInstance().add(box.resultList));
         startActivity(intent);
 
     }

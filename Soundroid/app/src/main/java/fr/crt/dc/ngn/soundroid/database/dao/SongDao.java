@@ -29,7 +29,8 @@ public interface SongDao {
     List<Song> getAllSongsInFavorites();
 
     @Query("SELECT * FROM Song WHERE title LIKE '%'||:title ||'%'")
-    Song findByTitle(String title);
+    //Song findByTitle(String title);
+    List<Song> findByTitle(String title);
 
     @Query("SELECT * FROM Song WHERE songId= :songId")
     Song findById(long songId);
