@@ -38,6 +38,7 @@ public abstract class SoundroidDatabase extends RoomDatabase {
 
     public static SoundroidDatabase getInstance(Context context) {
         Log.d("SoundroidDatabase", "getting database instance");
+        Log.d("SoundroidDatabase", "Database path : "+ context.getDatabasePath("Soundroid.db").getAbsolutePath());
         DB_INSTANCE = null;
         if (DB_INSTANCE == null) {
             synchronized (SoundroidDatabase.class) {

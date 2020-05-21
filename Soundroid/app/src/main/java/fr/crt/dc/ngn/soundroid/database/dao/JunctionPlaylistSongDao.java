@@ -31,7 +31,6 @@ public interface JunctionPlaylistSongDao {
     @Query("INSERT INTO JunctionPlaylistSong(playlistId, songId) VALUES (:playlistId, :songId)")
     void insertSongIntoPlayList(long songId, long playlistId);
 
-
     @Query("SELECT * FROM Song " +
             "JOIN JunctionPlayListSong " +
             "   ON JunctionPlayListSong.songId = Song.songId " +
