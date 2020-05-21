@@ -372,36 +372,36 @@ public class MainActivity extends AppCompatActivity {
 
     public void requestToDatabase(int position, String userInput) {
         Song currentSong = null;
-        String tag = null;
         List<Song> resultList = null;
+        int flag = 0;
         Intent intent = new Intent(this, SearchActivity.class);
         switch (position) {
             case 0:
                 currentSong = this.soundroidDatabase.songDao().findByTitle(userInput);
-                // intent.putExtra("title", StorageContainer.getInstance().add(currentSong));
-                //intent.putExtra("title",(Serializable)currentSong);
+                flag = 0;
+                intent.putExtra("title", StorageContainer.getInstance().add(currentSong));
                 Log.i("RESULT", "CURRENT SONG PLAYED by TITLE: " + currentSong);
                 break;
             case 1:
                 resultList = this.soundroidDatabase.songDao().findAllByArtist(userInput);
-                //Intent intent = new Intent(this, SearchActivity.class);
-                //intent.putExtra("artist", StorageContainer.getInstance().add(artistList));
-                //startActivity(intent);
-                // this.searchList.setAdapter((ListAdapter) list);
-                tag = "artist";
-                intent.putExtra(tag, StorageContainer.getInstance().add(resultList));
+                flag = 1;
+                intent.putExtra("flag", flag);
+                intent.putExtra("artist", StorageContainer.getInstance().add(resultList));
                 Log.i("RESULT", "CURRENT SONG PLAYED by ARTIST: " + resultList);
                 break;
             case 2:
                 resultList = this.soundroidDatabase.songDao().findAllByAlbum(userInput);
-                tag = "album";
-                intent.putExtra(tag, StorageContainer.getInstance().add(resultList));
+                flag = 2;
+                intent.putExtra("flag", flag);
+                intent.putExtra("album", StorageContainer.getInstance().add(resultList));
                 Log.i("RESULT", "CURRENT SONG PLAYED by ALBUM: " + resultList);
                 break;
         }
+
         startActivity(intent);
 
     }
+
 
     private void checkTTS() {
         //Log.d("MainActivity tts", "checkTTS");
