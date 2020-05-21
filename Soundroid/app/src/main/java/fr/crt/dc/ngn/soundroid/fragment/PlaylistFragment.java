@@ -84,9 +84,6 @@ public class PlaylistFragment extends Fragment {
         this.initializeViews(v);
 
         this.lvPlayLists = v.findViewById(R.id.list_view_custom_playlists);
-        this.playlists = (ArrayList<Playlist>) this.soundroidDatabaseInstance.playlistDao().getAllPlayLists();
-        this.playlistAdapter = new PlaylistAdapter(getContext(), playlists);
-        this.lvPlayLists.setAdapter(this.playlistAdapter);
         this.installOnAddPlaylistButtonListener();
         this.installOnLongItemClickListener();
         this.installOnItemClickListener();
@@ -105,10 +102,22 @@ public class PlaylistFragment extends Fragment {
         this.tvPlaylistSongsWithTagCounter.setText(nbSongsInPlaylistWithTag + " chansons");
         this.tvPlaylistFavouritesSongsCounter.setText(nbSongsInPlaylistFavoris + " chansons");
 
-        Log.d("PlaylistFragment all songs", this.soundroidDatabaseInstance.songDao().getAllSongs().toString());
-        Log.d("PlaylistFragment all playlists", this.soundroidDatabaseInstance.playlistDao().getAllPlayLists().toString());
-        Log.d("PlaylistFragment songs into Playlist", this.soundroidDatabaseInstance.junctionDAO().getPlaylistsWithSongs().toString());
-        Log.d("PlaylistFragment songs for playlist n°2", this.soundroidDatabaseInstance.junctionDAO().findAllSongsByPlaylistId(2).toString());
+        Thread t = new Thread(()->{
+            this.playlists = (ArrayList<Playlist>) this.soundroidDatabaseInstance.playlistDao().getAllPlayLists();
+            Log.d("PlaylistFragment all songs", this.soundroidDatabaseInstance.songDao().getAllSongs().toString());
+            Log.d("PlaylistFragment all playlists", this.soundroidDatabaseInstance.playlistDao().getAllPlayLists().toString());
+            Log.d("PlaylistFragment songs into Playlist", this.soundroidDatabaseInstance.junctionDAO().getPlaylistsWithSongs().toString());
+            Log.d("PlaylistFragment songs for playlist n°2", this.soundroidDatabaseInstance.junctionDAO().findAllSongsByPlaylistId(2).toString());
+            this.playlistAdapter = new PlaylistAdapter(getContext(), playlists);
+            this.lvPlayLists.setAdapter(this.playlistAdapter);
+
+        });
+        t.start();
+        try {
+            t.join();
+        } catch (InterruptedException e) {
+            Log.e("InterruptedException", e.getMessage());
+        }
         return v;
     }
 

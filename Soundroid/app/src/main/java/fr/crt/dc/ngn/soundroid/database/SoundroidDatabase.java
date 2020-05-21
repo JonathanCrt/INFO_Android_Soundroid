@@ -67,7 +67,7 @@ public abstract class SoundroidDatabase extends RoomDatabase {
                         }).execute();
                     }
                 }
-            }).allowMainThreadQueries().build();
+            }).build();
         }
         return DB_INSTANCE;
     }
