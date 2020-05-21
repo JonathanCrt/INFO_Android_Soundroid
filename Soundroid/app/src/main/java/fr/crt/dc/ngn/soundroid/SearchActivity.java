@@ -2,6 +2,7 @@ package fr.crt.dc.ngn.soundroid;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.ListView;
@@ -22,18 +23,24 @@ public class SearchActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search);
         ListView list = (ListView)findViewById(R.id.list_results_search);
-        //List<Integer> list2 = (List<Integer>) StorageContainer.getInstance().get(getIntent().getLongExtra("album",-1));
-        //Song song = (Song) StorageContainer.getInstance().get(getIntent().getLongExtra("title",-1));
-        List<Integer> list3 = (List<Integer>) StorageContainer.getInstance().get(getIntent().getLongExtra("artist",-1));
+        Bundle bundle = this.getIntent().getExtras();
 
-        Log.i("INTENT", "LIST3:  " + list3);
-        //if(list2 !=null)
-          //  Log.i("INTENT", "LIST2:  " + list2);
-       // if(song != null)
-         //   Log.i("INTENT", "SONG:  " + song);
-        //else{
-          //  Log.i("INTENT", "can' find any song");
-        //}
+        int flag = getIntent().getIntExtra("flag", -1);
+        Log.i("tag", "tag" + flag);
+        List<Integer> resultList = null;
+        switch (flag){
+            case 0:
+                resultList = (List<Integer>) StorageContainer.getInstance().get(getIntent().getLongExtra("title",-1));
+                break;
+            case 1:
+                resultList = (List<Integer>) StorageContainer.getInstance().get(getIntent().getLongExtra("artist",-1));
+                break;
+            case 2:
+                resultList = (List<Integer>) StorageContainer.getInstance().get(getIntent().getLongExtra("album",-1));
+                break;
+        }
+
+        Log.i("INTENT", "resultList:  " + resultList);
 
         //creation adapter
         //SearchAdapter adapter = new SearchAdapter(this, R.layout.activity_search,)
