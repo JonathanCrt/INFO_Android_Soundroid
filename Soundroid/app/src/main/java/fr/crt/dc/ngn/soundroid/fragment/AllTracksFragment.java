@@ -7,8 +7,10 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.graphics.Color;
 import android.os.Bundle;
 
+import androidx.annotation.ColorRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
@@ -122,7 +124,7 @@ public class AllTracksFragment extends Fragment {
 
         this.ivButtonAccessHistory = v.findViewById(R.id.iv_list_go_history);
         this.ivButtonAccessPlaylists = v.findViewById(R.id.iv_list_go_playlists);
-        ConstraintLayout constraintLayout = Objects.requireNonNull(getActivity()).findViewById(R.id.crt_layout);
+        ConstraintLayout constraintLayout = requireActivity().findViewById(R.id.crt_layout);
         this.toolbarController = new ToolbarController(getActivity(), constraintLayout);
         this.installOnItemClickListener();
         this.installOnLongItemClickListener();
@@ -271,9 +273,9 @@ public class AllTracksFragment extends Fragment {
     private void doBindService() {
         if (intent == null) {
             intent = new Intent(getContext(), SongService.class);
-            Objects.requireNonNull(getContext()).bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
+            requireContext().bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
         }
-        Objects.requireNonNull(getActivity()).startService(intent);
+        requireActivity().startService(intent);
     }
 
     private void doUnbindService() {
@@ -302,8 +304,12 @@ public class AllTracksFragment extends Fragment {
 
     private void toShuffle() {
         this.shuffleButton.setOnClickListener(e -> {
-            this.songService.toShuffle();
-            this.songService.playOrPauseSong();
+            if(this.songService.toShuffle()){
+                this.songService.playOrPauseSong();
+                this.shuffleButton.setTextColor(this.shuffleButton.getContext().getResources().getColor(R.color.colorPrimaryFlash));
+            }else{
+                this.shuffleButton.setTextColor(Color.BLACK);
+            }
             this.toolbarController.setWidgetsValues();
         });
     }
