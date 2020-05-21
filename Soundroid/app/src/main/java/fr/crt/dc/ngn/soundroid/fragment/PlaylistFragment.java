@@ -43,6 +43,7 @@ public class PlaylistFragment extends Fragment {
 
     private ImageView ivPlaylistSongsWithTag;
     private TextView tvPlaylistSongsWithTagCounter;
+    private ImageView iv_playlist_favourites_songs;
 
     private ImageView ivPlaylistfilter;
     private Button btnAddPlaylist;
@@ -67,6 +68,7 @@ public class PlaylistFragment extends Fragment {
         this.ivPlaylistfilter = view.findViewById(R.id.iv_playlist_filter);
         this.btnAddPlaylist = view.findViewById(R.id.btn_add_playlist);
         this.iv_playlist_songs_with_tag = view.findViewById(R.id.iv_playlist_songs_with_tag);
+        this.iv_playlist_favourites_songs = view.findViewById(R.id.iv_playlist_favourites_songs);
     }
 
     @Override
@@ -90,9 +92,14 @@ public class PlaylistFragment extends Fragment {
         this.installOnLongItemClickListener();
         this.installOnItemClickListener();
         this.installPlaylistTagButtonListener();
+        this.installPlaylistFavorisButtonListener();
         int nbSongsInPlaylistWithTag = this.createPlaylistWithTag();
         // Put the number of songs in playlistWithTag
         this.tvPlaylistSongsWithTagCounter.setText(String.valueOf(nbSongsInPlaylistWithTag) + " chansons");
+        int nbSongsInPlaylistFavoris = this.createPlaylistInFavorites();
+        // Put the number of songs in FavorisPlaylist
+        this.tvPlaylistFavouritesSongsCounter.setText(String.valueOf(nbSongsInPlaylistFavoris) + " chansons");
+
 
         Log.d("PlaylistFragment all songs", this.soundroidDatabaseInstance.songDao().getAllSongs().toString());
         Log.d("PlaylistFragment all playlists", this.soundroidDatabaseInstance.playlistDao().getAllPlayLists().toString());
@@ -126,14 +133,11 @@ public class PlaylistFragment extends Fragment {
         return soundroidDatabaseInstance.junctionDAO().findAllSongsByPlaylistId(playlistWithTagId).size();
     }
 
-
     private void installPlaylistTagButtonListener(){
         iv_playlist_songs_with_tag.setOnClickListener(v->{
             Log.d("PLAYLIST", "WITH TAG");
-
             Bundle arguments = new Bundle();
             arguments.putString("name of playlist", "tag");
-
             PlaylistFragmentDetail playlistFragmentDetail = new PlaylistFragmentDetail();
             playlistFragmentDetail.setArguments(arguments);
             FragmentTransaction fragmentTransaction = getParentFragmentManager().beginTransaction();
@@ -141,10 +145,50 @@ public class PlaylistFragment extends Fragment {
                     .replace(R.id.nav_host_fragment, playlistFragmentDetail)
                     .addToBackStack(null)
                     .commit();
-
         });
-
     }
+
+    /**
+     *
+     * @return number of songs in favorite playlist
+     */
+    private int createPlaylistInFavorites(){
+        List<Song> songFavorites = this.soundroidDatabaseInstance.songDao().getAllSongsInFavorites();
+        Log.i("PLAYLIST FAV ", songFavorites.toString());
+        Playlist playlistFavoris = this.soundroidDatabaseInstance.playlistDao().findByName("favoris");
+        // No favoris playlist yet
+        if(playlistFavoris == null) {
+            playlistFavoris = new Playlist("favoris");
+            this.soundroidDatabaseInstance.playlistDao().insertPlayList(playlistFavoris);
+        }
+
+        long playlistFavorisId = playlistFavoris.getPlaylistId();
+        List<Song> songInFavorites = this.soundroidDatabaseInstance.junctionDAO().findAllSongsByPlaylistId(playlistFavorisId);
+        for (Song s : songFavorites) {
+            // Song not in the playlist favoris yet
+            if(!songInFavorites.contains(s)){
+                this.soundroidDatabaseInstance.junctionDAO().insertSongIntoPlayList(s.getSongId(), playlistFavorisId);
+            }
+        }
+        Log.i("PLAYLIST FAVORIS ", soundroidDatabaseInstance.junctionDAO().findAllSongsByPlaylistId(playlistFavorisId).toString());
+        return soundroidDatabaseInstance.junctionDAO().findAllSongsByPlaylistId(playlistFavorisId).size();
+    }
+
+    private void installPlaylistFavorisButtonListener(){
+        iv_playlist_favourites_songs.setOnClickListener(v->{
+            Log.d("PLAYLIST", "FAVORIS");
+            Bundle arguments = new Bundle();
+            arguments.putString("name of playlist", "favoris");
+            PlaylistFragmentDetail playlistFragmentDetail = new PlaylistFragmentDetail();
+            playlistFragmentDetail.setArguments(arguments);
+            FragmentTransaction fragmentTransaction = getParentFragmentManager().beginTransaction();
+            fragmentTransaction
+                    .replace(R.id.nav_host_fragment, playlistFragmentDetail)
+                    .addToBackStack(null)
+                    .commit();
+        });
+    }
+
 
     private void installOnAddPlaylistButtonListener() {
         this.btnAddPlaylist.setOnClickListener(v -> {
