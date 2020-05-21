@@ -441,8 +441,12 @@ public class PlayerActivity extends AppCompatActivity {
      * start the shuffle mode
      */
     private void pushShuffleControl() {
+        if(this.songService.toShuffle()){
+            ivRandomPlayback.setImageDrawable(ContextCompat.getDrawable(this,R.drawable.ic_unshuffle_white));
+        }else{
+            ivRandomPlayback.setImageDrawable(ContextCompat.getDrawable(this,R.drawable.ic_shuffle_white));
+        }
 
-        this.songService.toShuffle();
 
     }
 }
