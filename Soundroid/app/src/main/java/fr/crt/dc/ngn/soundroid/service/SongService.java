@@ -318,14 +318,14 @@ public class SongService extends Service implements MediaPlayer.OnPreparedListen
     //}
 
 
-    public void toShuffle() {
+    public boolean toShuffle() {
         if (this.isShuffled) {
             this.isShuffled = false;
         } else {
             this.isShuffled = true;
         }
         Log.d("SHUFFLE", "to shuffle " + this.isShuffled);
-
+        return this.isShuffled;
     }
 
     public void handleSeekBar(int progression, boolean isfromUser) {

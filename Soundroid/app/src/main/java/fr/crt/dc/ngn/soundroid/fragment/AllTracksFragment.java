@@ -7,8 +7,10 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.graphics.Color;
 import android.os.Bundle;
 
+import androidx.annotation.ColorRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
@@ -290,8 +292,12 @@ public class AllTracksFragment extends Fragment {
 
     private void toShuffle() {
         this.shuffleButton.setOnClickListener(e -> {
-            this.songService.toShuffle();
-            this.songService.playOrPauseSong();
+            if(this.songService.toShuffle()){
+                this.songService.playOrPauseSong();
+                this.shuffleButton.setTextColor(this.shuffleButton.getContext().getResources().getColor(R.color.colorPrimaryFlash));
+            }else{
+                this.shuffleButton.setTextColor(Color.BLACK);
+            }
             this.toolbarController.setWidgetsValues();
         });
     }
