@@ -8,6 +8,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.graphics.Color;
+import android.os.AsyncTask;
 import android.os.Bundle;
 
 import androidx.annotation.ColorRes;
@@ -77,6 +78,7 @@ public class AllTracksFragment extends Fragment {
         return AllTracksFragment.context;
     }
 
+    private SoundroidDatabase soundroidDatabaseInstance;
     /**
      * initialize the fields
      */
@@ -84,6 +86,7 @@ public class AllTracksFragment extends Fragment {
         this.connectionEstablished = false;
         this.isOnBackground = false;
         this.context = this;
+        this.soundroidDatabaseInstance = SoundroidDatabase.getInstance(this.getContext());
     }
 
     @SuppressLint("WrongConstant")
@@ -115,6 +118,11 @@ public class AllTracksFragment extends Fragment {
         this.toolbarController = new ToolbarController(getActivity(), constraintLayout);
         this.installOnItemClickListener();
         this.installOnLongItemClickListener();
+        FragmentTransaction fragmentTransaction = getParentFragmentManager().beginTransaction();
+        fragmentTransaction
+                .replace(R.id.nav_host_fragment, this)
+                .addToBackStack(null)
+                .commit();
         return v;
     }
 
@@ -163,48 +171,53 @@ public class AllTracksFragment extends Fragment {
 
     @SuppressLint("ClickableViewAccessibility")
     private void installOnLongItemClickListener() {
-
         this.lv.setOnItemLongClickListener((arg0, arg1, pos, id) -> {
-            Song songPressed = songAdapter.getItem(pos);
-            Log.d("long clicked","song " +songPressed.toString());
-            androidx.appcompat.app.AlertDialog.Builder alertDialogBuilder = new androidx.appcompat.app.AlertDialog.Builder(this.getContext());
-            alertDialogBuilder.setTitle("Ajouter à une playlist");
+            new Thread(()->{
+                Song songPressed = songAdapter.getItem(pos);
+                Log.d("long clicked","song " +songPressed.toString());
+                androidx.appcompat.app.AlertDialog.Builder alertDialogBuilder = new androidx.appcompat.app.AlertDialog.Builder(this.getContext());
+                alertDialogBuilder.setTitle("Ajouter à une playlist");
 
-            // Array adapter to show a list of playlist
-            List<Playlist> playlistList = SoundroidDatabase.getInstance(this.getContext()).playlistDao().getAllPlayLists();
-            // transform the playlist list into an array of playlist name
-            String[] playlistsNames = playlistList.stream().map(Playlist::getName).toArray(String[]::new);
-            ArrayAdapter<String> adapter = new ArrayAdapter<>(this.getContext(),
-                    android.R.layout.simple_dropdown_item_1line, playlistsNames);
-            final AutoCompleteTextView autoCompleteTextView = new AutoCompleteTextView(this.getContext());
-            autoCompleteTextView.setAdapter(adapter);
-            alertDialogBuilder.setView(autoCompleteTextView);
-            // Display later the playlist name because it takes time to set the adapter
-            new Handler().postDelayed(autoCompleteTextView::showDropDown, 100);
-            alertDialogBuilder.setNegativeButton("Cancel", null);
-            alertDialogBuilder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    String playlistName = autoCompleteTextView.getText().toString();
-                    // If the playlist name is not correct
-                    if (playlistName.length()==0 || !Arrays.asList(playlistsNames).contains(playlistName)){
-                        Toast.makeText(getContext(), "Click on a playlist name !", Toast.LENGTH_SHORT).show();
-                    }else{
-                        Log.d("LOG", "PlaylistName = " + playlistName);
-                        Playlist playlistClicked = playlistList.stream().filter(p->p.getName().equals(playlistName)).findAny().get();
-                        SoundroidDatabase.getInstance(getContext()).junctionDAO().insertSongIntoPlayList(songPressed.getSongId(), playlistClicked.getPlaylistId());
-                        Log.d("PlaylistCLicked size ", String.valueOf(SoundroidDatabase.getInstance(getContext()).junctionDAO().findAllSongsByPlaylistId(playlistClicked.getPlaylistId()).size()));
+                // Array adapter to show a list of playlist
+                List<Playlist> playlistList = this.soundroidDatabaseInstance.playlistDao().getAllPlayLists();
+                // transform the playlist list into an array of playlist name
+                String[] playlistsNames = playlistList.stream().map(Playlist::getName).toArray(String[]::new);
+                ArrayAdapter<String> adapter = new ArrayAdapter<>(this.getContext(),
+                        android.R.layout.simple_dropdown_item_1line, playlistsNames);
+
+
+                final AutoCompleteTextView autoCompleteTextView = new AutoCompleteTextView(this.getContext());
+                autoCompleteTextView.setAdapter(adapter);
+                alertDialogBuilder.setView(autoCompleteTextView);
+                // Display later the playlist name because it takes time to set the adapter
+                alertDialogBuilder.setNegativeButton("Cancel", null);
+                alertDialogBuilder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        String playlistName = autoCompleteTextView.getText().toString();
+                        // If the playlist name is not correct
+                        if (playlistName.length()==0 || !Arrays.asList(playlistsNames).contains(playlistName)){
+                            Toast.makeText(getContext(), "Click on a playlist name !", Toast.LENGTH_SHORT).show();
+                        }else{
+                            new Thread(()-> {
+                                Log.d("LOG", "PlaylistName = " + playlistName);
+                                Playlist playlistClicked = playlistList.stream().filter(p -> p.getName().equals(playlistName)).findAny().get();
+                                SoundroidDatabase.getInstance(getContext()).junctionDAO().insertSongIntoPlayList(songPressed.getSongId(), playlistClicked.getPlaylistId());
+                                Log.d("PlaylistCLicked size ", String.valueOf(SoundroidDatabase.getInstance(getContext()).junctionDAO().findAllSongsByPlaylistId(playlistClicked.getPlaylistId()).size()));
+                            }).start();
+                        }
                     }
-
-                }
-            });
-            alertDialogBuilder.setIcon(R.drawable.ic_menu_playlists);
-            // Add scroll in the dropdown list
-            androidx.appcompat.app.AlertDialog ad = alertDialogBuilder.show();
-            Objects.requireNonNull(ad.getWindow()).setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
-            ad.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(getResources().getColor(R.color.colorPrimaryFlash));
-            ad.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(getResources().getColor(R.color.colorPrimaryFlash));
-
+                });
+                getActivity().runOnUiThread(()->{
+                    new Handler().postDelayed(autoCompleteTextView::showDropDown, 100);
+                    alertDialogBuilder.setIcon(R.drawable.ic_menu_playlists);
+                    // Add scroll in the dropdown list
+                    androidx.appcompat.app.AlertDialog ad = alertDialogBuilder.show();
+                    Objects.requireNonNull(ad.getWindow()).setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
+                    ad.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(getResources().getColor(R.color.colorPrimaryFlash));
+                    ad.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(getResources().getColor(R.color.colorPrimaryFlash));
+                });
+            }).start();
             return true;
         });
     }

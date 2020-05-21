@@ -46,15 +46,18 @@ public class PlaylistFragmentDetail extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
         // Inflate the layout for this fragmentapp
         View v = inflater.inflate(R.layout.fragment_playlist_detail, container, false);
-        Toolbar toolbar = v.findViewById(R.id.detail_toolbar);
-        // set the name of the playlist
-        toolbar.setTitle(namePlaylist);
-        ListView lvPlaylistDetail = v.findViewById(R.id.list_playlist_detail);
-        ArrayList<Song> songs = (ArrayList<Song>) this.soundroidDatabaseInstance.junctionDAO().findAllSongsByPlaylistId(this.soundroidDatabaseInstance.playlistDao().findPlaylistIdByName(namePlaylist));
-        PlaylistDetailAdapter playlistDetailAdapter = new PlaylistDetailAdapter(getContext(), songs);
-        lvPlaylistDetail.setAdapter(playlistDetailAdapter);
+        new Thread(()-> {
+            Toolbar toolbar = v.findViewById(R.id.detail_toolbar);
+            // set the name of the playlist
+            toolbar.setTitle(namePlaylist);
+            ListView lvPlaylistDetail = v.findViewById(R.id.list_playlist_detail);
+            ArrayList<Song> songs = (ArrayList<Song>) this.soundroidDatabaseInstance.junctionDAO().findAllSongsByPlaylistId(this.soundroidDatabaseInstance.playlistDao().findPlaylistIdByName(namePlaylist));
+            PlaylistDetailAdapter playlistDetailAdapter = new PlaylistDetailAdapter(getContext(), songs);
+            lvPlaylistDetail.setAdapter(playlistDetailAdapter);
+        }).start();
         return v;
     }
 }

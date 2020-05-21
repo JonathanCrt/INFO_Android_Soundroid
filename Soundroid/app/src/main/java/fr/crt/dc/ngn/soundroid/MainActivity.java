@@ -1,11 +1,9 @@
 package fr.crt.dc.ngn.soundroid;
 
 import android.annotation.SuppressLint;
-import android.app.FragmentManager;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
@@ -21,25 +19,19 @@ import android.telephony.SmsMessage;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.webkit.URLUtil;
 import android.widget.Button;
-import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.LinearLayout;
-import android.widget.ListAdapter;
 import android.widget.ListView;
-import android.widget.RadioGroup;
 import android.widget.Toast;
-import android.widget.ToggleButton;
 
 import com.google.android.material.navigation.NavigationView;
 
-import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.atomic.AtomicReference;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
@@ -136,15 +128,18 @@ public class MainActivity extends AppCompatActivity {
         toolbarPlayer.setOnClickListener(v -> this.launchPlayerActivity());
 
         // launch async task
-        try {
-            //Playlist p = new Playlist("Root");
-            ArrayList<Song> listSongs = (ArrayList<Song>) soundroidDatabase.songDao().getAllSongs();
-            Log.d("LOG", String.valueOf(soundroidDatabase.playlistDao().getAllPlayLists().size()));
-            if (listSongs.isEmpty()) {
-                // first launch of the app
-                Log.i("LOG", "First launch of the app");
+        //Playlist p = new Playlist("Root");
+        AtomicReference<ArrayList<Song>> listSongs = new AtomicReference<>();
+        Thread t = new Thread(()->{
+            try {
+                listSongs.set((ArrayList<Song>) soundroidDatabase.songDao().getAllSongs());
+                Log.d("LOG", String.valueOf(soundroidDatabase.playlistDao().getAllPlayLists().size()));
 
-            } else {
+                if (listSongs.get().isEmpty()) {
+                    // first launch of the app
+                    Log.i("LOG", "First launch of the app");
+
+                } else {
                 /*
                 Log.i("LOG", "already LAUNCHED");
                 // test to delete all in DB and restart with a new DB clean
@@ -159,13 +154,20 @@ public class MainActivity extends AppCompatActivity {
 
                  */
 
-                //Collections.sort(listSongs, (a, b) -> a.getTitle().compareTo(b.getTitle()));
-            }
+                    //Collections.sort(listSongs, (a, b) -> a.getTitle().compareTo(b.getTitle()));
+                }
 
-            SongAdapter adapter = new SongAdapter(getAppContext(), listSongs);
-            RootList.callAsyncTask(adapter, listSongs);
-        } catch (ExecutionException | InterruptedException e) {
-            Log.e("MainActivity", Objects.requireNonNull(e.getMessage()));
+                SongAdapter adapter = new SongAdapter(getAppContext(), listSongs.get());
+                RootList.callAsyncTask(adapter, listSongs.get());
+            } catch (ExecutionException | InterruptedException e) {
+                Log.e("MainActivity", Objects.requireNonNull(e.getMessage()));
+            }
+        });
+        t.start();
+        try {
+            t.join();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
 
         //SoundroidDatabase database = SoundroidDatabase.getInstance(this);
@@ -376,7 +378,7 @@ public class MainActivity extends AppCompatActivity {
         switch (position) {
             case 0:
                 currentSong = this.soundroidDatabase.songDao().findByTitle(userInput);
-               // intent.putExtra("title", StorageContainer.getInstance().add(currentSong));
+                // intent.putExtra("title", StorageContainer.getInstance().add(currentSong));
                 //intent.putExtra("title",(Serializable)currentSong);
                 Log.i("RESULT", "CURRENT SONG PLAYED by TITLE: " + currentSong);
                 break;
@@ -391,7 +393,7 @@ public class MainActivity extends AppCompatActivity {
                 Log.i("RESULT", "CURRENT SONG PLAYED by ARTIST: " + resultList);
                 break;
             case 2:
-               resultList = this.soundroidDatabase.songDao().findAllByAlbum(userInput);
+                resultList = this.soundroidDatabase.songDao().findAllByAlbum(userInput);
                 tag = "album";
                 intent.putExtra(tag, StorageContainer.getInstance().add(resultList));
                 Log.i("RESULT", "CURRENT SONG PLAYED by ALBUM: " + resultList);

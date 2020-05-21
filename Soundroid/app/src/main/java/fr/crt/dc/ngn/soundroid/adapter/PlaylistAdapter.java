@@ -1,6 +1,8 @@
 package fr.crt.dc.ngn.soundroid.adapter;
 
+import android.app.Activity;
 import android.content.Context;
+import android.os.AsyncTask;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -67,10 +69,13 @@ public class PlaylistAdapter extends ArrayAdapter<Playlist> {
 
         // now we can set populate the data via the ViewHolder into views
         mViewHolder.tvPlayListName.setText(currentPlaylist.getName());
-        Log.d("PlaylistAdapter count", ""  + this.soundroidDatabaseInstance.junctionDAO().countNumberOfSongsByName(currentPlaylist.getName()));
-        String numberSongs = String.valueOf(this.soundroidDatabaseInstance.junctionDAO().countNumberOfSongsByName(currentPlaylist.getName()));
-        mViewHolder.tvPlaylistCounterSongs.setText(numberSongs + " chansons");
-
+        new Thread(()->{
+            Log.d("PlaylistAdapter count", ""  + this.soundroidDatabaseInstance.junctionDAO().countNumberOfSongsByName(currentPlaylist.getName()));
+            String numberSongs = String.valueOf(this.soundroidDatabaseInstance.junctionDAO().countNumberOfSongsByName(currentPlaylist.getName()));
+            ((Activity) getContext()).runOnUiThread(()->{
+                mViewHolder.tvPlaylistCounterSongs.setText(numberSongs + " chansons");
+            });
+        }).start();
         // Update position as position tag that will start the right song when the user clicks a list item
         return convertView;
     }
