@@ -257,16 +257,18 @@ public class MainActivity extends AppCompatActivity {
 
 
     private void launchPlayerActivity() {
-        Intent currentSongIntent = new Intent(this, PlayerActivity.class);
-        Song currentSong = this.songService.getPlaylistSongs().get(this.songService.getSongIndex());
-        currentSongIntent
-                .putExtra("TITLE_SONG", currentSong.getTitle())
-                .putExtra("ARTIST_SONG", currentSong.getArtist())
-                .putExtra("RATING_SONG", currentSong.getRating())
-                .putExtra("ARTWORK_SONG", Utility.convertByteToBitmap(currentSong.getArtwork()))
-                .putExtra("DURATION_SONG", currentSong.getDuration())
-                .putExtra("TAG_SONG", currentSong.getTag());
-        startActivity(currentSongIntent);
+        new Thread(()->{
+            Intent currentSongIntent = new Intent(this, PlayerActivity.class);
+            Song currentSong = this.songService.getPlaylistSongs().get(this.songService.getSongIndex());
+            currentSongIntent
+                    .putExtra("TITLE_SONG", currentSong.getTitle())
+                    .putExtra("ARTIST_SONG", currentSong.getArtist())
+                    .putExtra("RATING_SONG", currentSong.getRating())
+                    .putExtra("ARTWORK_SONG", Utility.convertByteToBitmap(currentSong.getArtwork()))
+                    .putExtra("DURATION_SONG", currentSong.getDuration())
+                    .putExtra("TAG_SONG", currentSong.getTag());
+            startActivity(currentSongIntent);
+        }).start();
     }
 
     @Override

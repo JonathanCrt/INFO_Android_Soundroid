@@ -219,18 +219,22 @@ public class PlayerActivity extends AppCompatActivity {
     }
 
     public void setWidgetsValues() {
-        Song currentSong = this.songService.getPlaylistSongs().get(this.songService.getSongIndex());
-        this.currentTagOfSong = this.songDaoInstance.findTagBySongId(currentSong.getSongId());
-        int currentRating  = this.songDaoInstance.findRatingBySongId(currentSong.getSongId());
-        Log.d("PlayerActivity rating", " val:" + this.songDaoInstance.findRatingBySongId(currentSong.getSongId()));
-        setWidgetsValues(
-                currentSong.getTitle(),
-                currentSong.getArtist(),
-                currentRating,
-                Utility.convertByteToBitmap(currentSong.getArtwork()),
-                currentSong.getDuration(),
-                this.currentTagOfSong
-        );
+        new Thread(()->{
+            Song currentSong = this.songService.getPlaylistSongs().get(this.songService.getSongIndex());
+            this.currentTagOfSong = this.songDaoInstance.findTagBySongId(currentSong.getSongId());
+            int currentRating  = this.songDaoInstance.findRatingBySongId(currentSong.getSongId());
+            Log.d("PlayerActivity rating", " val:" + this.songDaoInstance.findRatingBySongId(currentSong.getSongId()));
+            this.runOnUiThread(()->{
+                setWidgetsValues(
+                        currentSong.getTitle(),
+                        currentSong.getArtist(),
+                        currentRating,
+                        Utility.convertByteToBitmap(currentSong.getArtwork()),
+                        currentSong.getDuration(),
+                        this.currentTagOfSong
+                );
+            });
+        }).start();
     }
 
 
@@ -248,34 +252,41 @@ public class PlayerActivity extends AppCompatActivity {
     }
 
     private void openAlertDialogToAddTag() {
-        EditText editTextTag = new EditText(this);
-        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
-        long currentSongId = this.songService.getPlaylistSongs().get(songService.getSongIndex()).getSongId();
-        this.currentTagOfSong = this.songDaoInstance.findTagBySongId(currentSongId);
+        new Thread(()->{
+            long currentSongId = this.songService.getPlaylistSongs().get(songService.getSongIndex()).getSongId();
+            this.currentTagOfSong = this.songDaoInstance.findTagBySongId(currentSongId);
+            EditText editTextTag = new EditText(this);
+            AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
 
-        alertDialogBuilder.setView(editTextTag).setIcon(R.drawable.ic_playlist_tag_black).setTitle("Tag de la chanson (max 25 caractères)");
-        editTextTag.setText(this.currentTagOfSong);
-        alertDialogBuilder.setPositiveButton("VALIDER", (dialog, whichButton) -> {
-            String tag = editTextTag.getText().toString();
-            if (tag.length() > MAX_SIZE_TAG) {
-                new AlertDialog.Builder(this)
-                        .setTitle("Erreur lors de l'ajout du tag")
-                        .setMessage("Le tag saisi est supérieur à 25 caractères ! ")
-                        .show();
-            } else {
-                this.currentTagOfSong = tag;
-                this.songDaoInstance.updateSongTagById(this.currentTagOfSong, currentSongId);
-                this.tvTag.setText(currentTagOfSong);
-                this.ivDeleteTag.setVisibility(View.VISIBLE);
-            }
+            alertDialogBuilder.setView(editTextTag).setIcon(R.drawable.ic_playlist_tag_black).setTitle("Tag de la chanson (max 25 caractères)");
+            editTextTag.setText(this.currentTagOfSong);
+            alertDialogBuilder.setPositiveButton("VALIDER", (dialog, whichButton) -> {
+                String tag = editTextTag.getText().toString();
+                if (tag.length() > MAX_SIZE_TAG) {
+                    new AlertDialog.Builder(this)
+                            .setTitle("Erreur lors de l'ajout du tag")
+                            .setMessage("Le tag saisi est supérieur à 25 caractères ! ")
+                            .show();
+                } else {
+                    this.currentTagOfSong = tag;
+                    new Thread(()->{
+                        this.songDaoInstance.updateSongTagById(this.currentTagOfSong, currentSongId);
+                    }).start();
+                    this.runOnUiThread(()->{
+                        this.tvTag.setText(currentTagOfSong);
+                        this.ivDeleteTag.setVisibility(View.VISIBLE);
+                    });
+                }
 
-        }).setNegativeButton("ANNULER", (dialog, whichButton) -> dialog.dismiss())
-                .create();
-
-        AlertDialog ad = alertDialogBuilder.create();
-        ad.show();
-        ad.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(getResources().getColor(R.color.colorPrimaryFlash));
-        ad.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(getResources().getColor(R.color.colorPrimaryFlash));
+            }).setNegativeButton("ANNULER", (dialog, whichButton) -> dialog.dismiss())
+                    .create();
+            this.runOnUiThread(()->{
+                AlertDialog ad = alertDialogBuilder.create();
+                ad.show();
+                ad.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(getResources().getColor(R.color.colorPrimaryFlash));
+                ad.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(getResources().getColor(R.color.colorPrimaryFlash));
+            });
+        }).start();
     }
 
     /**
@@ -294,7 +305,6 @@ public class PlayerActivity extends AppCompatActivity {
 
     private void clearRating() {
         resetRating();
-        Log.d("PlayerActivity clear rating", this.songDaoInstance.getAllSongs().toString());
     }
 
     /**
@@ -311,8 +321,10 @@ public class PlayerActivity extends AppCompatActivity {
         for (int i = nbStars; i < this.stars.length; i++) {
             this.stars[i].setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_outline_star_note));
         }
-        this.songDaoInstance.updateSongRatingById(nbStars, this.songService.getPlaylistSongs().get(this.songService.getSongIndex()).getSongId());
-        Log.d("PlayerActivity update Rating : " + nbStars, this.songDaoInstance.getAllSongs().toString());
+        new Thread(()->{
+            this.songDaoInstance.updateSongRatingById(nbStars, this.songService.getPlaylistSongs().get(this.songService.getSongIndex()).getSongId());
+            Log.d("PlayerActivity update Rating : " + nbStars, this.songDaoInstance.getAllSongs().toString());
+        }).start();
     }
 
     /**
@@ -391,11 +403,15 @@ public class PlayerActivity extends AppCompatActivity {
 
             AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
             alertDialogBuilder
-                    .setTitle("Supression")
-                    .setMessage("Vouslez vous vraiment supprimer ce tag ?")
-                    .setPositiveButton("OUI, il est null!", ((dialog, which) -> {
-                        this.songDaoInstance.updateSongWithNullTagBySongId(this.songService.getPlaylistSongs().get(songService.getSongIndex()).getSongId());
-                        this.tvTag.setText(this.songDaoInstance.findTagBySongId(this.songService.getPlaylistSongs().get(songService.getSongIndex()).getSongId()));
+                    .setTitle("Supression").setMessage("Voulez-vous vraiment supprimer ce tag ?")
+                    .setPositiveButton("OUI", ((dialog, which) -> {
+                        new Thread(()->{
+                            this.songDaoInstance.updateSongWithNullTagBySongId(this.songService.getPlaylistSongs().get(songService.getSongIndex()).getSongId());
+                            String text = this.songDaoInstance.findTagBySongId(this.songService.getPlaylistSongs().get(songService.getSongIndex()).getSongId());
+                            this.runOnUiThread(()->{
+                                this.tvTag.setText(text);
+                            });
+                        }).start();
                         this.ivDeleteTag.setVisibility(View.INVISIBLE);
                     }))
                     .setNegativeButton("NON", (dialog, whichButton) -> dialog.dismiss());
