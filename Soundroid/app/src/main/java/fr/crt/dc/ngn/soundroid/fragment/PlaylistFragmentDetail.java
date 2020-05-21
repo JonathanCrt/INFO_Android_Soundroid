@@ -72,15 +72,11 @@ public class PlaylistFragmentDetail extends Fragment {
 
         // set the name of the playlist
         toolbar.setTitle(namePlaylist);
-<<<<<<< HEAD
 
         // populate listView
         this.lvPlaylistDetail = v.findViewById(R.id.list_playlist_detail);
         this.songs = (ArrayList<Song>) this.soundroidDatabaseInstance.junctionDAO().findAllSongsByPlaylistId(this.soundroidDatabaseInstance.playlistDao().findPlaylistIdByName(namePlaylist));
-=======
-        ListView lvPlaylistDetail = v.findViewById(R.id.list_playlist_detail);
-        ArrayList<Song> songs = (ArrayList<Song>) this.soundroidDatabaseInstance.junctionDAO().findAllSongsByPlaylistId(this.soundroidDatabaseInstance.playlistDao().findPlaylistIdByName(namePlaylist));
->>>>>>> 188991751b258434c06a86e146732d496504b9b5
+
         PlaylistDetailAdapter playlistDetailAdapter = new PlaylistDetailAdapter(getContext(), songs);
         this.lvPlaylistDetail.setAdapter(playlistDetailAdapter);
 
