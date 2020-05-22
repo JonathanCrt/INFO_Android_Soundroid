@@ -406,6 +406,7 @@ public class MainActivity extends AppCompatActivity {
         } catch (InterruptedException e) {
             return;
         }
+        intent.putExtra("input", userInput);
         intent.putExtra("flag", flag);
         intent.putExtra("storageID", StorageContainer.getInstance().add(box.resultList));
         startActivity(intent);
