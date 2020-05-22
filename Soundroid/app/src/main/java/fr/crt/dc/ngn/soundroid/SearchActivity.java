@@ -18,8 +18,6 @@ import fr.crt.dc.ngn.soundroid.utility.Utility;
 
 public class SearchActivity extends AppCompatActivity {
 
-
-
     public enum Criteria implements Serializable {
         TITLE, ARTIST, ALBUM
     }
@@ -28,8 +26,6 @@ public class SearchActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search);
         ListView list = findViewById(R.id.list_results_search);
-
-
         Bundle bundle = this.getIntent().getExtras();
 
         Criteria flag = (Criteria) getIntent().getSerializableExtra("flag");
@@ -72,6 +68,5 @@ public class SearchActivity extends AppCompatActivity {
             startActivity(intent);
 
         });
-
     }
 }
