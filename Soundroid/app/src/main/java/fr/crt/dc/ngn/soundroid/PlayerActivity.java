@@ -1,9 +1,8 @@
 package fr.crt.dc.ngn.soundroid;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
-import fr.crt.dc.ngn.soundroid.controller.PlayerController;
+import androidx.core.view.GestureDetectorCompat;
 import fr.crt.dc.ngn.soundroid.controller.ToolbarController;
 import fr.crt.dc.ngn.soundroid.database.SoundroidDatabase;
 import fr.crt.dc.ngn.soundroid.database.dao.SongDao;
@@ -17,21 +16,24 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.graphics.Bitmap;
+import android.media.AudioManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.util.Log;
-import android.view.LayoutInflater;
+import android.view.GestureDetector;
+import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.Random;
 
-public class PlayerActivity extends AppCompatActivity {
+
+public class PlayerActivity extends AppCompatActivity implements GestureDetector.OnGestureListener, GestureDetector.OnDoubleTapListener {
 
 
     // Views
@@ -50,6 +52,7 @@ public class PlayerActivity extends AppCompatActivity {
     private TextView tvDuration;
     private TextView tvTag;
     private ImageView ivDeleteTag;
+    private ImageView ivControlvolume;
 
     private SongService songService;
     private Intent intent;
@@ -65,10 +68,14 @@ public class PlayerActivity extends AppCompatActivity {
     private long currentSongLength;
     private ToolbarController toolbarController;
     private String currentTagOfSong = null;
+    private AudioManager audioManager;
 
     private SongDao songDaoInstance;
     public static int MAX_SIZE_TAG = 25;
     private ImageView[] stars;
+    private GestureDetectorCompat mDetector;
+    private static final int SWIPE_MIN_DISTANCE = 400;
+    private static final int SWIPE_THRESHOLD_VELOCITY = 100;
 
     private void initializeViews() {
         this.ivBack = findViewById(R.id.iv_player_back);
@@ -92,6 +99,7 @@ public class PlayerActivity extends AppCompatActivity {
         this.tvDuration = findViewById(R.id.tv_player_end_time);
         this.tvTag = findViewById(R.id.tv_player_tag);
         this.ivDeleteTag = findViewById(R.id.iv_player_delete_tag);
+        this.ivControlvolume = findViewById(R.id.iv_player_control_volume);
 
         this.stars = new ImageView[]{ivNoteStarOne, ivNoteStarTwo, ivNoteStarThree, ivNoteStarFour, ivNoteStarFive};
     }
@@ -111,10 +119,10 @@ public class PlayerActivity extends AppCompatActivity {
         SoundroidDatabase soundroidDatabaseInstance = SoundroidDatabase.getInstance(this);
         this.songDaoInstance = soundroidDatabaseInstance.songDao();
         this.installOnClickListenerButtonDeleteTag();
-
-
-
-
+        this.mDetector = new GestureDetectorCompat(this, this);
+        this.mDetector.setOnDoubleTapListener(this);
+        this.audioManager = (AudioManager) getApplicationContext().getSystemService(Context.AUDIO_SERVICE);
+        this.installOnClickListenerButtonControlVolume();
         /*
         final LayoutInflater factory = getLayoutInflater();
         final View mainActivityView = factory.inflate(R.layout.toolbar_player, null);
@@ -211,7 +219,7 @@ public class PlayerActivity extends AppCompatActivity {
             ivControlPlaySong.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_pause_white_2x));
         }
         this.tvTag.setText(tag);
-        if(tag != null && tag.length() > 0){
+        if (tag != null && tag.length() > 0) {
             this.ivDeleteTag.setVisibility(View.VISIBLE);
         } else {
             this.ivDeleteTag.setVisibility(View.INVISIBLE);
@@ -219,12 +227,12 @@ public class PlayerActivity extends AppCompatActivity {
     }
 
     public void setWidgetsValues() {
-        new Thread(()->{
+        new Thread(() -> {
             Song currentSong = this.songService.getPlaylistSongs().get(this.songService.getSongIndex());
             this.currentTagOfSong = this.songDaoInstance.findTagBySongId(currentSong.getSongId());
-            int currentRating  = this.songDaoInstance.findRatingBySongId(currentSong.getSongId());
+            int currentRating = this.songDaoInstance.findRatingBySongId(currentSong.getSongId());
             Log.d("PlayerActivity rating", " val:" + this.songDaoInstance.findRatingBySongId(currentSong.getSongId()));
-            this.runOnUiThread(()->{
+            this.runOnUiThread(() -> {
                 setWidgetsValues(
                         currentSong.getTitle(),
                         currentSong.getArtist(),
@@ -252,35 +260,34 @@ public class PlayerActivity extends AppCompatActivity {
     }
 
     private void openAlertDialogToAddTag() {
-        new Thread(()->{
+        new Thread(() -> {
             long currentSongId = this.songService.getPlaylistSongs().get(songService.getSongIndex()).getSongId();
             this.currentTagOfSong = this.songDaoInstance.findTagBySongId(currentSongId);
             EditText editTextTag = new EditText(this);
             AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+            this.runOnUiThread(() -> {
+                alertDialogBuilder.setView(editTextTag).setIcon(R.drawable.ic_playlist_tag_black).setTitle("Tag de la chanson (max 25 caractères)");
+                editTextTag.setText(this.currentTagOfSong);
+                alertDialogBuilder.setPositiveButton("VALIDER", (dialog, whichButton) -> {
+                    String tag = editTextTag.getText().toString();
+                    if (tag.length() > MAX_SIZE_TAG) {
+                        new AlertDialog.Builder(this)
+                                .setTitle("Erreur lors de l'ajout du tag")
+                                .setMessage("Le tag saisi est supérieur à 25 caractères ! ")
+                                .show();
+                    } else {
+                        this.currentTagOfSong = tag;
+                        new Thread(() -> {
+                            this.songDaoInstance.updateSongTagById(this.currentTagOfSong, currentSongId);
+                        }).start();
+                        this.runOnUiThread(() -> {
+                            this.tvTag.setText(currentTagOfSong);
+                            this.ivDeleteTag.setVisibility(View.VISIBLE);
+                        });
+                    }
 
-            alertDialogBuilder.setView(editTextTag).setIcon(R.drawable.ic_playlist_tag_black).setTitle("Tag de la chanson (max 25 caractères)");
-            editTextTag.setText(this.currentTagOfSong);
-            alertDialogBuilder.setPositiveButton("VALIDER", (dialog, whichButton) -> {
-                String tag = editTextTag.getText().toString();
-                if (tag.length() > MAX_SIZE_TAG) {
-                    new AlertDialog.Builder(this)
-                            .setTitle("Erreur lors de l'ajout du tag")
-                            .setMessage("Le tag saisi est supérieur à 25 caractères ! ")
-                            .show();
-                } else {
-                    this.currentTagOfSong = tag;
-                    new Thread(()->{
-                        this.songDaoInstance.updateSongTagById(this.currentTagOfSong, currentSongId);
-                    }).start();
-                    this.runOnUiThread(()->{
-                        this.tvTag.setText(currentTagOfSong);
-                        this.ivDeleteTag.setVisibility(View.VISIBLE);
-                    });
-                }
-
-            }).setNegativeButton("ANNULER", (dialog, whichButton) -> dialog.dismiss())
-                    .create();
-            this.runOnUiThread(()->{
+                }).setNegativeButton("ANNULER", (dialog, whichButton) -> dialog.dismiss())
+                        .create();
                 AlertDialog ad = alertDialogBuilder.create();
                 ad.show();
                 ad.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(getResources().getColor(R.color.colorPrimaryFlash));
@@ -321,7 +328,7 @@ public class PlayerActivity extends AppCompatActivity {
         for (int i = nbStars; i < this.stars.length; i++) {
             this.stars[i].setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_outline_star_note));
         }
-        new Thread(()->{
+        new Thread(() -> {
             this.songDaoInstance.updateSongRatingById(nbStars, this.songService.getPlaylistSongs().get(this.songService.getSongIndex()).getSongId());
             Log.d("PlayerActivity update Rating : " + nbStars, this.songDaoInstance.getAllSongs().toString());
         }).start();
@@ -405,10 +412,10 @@ public class PlayerActivity extends AppCompatActivity {
             alertDialogBuilder
                     .setTitle("Supression").setMessage("Voulez-vous vraiment supprimer ce tag ?")
                     .setPositiveButton("OUI", ((dialog, which) -> {
-                        new Thread(()->{
+                        new Thread(() -> {
                             this.songDaoInstance.updateSongWithNullTagBySongId(this.songService.getPlaylistSongs().get(songService.getSongIndex()).getSongId());
                             String text = this.songDaoInstance.findTagBySongId(this.songService.getPlaylistSongs().get(songService.getSongIndex()).getSongId());
-                            this.runOnUiThread(()->{
+                            this.runOnUiThread(() -> {
                                 this.tvTag.setText(text);
                             });
                         }).start();
@@ -457,12 +464,95 @@ public class PlayerActivity extends AppCompatActivity {
      * start the shuffle mode
      */
     private void pushShuffleControl() {
-        if(this.songService.toShuffle()){
-            ivRandomPlayback.setImageDrawable(ContextCompat.getDrawable(this,R.drawable.ic_unshuffle_white));
-        }else{
-            ivRandomPlayback.setImageDrawable(ContextCompat.getDrawable(this,R.drawable.ic_shuffle_white));
+        if (this.songService.toShuffle()) {
+            ivRandomPlayback.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_unshuffle_white));
+        } else {
+            ivRandomPlayback.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_shuffle_white));
         }
 
 
+    }
+
+    private void installOnClickListenerButtonControlVolume() {
+        this.ivControlvolume.setOnClickListener(v -> {
+            this.audioManager.adjustStreamVolume(AudioManager.STREAM_MUSIC, AudioManager.ADJUST_SAME, AudioManager.FLAG_SHOW_UI);
+        });
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        if (this.mDetector.onTouchEvent(event)) {
+            return true;
+        }
+        return super.onTouchEvent(event);
+    }
+
+    @Override
+    public boolean onDown(MotionEvent e) {
+        return false;
+    }
+
+    @Override
+    public void onShowPress(MotionEvent e) { }
+
+    @Override
+    public boolean onSingleTapUp(MotionEvent e) {
+        return false;
+    }
+
+    @Override
+    public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
+        return false;
+    }
+
+    @Override
+    public void onLongPress(MotionEvent e) {
+        this.openAlertDialogToAddTag();
+    }
+
+    @Override
+    public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+        try {
+            // bottom to top swipe
+            if (e1.getY() - e2.getY() > SWIPE_MIN_DISTANCE && Math.abs(velocityY) > SWIPE_THRESHOLD_VELOCITY) {
+                //this.audioManager.adjustStreamVolume(AudioManager.STREAM_MUSIC, AudioManager.ADJUST_RAISE, AudioManager.FLAG_SHOW_UI);
+                return false;
+            }
+
+            // top to bottom swipe
+            else if (e2.getY() - e1.getY() > SWIPE_MIN_DISTANCE && Math.abs(velocityY) > SWIPE_THRESHOLD_VELOCITY) {
+                //this.audioManager.adjustStreamVolume(AudioManager.STREAM_MUSIC, AudioManager.ADJUST_LOWER, AudioManager.FLAG_SHOW_UI);
+                return false;
+            }
+
+            // right to left swipe
+            if (e1.getX() - e2.getX() > SWIPE_MIN_DISTANCE && Math.abs(velocityX) > SWIPE_THRESHOLD_VELOCITY) {
+                this.pushPreviousControl();
+            }
+            // left to right swipe
+            else if (e2.getX() - e1.getX() > SWIPE_MIN_DISTANCE && Math.abs(velocityX) > SWIPE_THRESHOLD_VELOCITY) {
+                this.pushNextControl();
+            }
+
+        } catch (Exception e) {
+            return false;
+        }
+        return false;
+    }
+
+    @Override
+    public boolean onSingleTapConfirmed(MotionEvent e) {
+        return false;
+    }
+
+    @Override
+    public boolean onDoubleTap(MotionEvent e) {
+        this.pushPlayControl();
+        return false;
+    }
+
+    @Override
+    public boolean onDoubleTapEvent(MotionEvent e) {
+        return false;
     }
 }

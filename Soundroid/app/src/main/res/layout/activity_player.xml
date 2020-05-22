@@ -280,4 +280,17 @@
         app:layout_constraintVertical_bias="0.093"
         app:srcCompat="@drawable/ic_outline_star_note" />
 
+    <ImageView
+        android:id="@+id/iv_player_control_volume"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.042"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.023"
+        app:srcCompat="@drawable/ic_volume_up_white"
+        android:contentDescription="@string/btn_volume_control" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
