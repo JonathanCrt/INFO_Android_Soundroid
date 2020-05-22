@@ -57,7 +57,6 @@ public class ToolbarController extends AbstractController   {
         this.context = context;
         this.constraintLayout = mainActivity;
         this.initialization();
-        this.setTextViewSelected();
         intent = new Intent(this.context, SongService.class);
 
         ServiceConnection serviceConnection = new ServiceConnection() {
@@ -86,7 +85,7 @@ public class ToolbarController extends AbstractController   {
         this.ivNextControl.setOnClickListener(v-> pushNextControl());
     }
 
-    private void setTextViewSelected() {
+    public void setTextViewSelected() {
         this.tvTitleSong.setSelected(true);
         this.tvArtistSong.setSelected(true);
     }
@@ -127,4 +126,10 @@ public class ToolbarController extends AbstractController   {
         this.setImagePause(ivPlayControl, context);
         this.setWidgetsValues();
     }
+
+    public void setPlayImageOnPushed() {
+        this.ivPlayControl.setImageDrawable(context.getDrawable(R.drawable.ic_pause_white));
+    }
 }
+
+

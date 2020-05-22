@@ -314,6 +314,7 @@ public class AllTracksFragment extends Fragment {
         this.shuffleButton.setOnClickListener(e -> {
             if(this.songService.toShuffle()){
                 this.songService.playOrPauseSong();
+                this.toolbarController.setPlayImageOnPushed();
                 this.shuffleButton.setTextColor(this.shuffleButton.getContext().getResources().getColor(R.color.colorPrimaryFlash));
             }else{
                 this.shuffleButton.setTextColor(Color.BLACK);

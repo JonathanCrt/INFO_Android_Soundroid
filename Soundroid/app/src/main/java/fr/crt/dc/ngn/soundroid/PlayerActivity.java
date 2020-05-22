@@ -3,7 +3,6 @@ package fr.crt.dc.ngn.soundroid;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.core.view.GestureDetectorCompat;
-import fr.crt.dc.ngn.soundroid.controller.ToolbarController;
 import fr.crt.dc.ngn.soundroid.database.SoundroidDatabase;
 import fr.crt.dc.ngn.soundroid.database.dao.SongDao;
 import fr.crt.dc.ngn.soundroid.database.entity.Song;
@@ -16,6 +15,14 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.graphics.Bitmap;
+import android.graphics.Color;
+import android.graphics.ColorFilter;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.GradientDrawable;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.media.AudioManager;
 import android.os.Bundle;
 import android.os.Handler;
@@ -24,6 +31,9 @@ import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.CycleInterpolator;
+import android.view.animation.RotateAnimation;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.SeekBar;
@@ -33,8 +43,7 @@ import android.widget.Toast;
 import java.util.Random;
 
 
-public class PlayerActivity extends AppCompatActivity implements GestureDetector.OnGestureListener, GestureDetector.OnDoubleTapListener {
-
+public class PlayerActivity extends AppCompatActivity implements GestureDetector.OnGestureListener, GestureDetector.OnDoubleTapListener, SensorEventListener {
 
     // Views
     private ImageView ivBack;
@@ -66,7 +75,6 @@ public class PlayerActivity extends AppCompatActivity implements GestureDetector
     private Handler mHandler;
     private Runnable mRunnable;
     private long currentSongLength;
-    private ToolbarController toolbarController;
     private String currentTagOfSong = null;
     private AudioManager audioManager;
 
@@ -76,6 +84,13 @@ public class PlayerActivity extends AppCompatActivity implements GestureDetector
     private GestureDetectorCompat mDetector;
     private static final int SWIPE_MIN_DISTANCE = 400;
     private static final int SWIPE_THRESHOLD_VELOCITY = 100;
+
+    private SensorManager senSensorManager;
+    private Sensor senAccelerometer;
+    private long lastUpdate = 0;
+    private float last_x, last_y, last_z;
+    private static final int SHAKE_THRESHOLD = 1000;
+
 
     private void initializeViews() {
         this.ivBack = findViewById(R.id.iv_player_back);
@@ -123,6 +138,10 @@ public class PlayerActivity extends AppCompatActivity implements GestureDetector
         this.mDetector.setOnDoubleTapListener(this);
         this.audioManager = (AudioManager) getApplicationContext().getSystemService(Context.AUDIO_SERVICE);
         this.installOnClickListenerButtonControlVolume();
+        senSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+        assert senSensorManager != null;
+        senAccelerometer = senSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+        senSensorManager.registerListener(this, senAccelerometer , SensorManager.SENSOR_DELAY_NORMAL);
         /*
         final LayoutInflater factory = getLayoutInflater();
         final View mainActivityView = factory.inflate(R.layout.toolbar_player, null);
@@ -144,10 +163,22 @@ public class PlayerActivity extends AppCompatActivity implements GestureDetector
     }
 
     @Override
+    protected void onPause() {
+        this.senSensorManager.unregisterListener(this, this.senAccelerometer);
+        super.onPause();
+    }
+
+    @Override
     protected void onStop() {
         super.onStop();
         this.mHandler.removeCallbacks(mRunnable);
         this.doUnbindService();
+    }
+
+    @Override
+    protected void onResume() {
+        this.senSensorManager.registerListener(this, this.senAccelerometer, SensorManager.SENSOR_DELAY_UI);
+        super.onResume();
     }
 
     @Override
@@ -232,16 +263,14 @@ public class PlayerActivity extends AppCompatActivity implements GestureDetector
             this.currentTagOfSong = this.songDaoInstance.findTagBySongId(currentSong.getSongId());
             int currentRating = this.songDaoInstance.findRatingBySongId(currentSong.getSongId());
             Log.d("PlayerActivity rating", " val:" + this.songDaoInstance.findRatingBySongId(currentSong.getSongId()));
-            this.runOnUiThread(() -> {
-                setWidgetsValues(
-                        currentSong.getTitle(),
-                        currentSong.getArtist(),
-                        currentRating,
-                        Utility.convertByteToBitmap(currentSong.getArtwork()),
-                        currentSong.getDuration(),
-                        this.currentTagOfSong
-                );
-            });
+            this.runOnUiThread(() -> setWidgetsValues(
+                    currentSong.getTitle(),
+                    currentSong.getArtist(),
+                    currentRating,
+                    Utility.convertByteToBitmap(currentSong.getArtwork()),
+                    currentSong.getDuration(),
+                    this.currentTagOfSong
+            ));
         }).start();
     }
 
@@ -277,9 +306,7 @@ public class PlayerActivity extends AppCompatActivity implements GestureDetector
                                 .show();
                     } else {
                         this.currentTagOfSong = tag;
-                        new Thread(() -> {
-                            this.songDaoInstance.updateSongTagById(this.currentTagOfSong, currentSongId);
-                        }).start();
+                        new Thread(() -> this.songDaoInstance.updateSongTagById(this.currentTagOfSong, currentSongId)).start();
                         this.runOnUiThread(() -> {
                             this.tvTag.setText(currentTagOfSong);
                             this.ivDeleteTag.setVisibility(View.VISIBLE);
@@ -415,9 +442,7 @@ public class PlayerActivity extends AppCompatActivity implements GestureDetector
                         new Thread(() -> {
                             this.songDaoInstance.updateSongWithNullTagBySongId(this.songService.getPlaylistSongs().get(songService.getSongIndex()).getSongId());
                             String text = this.songDaoInstance.findTagBySongId(this.songService.getPlaylistSongs().get(songService.getSongIndex()).getSongId());
-                            this.runOnUiThread(() -> {
-                                this.tvTag.setText(text);
-                            });
+                            this.runOnUiThread(() -> this.tvTag.setText(text));
                         }).start();
                         this.ivDeleteTag.setVisibility(View.INVISIBLE);
                     }))
@@ -450,6 +475,7 @@ public class PlayerActivity extends AppCompatActivity implements GestureDetector
         Log.d("PlayerActivity pushNext", " " + this.songService.getPlaylistSongs().get(this.songService.getSongIndex()).getRating());
         this.clearRating();
         this.setWidgetsValues();
+        this.setRandomBackgroundRedRange();
     }
 
     private void pushPreviousControl() {
@@ -458,6 +484,7 @@ public class PlayerActivity extends AppCompatActivity implements GestureDetector
         Log.d("PlayerActivity pushPrevious", " " + this.songService.getPlaylistSongs().get(this.songService.getSongIndex()).getRating());
         this.clearRating();
         this.setWidgetsValues();
+        this.setRandomBackgroundRedRange();
     }
 
     /**
@@ -469,16 +496,28 @@ public class PlayerActivity extends AppCompatActivity implements GestureDetector
         } else {
             ivRandomPlayback.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_shuffle_white));
         }
+    }
 
+    private void shakeAnimateOnArtworkImageView() {
+        RotateAnimation rotate = new RotateAnimation(-5, 5,Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
+        rotate.setDuration(200);
+        rotate.setStartOffset(50);
+        rotate.setRepeatMode(Animation.REVERSE);
+        rotate.setInterpolator(new CycleInterpolator(5));
+        this.ivArtworkSong.startAnimation(rotate);
+    }
 
+    private void setRandomBackgroundRedRange() {
+        Random rnd = new Random();
+        int color = Color.argb(255, rnd.nextInt(256), rnd.nextInt(20), rnd.nextInt(20));
+        findViewById(R.id.crtLay_player).setBackgroundColor(color);
     }
 
     private void installOnClickListenerButtonControlVolume() {
-        this.ivControlvolume.setOnClickListener(v -> {
-            this.audioManager.adjustStreamVolume(AudioManager.STREAM_MUSIC, AudioManager.ADJUST_SAME, AudioManager.FLAG_SHOW_UI);
-        });
+        this.ivControlvolume.setOnClickListener(v -> this.audioManager.adjustStreamVolume(AudioManager.STREAM_MUSIC, AudioManager.ADJUST_SAME, AudioManager.FLAG_SHOW_UI));
     }
 
+    // Touch and gestures events
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         if (this.mDetector.onTouchEvent(event)) {
@@ -555,4 +594,37 @@ public class PlayerActivity extends AppCompatActivity implements GestureDetector
     public boolean onDoubleTapEvent(MotionEvent e) {
         return false;
     }
+
+    /***************SensorEventListener*****************/
+    @Override
+    public void onSensorChanged(SensorEvent sensorEvent) {
+        // retrieve sensor values
+        if (sensorEvent.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
+            float x = sensorEvent.values[0];
+            float y = sensorEvent.values[1];
+            float z = sensorEvent.values[2];
+
+            long curTime = System.currentTimeMillis();
+            if ((curTime - lastUpdate) > 100) {
+                long diffTime = (curTime - lastUpdate);
+                lastUpdate = curTime;
+                float speed = Math.abs(x + y + z - last_x - last_y - last_z)/ diffTime * 10000;
+                if (speed > SHAKE_THRESHOLD) {
+                    Random random = new Random();
+                    int randomSong  = random.nextInt(this.songService.getPlaylistSongs().size());
+                    this.songService.setCurrentSong(randomSong);
+                    this.songService.playOrPauseSong();
+                    this.setWidgetsValues();
+                    this.shakeAnimateOnArtworkImageView();
+                    this.setRandomBackgroundRedRange();
+                }
+                last_x = x;
+                last_y = y;
+                last_z = z;
+            }
+        }
+    }
+
+    @Override
+    public void onAccuracyChanged(Sensor sensor, int accuracy) { }
 }
