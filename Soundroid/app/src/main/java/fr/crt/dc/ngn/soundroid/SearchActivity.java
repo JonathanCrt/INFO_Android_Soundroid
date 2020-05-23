@@ -59,6 +59,7 @@ public class SearchActivity extends AppCompatActivity {
             Log.i("ITEM", "CURRENT ITEM : " + song);
             Intent intent = new Intent(this, PlayerActivity.class);
             intent
+                    .putExtra("ID_SONG", song.getSongId())
                     .putExtra("TITLE_SONG", song.getTitle())
                     .putExtra("ARTIST_SONG", song.getArtist())
                     .putExtra("RATING_SONG", song.getRating())

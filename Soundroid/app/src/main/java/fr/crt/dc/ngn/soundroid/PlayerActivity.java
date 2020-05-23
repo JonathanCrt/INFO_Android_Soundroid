@@ -458,7 +458,13 @@ public class PlayerActivity extends AppCompatActivity implements GestureDetector
             this.mHandler.removeCallbacks(mRunnable);
         } else {
             this.playerState = PlayerState.PLAYING;
-
+            long id = getIntent().getLongExtra("ID_SONG", 0L);
+            Log.i("ID", "id_song: " + id) ;
+            new Thread(() -> {
+                Song song = this.songDaoInstance.findById(id);
+                boolean b = this.songService.getPlaylistSongs().contains(song);
+                Log.i("player activity", "search song : " + b);
+            }).start();
             Toast.makeText(this, "State : " + this.playerState.name(), Toast.LENGTH_SHORT).show();
             this.ivControlPlaySong.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_pause_white_2x));
             this.runUIThreadToSetProgressSeekBar();
