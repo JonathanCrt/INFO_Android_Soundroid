@@ -138,7 +138,6 @@ public class AllTracksFragment extends Fragment {
             popup.getMenuInflater().inflate(R.menu.popup_filter, popup.getMenu());
             popup.setOnMenuItemClickListener(item -> {
                 Toast.makeText(this.getContext(), "You clicked on : " + item.getTitle(), Toast.LENGTH_SHORT).show();
-                Log.d("AllTracksFragment item", " " + item.getTitle());
                 songAdapter.getFilter().filter(item.getTitle());
                 this.songAdapter.notifyDataSetChanged();
                 return true;
@@ -160,14 +159,12 @@ public class AllTracksFragment extends Fragment {
 
         this.ivButtonAccessHistory.setOnClickListener(v -> {
             FragmentTransaction fragmentTransaction = getParentFragmentManager().beginTransaction();
-            Log.d("AlltracksFragment", "click here ! ");
             fragmentTransaction.replace(R.id.nav_host_fragment, new HistoryFragment());
             fragmentTransaction.commit();
         });
 
         this.ivButtonAccessPlaylists.setOnClickListener(v -> {
             FragmentTransaction fragmentTransaction = getParentFragmentManager().beginTransaction();
-            Log.d("AlltracksFragment", "click here ! ");
             fragmentTransaction.replace(R.id.nav_host_fragment, new PlaylistFragment());
             fragmentTransaction.commit();
         });
@@ -195,21 +192,18 @@ public class AllTracksFragment extends Fragment {
                 alertDialogBuilder.setView(autoCompleteTextView);
                 // Display later the playlist name because it takes time to set the adapter
                 alertDialogBuilder.setNegativeButton("Cancel", null);
-                alertDialogBuilder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        String playlistName = autoCompleteTextView.getText().toString();
-                        // If the playlist name is not correct
-                        if (playlistName.length()==0 || !Arrays.asList(playlistsNames).contains(playlistName)){
-                            Toast.makeText(getContext(), "Click on a playlist name !", Toast.LENGTH_SHORT).show();
-                        }else{
-                            new Thread(()-> {
-                                Log.d("LOG", "PlaylistName = " + playlistName);
-                                Playlist playlistClicked = playlistList.stream().filter(p -> p.getName().equals(playlistName)).findAny().get();
-                                SoundroidDatabase.getInstance(getContext()).junctionDAO().insertSongIntoPlayList(songPressed.getSongId(), playlistClicked.getPlaylistId());
-                                Log.d("PlaylistCLicked size ", String.valueOf(SoundroidDatabase.getInstance(getContext()).junctionDAO().findAllSongsByPlaylistId(playlistClicked.getPlaylistId()).size()));
-                            }).start();
-                        }
+                alertDialogBuilder.setPositiveButton("OK", (dialog, which) -> {
+                    String playlistName = autoCompleteTextView.getText().toString();
+                    // If the playlist name is not correct
+                    if (playlistName.length()==0 || !Arrays.asList(playlistsNames).contains(playlistName)){
+                        Toast.makeText(getContext(), "Click on a playlist name !", Toast.LENGTH_SHORT).show();
+                    }else{
+                        new Thread(()-> {
+                            Log.d("LOG", "PlaylistName = " + playlistName);
+                            Playlist playlistClicked = playlistList.stream().filter(p -> p.getName().equals(playlistName)).findAny().get();
+                            SoundroidDatabase.getInstance(getContext()).junctionDAO().insertSongIntoPlayList(songPressed.getSongId(), playlistClicked.getPlaylistId());
+                            Log.d("PlaylistCLicked size ", String.valueOf(SoundroidDatabase.getInstance(getContext()).junctionDAO().findAllSongsByPlaylistId(playlistClicked.getPlaylistId()).size()));
+                        }).start();
                     }
                 });
                 getActivity().runOnUiThread(()->{
@@ -231,9 +225,7 @@ public class AllTracksFragment extends Fragment {
      */
     @Override
     public void onStart() {
-        Log.d("cycle life of fragment", "i'm inside onStart");
         super.onStart();
-        Log.i("intent value: ", "" + intent);
         this.doBindService();
         Toast.makeText(this.getContext(), "PlayList size: " + RootList.getRootList().size(), Toast.LENGTH_SHORT).show();
         this.tvNumberOfSongs.setText(String.valueOf(RootList.getRootList().size()));
@@ -246,14 +238,12 @@ public class AllTracksFragment extends Fragment {
      */
     @Override
     public void onPause() {
-        Log.d("cycle life of fragment", "i'm inside onPause");
         super.onPause();
         this.isOnBackground = true;
     }
 
     @Override
     public void onResume() {
-        Log.d("cycle life of fragment", "i'm inside onResume");
         super.onResume();
         if (isOnBackground)
             isOnBackground = false;
@@ -264,14 +254,12 @@ public class AllTracksFragment extends Fragment {
      */
     @Override
     public void onStop() {
-        Log.d("cycle life of fragment", "i'm inside onStop");
         this.currentNumbersOfSongs =  Integer.parseInt(this.tvNumberOfSongs.getText().toString());
         super.onStop();
     }
 
     @Override
     public void onDestroy() {
-        Log.d("cycle life of fragment", "i'm inside onDestroy");
         this.toolbarController = null;
         //this.doUnbindService();
         super.onDestroy();

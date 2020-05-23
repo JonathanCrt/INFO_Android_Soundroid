@@ -7,12 +7,15 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.preference.PreferenceManager;
 import android.provider.ContactsContract;
 import android.speech.tts.TextToSpeech;
 import android.telephony.SmsMessage;
@@ -21,8 +24,10 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.material.navigation.NavigationView;
@@ -45,6 +50,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
 import fr.crt.dc.ngn.soundroid.adapter.SongAdapter;
+import fr.crt.dc.ngn.soundroid.controller.ToolbarController;
 import fr.crt.dc.ngn.soundroid.database.SoundroidDatabase;
 import fr.crt.dc.ngn.soundroid.tts.Speaker;
 import fr.crt.dc.ngn.soundroid.utility.RootList;
@@ -71,13 +77,16 @@ public class MainActivity extends AppCompatActivity {
     private boolean[] checkedItems;
     private int selectedCriteria = 0;
     private ListView searchList;
+    private TextView tvToolbarArtistSong;
+    private TextView tvToolbarTitleSong;
+    private ImageView ivToolbarArtworkSong;
+    private Bitmap currentBitmapSong;
 
     //TextToSpeech API
     private final int CHECK_CODE = 0x1;
     private final int LONG_DURATION = 10000;
     private final int SHORT_DURATION = 2000;
     private Speaker speaker;
-    private Button toggleButton;
 
     int PERMISSION_ALL = 1;
     String[] PERMISSIONS = {
@@ -195,18 +204,12 @@ public class MainActivity extends AppCompatActivity {
         this.listCriteria = getResources().getStringArray(R.array.search_criteria);
         this.checkedItems = new boolean[listCriteria.length];
         this.searchList = findViewById(R.id.list_songs);
-
-        /*
-        this.toggleButton = findViewById(R.id.speechToogle);
-
-        this.toggleButton.setOnClickListener(v -> {
-            speaker.speakText("Bonjour !");
-        });
-         */
+        this.tvToolbarArtistSong =  findViewById(R.id.tv_toolbar_artist);
+        this.tvToolbarTitleSong =  findViewById(R.id.tv_toolbar_title);
+        this.ivToolbarArtworkSong = findViewById(R.id.iv_toolbar_artwork);
         this.checkTTS();
         this.initializeSMSReceiver();
         this.registerSMSReceiver();
-
     }
 
     @Override
@@ -223,11 +226,27 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        String currentTitleReceived = sharedPreferences.getString("current_song_title", "Titre");
+        String currentArtisteReceived = sharedPreferences.getString("current_song_artist", "Artiste");
+        Log.i("MainActivity", "sharedPref values : " + currentTitleReceived + " " + currentArtisteReceived);
+        new Thread(() -> {
+            byte[] currentByteArtwork = this.soundroidDatabase.songDao().findArtworkBySongId(sharedPreferences.getLong("current_song_id", 0L));
+            if(currentByteArtwork != null){
+                this.currentBitmapSong = Utility.convertByteToBitmap(currentByteArtwork);
+                this.runOnUiThread(() -> this.ivToolbarArtworkSong.setImageBitmap(this.currentBitmapSong));
+            }
+        }).start();
+        this.tvToolbarArtistSong.setText(currentArtisteReceived);
+        this.tvToolbarTitleSong.setText(currentTitleReceived);
+
     }
 
     @Override
     protected void onStop() {
+        Toast.makeText(this, "MainActivity onStop", Toast.LENGTH_LONG).show();
         super.onStop();
+
     }
 
     @Override
@@ -414,7 +433,6 @@ public class MainActivity extends AppCompatActivity {
 
 
     private void checkTTS() {
-        //Log.d("MainActivity tts", "checkTTS");
         Intent intentCheck = new Intent();
         intentCheck.setAction(TextToSpeech.Engine.ACTION_CHECK_TTS_DATA);
         startActivityForResult(intentCheck, CHECK_CODE);
@@ -475,7 +493,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void registerSMSReceiver() {
-        //Log.d("Mainctivity tts", "registerSMSReceiver");
         IntentFilter intentFilter = new IntentFilter("android.provider.Telephony.SMS_RECEIVED");
         registerReceiver(smsReceiver, intentFilter);
     }

@@ -2,7 +2,6 @@ package fr.crt.dc.ngn.soundroid.fragment;
 
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
-import android.os.AsyncTask;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -232,9 +231,7 @@ public class PlaylistFragment extends Fragment {
                         Log.d("PlaylistFragment songs into Playlist", this.soundroidDatabaseInstance.junctionDAO().getPlaylistsWithSongs().toString());
                         this.playlists.clear();
                         this.playlists.addAll(this.soundroidDatabaseInstance.playlistDao().getAllPlayLists());
-                        getActivity().runOnUiThread(()->{
-                            this.playlistAdapter.notifyDataSetChanged();
-                        });
+                        getActivity().runOnUiThread(()-> this.playlistAdapter.notifyDataSetChanged());
                     }).start();
                 }
 

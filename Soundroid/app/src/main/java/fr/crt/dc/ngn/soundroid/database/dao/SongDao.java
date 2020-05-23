@@ -59,6 +59,9 @@ public interface SongDao {
     @Query("SELECT tag FROM Song WHERE songId = :songId")
     String findTagBySongId(long songId);
 
+    @Query("SELECT artwork FROM Song WHERE songId = :songId")
+    byte[] findArtworkBySongId(long songId);
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insertSong(Song song);
 

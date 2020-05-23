@@ -3,6 +3,7 @@ package fr.crt.dc.ngn.soundroid;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.core.view.GestureDetectorCompat;
+import fr.crt.dc.ngn.soundroid.controller.ToolbarController;
 import fr.crt.dc.ngn.soundroid.database.SoundroidDatabase;
 import fr.crt.dc.ngn.soundroid.database.dao.SongDao;
 import fr.crt.dc.ngn.soundroid.database.entity.Song;
@@ -14,11 +15,9 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.Color;
-import android.graphics.ColorFilter;
-import android.graphics.drawable.ColorDrawable;
-import android.graphics.drawable.GradientDrawable;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -27,6 +26,7 @@ import android.media.AudioManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
@@ -41,6 +41,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.Random;
+import java.util.concurrent.atomic.AtomicReference;
 
 
 public class PlayerActivity extends AppCompatActivity implements GestureDetector.OnGestureListener, GestureDetector.OnDoubleTapListener, SensorEventListener {
@@ -91,7 +92,6 @@ public class PlayerActivity extends AppCompatActivity implements GestureDetector
     private float last_x, last_y, last_z;
     private static final int SHAKE_THRESHOLD = 1000;
 
-
     private void initializeViews() {
         this.ivBack = findViewById(R.id.iv_player_back);
         this.tvTitleSong = findViewById(R.id.tv_player_title);
@@ -141,13 +141,7 @@ public class PlayerActivity extends AppCompatActivity implements GestureDetector
         senSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         assert senSensorManager != null;
         senAccelerometer = senSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
-        senSensorManager.registerListener(this, senAccelerometer , SensorManager.SENSOR_DELAY_NORMAL);
-        /*
-        final LayoutInflater factory = getLayoutInflater();
-        final View mainActivityView = factory.inflate(R.layout.toolbar_player, null);
-        this.toolbarController = new ToolbarController(this, mainActivityView.findViewById(R.id.crt_layout));
-
-         */
+        senSensorManager.registerListener(this, senAccelerometer, SensorManager.SENSOR_DELAY_NORMAL);
     }
 
     @Override
@@ -185,7 +179,6 @@ public class PlayerActivity extends AppCompatActivity implements GestureDetector
     protected void onDestroy() {
         super.onDestroy();
         doUnbindService();
-
     }
 
     ServiceConnection serviceConnection = new ServiceConnection() {
@@ -262,15 +255,11 @@ public class PlayerActivity extends AppCompatActivity implements GestureDetector
             Song currentSong = this.songService.getPlaylistSongs().get(this.songService.getSongIndex());
             this.currentTagOfSong = this.songDaoInstance.findTagBySongId(currentSong.getSongId());
             int currentRating = this.songDaoInstance.findRatingBySongId(currentSong.getSongId());
-            Log.d("PlayerActivity rating", " val:" + this.songDaoInstance.findRatingBySongId(currentSong.getSongId()));
-            this.runOnUiThread(() -> setWidgetsValues(
-                    currentSong.getTitle(),
-                    currentSong.getArtist(),
-                    currentRating,
-                    Utility.convertByteToBitmap(currentSong.getArtwork()),
-                    currentSong.getDuration(),
-                    this.currentTagOfSong
-            ));
+            this.runOnUiThread(() -> {
+                setWidgetsValues(currentSong.getTitle(), currentSong.getArtist(), currentRating, Utility.convertByteToBitmap(currentSong.getArtwork()),
+                        currentSong.getDuration(), this.currentTagOfSong);
+                this.editSharedPreferences(currentSong.getSongId());
+            });
         }).start();
     }
 
@@ -357,7 +346,6 @@ public class PlayerActivity extends AppCompatActivity implements GestureDetector
         }
         new Thread(() -> {
             this.songDaoInstance.updateSongRatingById(nbStars, this.songService.getPlaylistSongs().get(this.songService.getSongIndex()).getSongId());
-            Log.d("PlayerActivity update Rating : " + nbStars, this.songDaoInstance.getAllSongs().toString());
         }).start();
     }
 
@@ -472,7 +460,6 @@ public class PlayerActivity extends AppCompatActivity implements GestureDetector
     private void pushNextControl() {
         this.songService.playNextSong();
         ivControlPlaySong.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_pause_white_2x));
-        Log.d("PlayerActivity pushNext", " " + this.songService.getPlaylistSongs().get(this.songService.getSongIndex()).getRating());
         this.clearRating();
         this.setWidgetsValues();
         this.setRandomBackgroundRedRange();
@@ -481,7 +468,6 @@ public class PlayerActivity extends AppCompatActivity implements GestureDetector
     private void pushPreviousControl() {
         this.songService.playPreviousSong();
         ivControlPlaySong.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_pause_white_2x));
-        Log.d("PlayerActivity pushPrevious", " " + this.songService.getPlaylistSongs().get(this.songService.getSongIndex()).getRating());
         this.clearRating();
         this.setWidgetsValues();
         this.setRandomBackgroundRedRange();
@@ -499,7 +485,7 @@ public class PlayerActivity extends AppCompatActivity implements GestureDetector
     }
 
     private void shakeAnimateOnArtworkImageView() {
-        RotateAnimation rotate = new RotateAnimation(-5, 5,Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
+        RotateAnimation rotate = new RotateAnimation(-5, 5, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
         rotate.setDuration(200);
         rotate.setStartOffset(50);
         rotate.setRepeatMode(Animation.REVERSE);
@@ -517,6 +503,18 @@ public class PlayerActivity extends AppCompatActivity implements GestureDetector
         this.ivControlvolume.setOnClickListener(v -> this.audioManager.adjustStreamVolume(AudioManager.STREAM_MUSIC, AudioManager.ADJUST_SAME, AudioManager.FLAG_SHOW_UI));
     }
 
+    private void editSharedPreferences(long songId) {
+        Toast.makeText(this, "SharedPrefs edited !", Toast.LENGTH_LONG).show();
+        Log.i("PlayerActivity", "sharedPrefs edited ! ");
+        Log.i("PlayerActivity", "sharedPrefs values " + this.tvTitleSong.getText().toString() + " " + this.tvArtistSong.getText().toString());
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString("current_song_title", this.tvTitleSong.getText().toString());
+        editor.putString("current_song_artist", this.tvArtistSong.getText().toString());
+        editor.putLong("current_song_id", songId);
+        editor.apply();
+    }
+
     // Touch and gestures events
     @Override
     public boolean onTouchEvent(MotionEvent event) {
@@ -532,7 +530,8 @@ public class PlayerActivity extends AppCompatActivity implements GestureDetector
     }
 
     @Override
-    public void onShowPress(MotionEvent e) { }
+    public void onShowPress(MotionEvent e) {
+    }
 
     @Override
     public boolean onSingleTapUp(MotionEvent e) {
@@ -608,10 +607,10 @@ public class PlayerActivity extends AppCompatActivity implements GestureDetector
             if ((curTime - lastUpdate) > 100) {
                 long diffTime = (curTime - lastUpdate);
                 lastUpdate = curTime;
-                float speed = Math.abs(x + y + z - last_x - last_y - last_z)/ diffTime * 10000;
+                float speed = Math.abs(x + y + z - last_x - last_y - last_z) / diffTime * 10000;
                 if (speed > SHAKE_THRESHOLD) {
                     Random random = new Random();
-                    int randomSong  = random.nextInt(this.songService.getPlaylistSongs().size());
+                    int randomSong = random.nextInt(this.songService.getPlaylistSongs().size());
                     this.songService.setCurrentSong(randomSong);
                     this.songService.playOrPauseSong();
                     this.setWidgetsValues();
@@ -626,5 +625,6 @@ public class PlayerActivity extends AppCompatActivity implements GestureDetector
     }
 
     @Override
-    public void onAccuracyChanged(Sensor sensor, int accuracy) { }
+    public void onAccuracyChanged(Sensor sensor, int accuracy) {
+    }
 }

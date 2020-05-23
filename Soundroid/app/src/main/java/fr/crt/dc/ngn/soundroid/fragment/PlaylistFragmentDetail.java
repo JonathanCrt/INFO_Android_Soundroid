@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.Bundle;
 
-import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 
 import android.os.IBinder;
@@ -18,23 +17,16 @@ import android.widget.ListView;
 import android.widget.Toast;
 import android.widget.Toolbar;
 
-import com.google.android.material.appbar.CollapsingToolbarLayout;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Objects;
 
 import fr.crt.dc.ngn.soundroid.R;
-import fr.crt.dc.ngn.soundroid.adapter.PlaylistAdapter;
 import fr.crt.dc.ngn.soundroid.adapter.PlaylistDetailAdapter;
-import fr.crt.dc.ngn.soundroid.adapter.SongAdapter;
 import fr.crt.dc.ngn.soundroid.controller.ToolbarController;
 import fr.crt.dc.ngn.soundroid.database.SoundroidDatabase;
-import fr.crt.dc.ngn.soundroid.database.entity.Playlist;
 import fr.crt.dc.ngn.soundroid.database.entity.Song;
 import fr.crt.dc.ngn.soundroid.service.SongService;
-import fr.crt.dc.ngn.soundroid.utility.RootList;
 
 public class PlaylistFragmentDetail extends Fragment {
 
@@ -168,7 +160,7 @@ public class PlaylistFragmentDetail extends Fragment {
         requireActivity().startService(intent);
     }
 
-    public void doUnbindService() {
+    private void doUnbindService() {
         if (connectionEstablished) {
             requireContext().unbindService(serviceConnection);
             connectionEstablished = false;

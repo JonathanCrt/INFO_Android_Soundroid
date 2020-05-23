@@ -70,23 +70,28 @@ public class ExportFragment extends Fragment {
 
     private void generateJSONFileAndOpenFileManager() {
         this.btnExport.setOnClickListener(v -> {
-            this.responseSongsList = this.soundroidDatabaseInstance.songDao().getAllSongs();
-            Gson gson = new Gson();
-            this.jsonData = gson.toJson(this.responseSongsList);
-            JsonParser jsonParser = new JsonParser();
-            JsonArray jsonArray = jsonParser.parse(this.jsonData).getAsJsonArray();
+            new Thread(() -> {
+                this.responseSongsList = this.soundroidDatabaseInstance.songDao().getAllSongs();
+                Gson gson = new Gson();
+                this.jsonData = gson.toJson(this.responseSongsList);
+                JsonParser jsonParser = new JsonParser();
+                JsonArray jsonArray = jsonParser.parse(this.jsonData).getAsJsonArray();
 
-            try {
-                Writer writerOutput;
-                String pathDownload = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getAbsolutePath() + "/Soundroid.json";
-                writerOutput = new BufferedWriter(new FileWriter(new File(pathDownload)));
-                writerOutput.write(jsonArray.toString());
-                writerOutput.close();
-                Toast.makeText(this.getContext(), "Sauvegarde effectuée !", Toast.LENGTH_LONG).show();
-                startActivity(new Intent(DownloadManager.ACTION_VIEW_DOWNLOADS));
-            } catch (IOException e) {
-                Log.e("ExportFragment", "Error during writing json file" + e.getMessage());
-            }
+                try {
+                    Writer writerOutput;
+                    String pathDownload = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getAbsolutePath() + "/Soundroid.json";
+                    writerOutput = new BufferedWriter(new FileWriter(new File(pathDownload)));
+                    writerOutput.write(jsonArray.toString());
+                    writerOutput.close();
+                    this.getActivity().runOnUiThread(() -> {
+                        Toast.makeText(this.getContext(), "Sauvegarde effectuée !", Toast.LENGTH_LONG).show();
+                    });
+                    startActivity(new Intent(DownloadManager.ACTION_VIEW_DOWNLOADS));
+                } catch (IOException e) {
+                    Log.e("ExportFragment", "Error during writing json file" + e.getMessage());
+                }
+            }).start();
+
         });
     }
 
