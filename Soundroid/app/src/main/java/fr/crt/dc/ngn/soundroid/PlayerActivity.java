@@ -29,6 +29,7 @@ import android.os.IBinder;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.GestureDetector;
+import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.animation.Animation;
@@ -62,7 +63,7 @@ public class PlayerActivity extends AppCompatActivity implements GestureDetector
     private TextView tvDuration;
     private TextView tvTag;
     private ImageView ivDeleteTag;
-    private ImageView ivControlvolume;
+    private ImageView ivControlVolume;
 
     private SongService songService;
     private Intent intent;
@@ -78,6 +79,11 @@ public class PlayerActivity extends AppCompatActivity implements GestureDetector
     private long currentSongLength;
     private String currentTagOfSong = null;
     private AudioManager audioManager;
+    private enum PlayerState {INIT, PLAYING, PAUSE};
+    private PlayerState playerState = PlayerState.INIT;
+
+    //private SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+    //private SharedPreferences.Editor editor = sharedPreferences.edit();
 
     private SongDao songDaoInstance;
     public static int MAX_SIZE_TAG = 25;
@@ -114,8 +120,7 @@ public class PlayerActivity extends AppCompatActivity implements GestureDetector
         this.tvDuration = findViewById(R.id.tv_player_end_time);
         this.tvTag = findViewById(R.id.tv_player_tag);
         this.ivDeleteTag = findViewById(R.id.iv_player_delete_tag);
-        this.ivControlvolume = findViewById(R.id.iv_player_control_volume);
-
+        this.ivControlVolume = findViewById(R.id.iv_player_control_volume);
         this.stars = new ImageView[]{ivNoteStarOne, ivNoteStarTwo, ivNoteStarThree, ivNoteStarFour, ivNoteStarFive};
     }
 
@@ -447,14 +452,20 @@ public class PlayerActivity extends AppCompatActivity implements GestureDetector
     private void pushPlayControl() {
         this.songService.setToolbarPushed(true);
         if (!songService.playOrPauseSong()) {
-            Toast.makeText(this, "State : Pause", Toast.LENGTH_SHORT).show();
-            ivControlPlaySong.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_play_white_2x));
+            this.playerState = PlayerState.PAUSE;
+            Toast.makeText(this, "State : " + this.playerState.name(), Toast.LENGTH_SHORT).show();
+            this.ivControlPlaySong.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_play_white_2x));
             this.mHandler.removeCallbacks(mRunnable);
         } else {
-            Toast.makeText(this, "State : Play", Toast.LENGTH_SHORT).show();
-            ivControlPlaySong.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_pause_white_2x));
+            this.playerState = PlayerState.PLAYING;
+
+            Toast.makeText(this, "State : " + this.playerState.name(), Toast.LENGTH_SHORT).show();
+            this.ivControlPlaySong.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_pause_white_2x));
             this.runUIThreadToSetProgressSeekBar();
         }
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString("playback_state", this.playerState.name()).apply();
     }
 
     private void pushNextControl() {
@@ -500,18 +511,16 @@ public class PlayerActivity extends AppCompatActivity implements GestureDetector
     }
 
     private void installOnClickListenerButtonControlVolume() {
-        this.ivControlvolume.setOnClickListener(v -> this.audioManager.adjustStreamVolume(AudioManager.STREAM_MUSIC, AudioManager.ADJUST_SAME, AudioManager.FLAG_SHOW_UI));
+        this.ivControlVolume.setOnClickListener(v -> this.audioManager.adjustStreamVolume(AudioManager.STREAM_MUSIC, AudioManager.ADJUST_SAME, AudioManager.FLAG_SHOW_UI));
     }
 
     private void editSharedPreferences(long songId) {
-        Toast.makeText(this, "SharedPrefs edited !", Toast.LENGTH_LONG).show();
-        Log.i("PlayerActivity", "sharedPrefs edited ! ");
-        Log.i("PlayerActivity", "sharedPrefs values " + this.tvTitleSong.getText().toString() + " " + this.tvArtistSong.getText().toString());
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString("current_song_title", this.tvTitleSong.getText().toString());
         editor.putString("current_song_artist", this.tvArtistSong.getText().toString());
         editor.putLong("current_song_id", songId);
+        editor.putString("playback_state", this.playerState.name());
         editor.apply();
     }
 

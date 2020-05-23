@@ -41,6 +41,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
@@ -64,9 +65,7 @@ public class MainActivity extends AppCompatActivity {
 
     private AppBarConfiguration mAppBarConfiguration;
 
-
-    public static final int TOOLBAR_CONTROLLER_REQUEST_CODE = 1;
-    private boolean isPlayerVisible;
+    private static String TAG = "MainActivity";
 
     private static Context context;
     private Intent intent;
@@ -81,6 +80,7 @@ public class MainActivity extends AppCompatActivity {
     private TextView tvToolbarTitleSong;
     private ImageView ivToolbarArtworkSong;
     private Bitmap currentBitmapSong;
+    private ImageView ivToolbarControlPlay;
 
     //TextToSpeech API
     private final int CHECK_CODE = 0x1;
@@ -137,9 +137,8 @@ public class MainActivity extends AppCompatActivity {
         toolbarPlayer.setOnClickListener(v -> this.launchPlayerActivity());
 
         // launch async task
-        //Playlist p = new Playlist("Root");
         AtomicReference<ArrayList<Song>> listSongs = new AtomicReference<>();
-        Thread t = new Thread(()->{
+        Thread t = new Thread(() -> {
             try {
                 listSongs.set((ArrayList<Song>) soundroidDatabase.songDao().getAllSongs());
                 Log.d("LOG", String.valueOf(soundroidDatabase.playlistDao().getAllPlayLists().size()));
@@ -179,34 +178,13 @@ public class MainActivity extends AppCompatActivity {
             e.printStackTrace();
         }
 
-        //SoundroidDatabase database = SoundroidDatabase.getInstance(this);
-        //database.playlistDao().createPlayList(new fr.crt.dc.ngn.soundroid.database.entity.Playlist("poooooooooop"));
-        //database.songDao().insertSong(new fr.crt.dc.ngn.soundroid.database.entity.Song(1, "Billie Jean", "Michael Jackson", 2503, "rep/artwork", "pop", "King of pop", "rep/...",  "89+79gs76g"));
-
-        //Log.i("MainActivity SIZE" , "" + database.playlistDao().getAllPlayLists().size());
-        //soundroidDatabase.playlistDao().deleteAll();
-
-        /*
-        for(int i = 1; i < soundroidDatabase.playlistDao().getAllPlayLists().size(); i++) {
-            Log.i("increment", " " + i);
-            Log.i("MainActivity NAME" , "" + soundroidDatabase.playlistDao().getAllPlayLists().get(i).getName());
-            soundroidDatabase.playlistDao().deleteOnePlayList(soundroidDatabase.playlistDao().getAllPlayLists().get(i).getName());
-
-        }
-         */
-
-
-        //Log.i("MainActivity DB Junction" , "" + this.soundroidDatabase.junctionDAO().getAllJunctions());
-        //Log.i("MainActivity DB" , "" + database.playlistDao().getAllPlayLists());
-
-        //this.soundroidDatabase.playlistDao().deleteOnePlayListByName("Playlist test");
-
         this.listCriteria = getResources().getStringArray(R.array.search_criteria);
         this.checkedItems = new boolean[listCriteria.length];
         this.searchList = findViewById(R.id.list_songs);
-        this.tvToolbarArtistSong =  findViewById(R.id.tv_toolbar_artist);
-        this.tvToolbarTitleSong =  findViewById(R.id.tv_toolbar_title);
+        this.tvToolbarArtistSong = findViewById(R.id.tv_toolbar_artist);
+        this.tvToolbarTitleSong = findViewById(R.id.tv_toolbar_title);
         this.ivToolbarArtworkSong = findViewById(R.id.iv_toolbar_artwork);
+        this.ivToolbarControlPlay = findViewById(R.id.iv_control_play);
         this.checkTTS();
         this.initializeSMSReceiver();
         this.registerSMSReceiver();
@@ -229,22 +207,32 @@ public class MainActivity extends AppCompatActivity {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         String currentTitleReceived = sharedPreferences.getString("current_song_title", "Titre");
         String currentArtisteReceived = sharedPreferences.getString("current_song_artist", "Artiste");
-        Log.i("MainActivity", "sharedPref values : " + currentTitleReceived + " " + currentArtisteReceived);
+        this.tvToolbarArtistSong.setText(currentArtisteReceived);
+        this.tvToolbarTitleSong.setText(currentTitleReceived);
         new Thread(() -> {
             byte[] currentByteArtwork = this.soundroidDatabase.songDao().findArtworkBySongId(sharedPreferences.getLong("current_song_id", 0L));
-            if(currentByteArtwork != null){
+            if (currentByteArtwork != null) {
                 this.currentBitmapSong = Utility.convertByteToBitmap(currentByteArtwork);
                 this.runOnUiThread(() -> this.ivToolbarArtworkSong.setImageBitmap(this.currentBitmapSong));
             }
         }).start();
-        this.tvToolbarArtistSong.setText(currentArtisteReceived);
-        this.tvToolbarTitleSong.setText(currentTitleReceived);
+        String statePlayer = sharedPreferences.getString("playback_state", "");
+        Toast.makeText(this, "" + statePlayer, Toast.LENGTH_LONG).show();
+        this.runOnUiThread(() -> {
+            switch (statePlayer) {
+                case "PLAYING":
+                    this.ivToolbarControlPlay.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_pause_white));
+                    break;
+                case "PAUSE":
+                    this.ivToolbarControlPlay.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_play_white));
+                    break;
+            }
+        });
 
     }
 
     @Override
     protected void onStop() {
-        Toast.makeText(this, "MainActivity onStop", Toast.LENGTH_LONG).show();
         super.onStop();
 
     }
@@ -276,7 +264,7 @@ public class MainActivity extends AppCompatActivity {
 
 
     private void launchPlayerActivity() {
-        new Thread(()->{
+        new Thread(() -> {
             Intent currentSongIntent = new Intent(this, PlayerActivity.class);
             Song currentSong = this.songService.getPlaylistSongs().get(this.songService.getSongIndex());
             currentSongIntent
@@ -306,8 +294,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /**
-     *
-     * @param context context of mainActivity
+     * @param context     context of mainActivity
      * @param permissions array of permissions
      * @return boolean indicates if user have permissions
      */
@@ -391,14 +378,16 @@ public class MainActivity extends AppCompatActivity {
         Intent intent = new Intent(this, SearchActivity.class);
         class Box {
             // champs mutable
-            private List<Song>  resultList= null;
+            private List<Song> resultList = null;
         }
         Runnable run = null;
         Box box = new Box();
 
         switch (position) {
             case 0:
-                run = () ->{ box.resultList = this.soundroidDatabase.songDao().findByTitle(userInput);};
+                run = () -> {
+                    box.resultList = this.soundroidDatabase.songDao().findByTitle(userInput);
+                };
                 flag = SearchActivity.Criteria.TITLE;
                 Log.i("RESULT", "CURRENT SONG PLAYED by TITLE: " + box.resultList);
                 break;
@@ -408,7 +397,7 @@ public class MainActivity extends AppCompatActivity {
                 Log.i("RESULT", "CURRENT SONG PLAYED by ARTIST: " + box.resultList);
                 break;
             case 2:
-                run =() ->box.resultList = this.soundroidDatabase.songDao().findAllByAlbum(userInput);
+                run = () -> box.resultList = this.soundroidDatabase.songDao().findAllByAlbum(userInput);
                 flag = SearchActivity.Criteria.ALBUM;
                 Log.i("RESULT", "CURRENT SONG PLAYED by ALBUM: " + box.resultList);
                 break;

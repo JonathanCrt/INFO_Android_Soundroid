@@ -4,8 +4,11 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.os.IBinder;
+import android.preference.PreferenceManager;
+import android.util.Log;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -98,6 +101,14 @@ public class ToolbarController extends AbstractController   {
         setTextSongInformation(this.songService.getPlaylistSongs().get(this.songService.getSongIndex()).getTitle(), this.tvTitleSong);
         setTextSongInformation(this.songService.getPlaylistSongs().get(this.songService.getSongIndex()).getArtist(), this.tvArtistSong);
         setArtworkSong(Utility.convertByteToBitmap(this.songService.getPlaylistSongs().get(this.songService.getSongIndex()).getArtwork()), this.artwork);
+        Log.i("PlayerActivity", "sharedPrefs edited ! ");
+        Log.i("PlayerActivity", "sharedPrefs values " + this.tvTitleSong.getText().toString() + " " + this.tvArtistSong.getText().toString());
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString("current_song_title", this.tvTitleSong.getText().toString());
+        editor.putString("current_song_artist", this.tvArtistSong.getText().toString());
+        editor.putLong("current_song_id", this.songService.getPlaylistSongs().get(this.songService.getSongIndex()).getSongId());
+        editor.apply();
     }
 
     /**
