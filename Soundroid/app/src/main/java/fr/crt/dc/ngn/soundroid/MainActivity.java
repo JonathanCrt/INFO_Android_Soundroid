@@ -349,14 +349,15 @@ public class MainActivity extends AppCompatActivity {
     public void monoSearch(MenuItem item) {
         item = item.setOnMenuItemClickListener(l -> {
             //Log.d("SEARCH", "onCreateOptionsMenu: HERE");
-            AlertDialog.Builder mBuilder = new AlertDialog.Builder(this);
-            mBuilder.setTitle("search a song");
+            AlertDialog.Builder mBuilder = new AlertDialog.Builder(this, R.style.MyCheckBox);
+            mBuilder.setTitle("Chercher une musique");
 
             final EditText input = new EditText(this);
             LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.MATCH_PARENT,
                     LinearLayout.LayoutParams.MATCH_PARENT);
             input.setLayoutParams(lp);
+            input.setHint("Saisir la recherche");
             mBuilder.setView(input);
 
 
@@ -368,8 +369,8 @@ public class MainActivity extends AppCompatActivity {
                 }
             });
 
-            mBuilder.setPositiveButton("GO", (dialog, which) -> {
-                Toast.makeText(MainActivity.this, "GO", Toast.LENGTH_SHORT).show();
+            mBuilder.setPositiveButton("OK", (dialog, which) -> {
+                Toast.makeText(MainActivity.this, "OK", Toast.LENGTH_SHORT).show();
                 //doit faire appelle a methode annexe et passe en aparametre la position
                 String userInput = input.getText().toString();
                 Log.i("INPUT", "userInput:" + userInput);
@@ -378,14 +379,8 @@ public class MainActivity extends AppCompatActivity {
             });
 
             AlertDialog dialog = mBuilder.create();
-            dialog.setOnShowListener(arg0 -> dialog.getButton(AlertDialog.BUTTON_POSITIVE).setBackgroundColor(Color.RED));
-            mBuilder.show();
-
-            // Button positiveButton = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
-            // positiveButton.setTextColor(Color.parseColor("#FF0B8B42"));
-            // positiveButton.setBackgroundColor(Color.parseColor("#FFE1FCEA"));
-
-
+            dialog.show();
+            dialog.getButton(android.app.AlertDialog.BUTTON_POSITIVE).setTextColor(getResources().getColor(R.color.colorPrimaryFlash));
             return true;
         });
 
@@ -425,6 +420,7 @@ public class MainActivity extends AppCompatActivity {
         } catch (InterruptedException e) {
             return;
         }
+        intent.putExtra("input", userInput);
         intent.putExtra("flag", flag);
         intent.putExtra("storageID", StorageContainer.getInstance().add(box.resultList));
         startActivity(intent);

@@ -10,6 +10,11 @@
         <item name="windowNoTitle">true</item>
     </style>
 
+    <style name="MyCheckBox" parent="Theme.AppCompat.Light.Dialog.Alert">
+        <item name="colorControlNormal">@color/colorPrimaryFlash</item>   <!-- normal border color  -->
+        <item name="colorControlActivated">@color/colorPrimaryFlash</item> <!-- activated color  -->
+        <!--<item name="android:textColor">#FFFFFF</item>--> <!-- text color -->
+    </style>
 
     <style name="AppTheme.NoActionBar">
         <item name="windowActionBar">false</item>
