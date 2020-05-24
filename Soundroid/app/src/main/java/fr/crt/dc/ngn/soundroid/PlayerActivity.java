@@ -427,10 +427,9 @@ public class PlayerActivity extends AppCompatActivity implements GestureDetector
 
     private void installOnClickListenerButtonDeleteTag() {
         this.ivDeleteTag.setOnClickListener(v -> {
-
             AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
             alertDialogBuilder
-                    .setTitle("Supression").setMessage("Voulez-vous vraiment supprimer ce tag ?")
+                    .setTitle("Suppression").setMessage("Voulez-vous vraiment supprimer ce tag ?")
                     .setPositiveButton("OUI", ((dialog, which) -> {
                         new Thread(() -> {
                             this.songDaoInstance.updateSongWithNullTagBySongId(this.songService.getPlaylistSongs().get(songService.getSongIndex()).getSongId());
@@ -445,8 +444,6 @@ public class PlayerActivity extends AppCompatActivity implements GestureDetector
             ad.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(getResources().getColor(R.color.colorPrimaryFlash));
             ad.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(getResources().getColor(R.color.colorPrimaryFlash));
         });
-
-
     }
 
     private void pushPlayControl() {

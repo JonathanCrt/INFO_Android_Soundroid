@@ -32,6 +32,9 @@ public interface HistoryDao {
     @Query("SELECT * FROM History JOIN Song ON FK_songId = songId ORDER BY dateLastPlayed DESC")
     List<Song> getAllHistory();
 
+    @Query("SELECT * FROM History JOIN Song ON FK_songId = songId ORDER BY dateLastPlayed DESC")
+    List<History> getAllHistoryH();
+
     @Query("SELECT * FROM History WHERE :songId= FK_songId")
     History getHistoryBySongId(long songId);
 

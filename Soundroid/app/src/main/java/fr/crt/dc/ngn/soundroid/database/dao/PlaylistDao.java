@@ -31,10 +31,6 @@ public interface PlaylistDao {
     @Update
     void updatePlayList(Playlist playlist);
 
-    @Delete
-    void deletePlaylist(Playlist playlist);
-
-
     @Query("SELECT playlistId FROM PLAYLIST WHERE name = :name")
     long getIdPlaylistByName(String name);
 
@@ -44,6 +40,12 @@ public interface PlaylistDao {
     default long deletePlaylist(String name){
         long id = getIdPlaylistByName(name);
         deleteOnePlaylistByName(name);
+        return id;
+    }
+
+    default long deletePlaylist(Playlist playlist){
+        long id = getIdPlaylistByName(playlist.getName());
+        deleteOnePlaylistByName(playlist.getName());
         return id;
     }
 

@@ -25,7 +25,7 @@ public class Playlist {
     @Ignore
     public Playlist(String name) {
         this.name = name;
-        this.isAutomatic = false;   // playlist made with a search
+        this.isAutomatic = true;   // playlist made with automatic request in DB
     }
 
     public long getPlaylistId() {

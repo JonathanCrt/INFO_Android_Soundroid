@@ -41,6 +41,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import androidx.fragment.app.FragmentTransaction;
 import fr.crt.dc.ngn.soundroid.R;
@@ -75,6 +76,7 @@ public class AllTracksFragment extends Fragment {
     private ImageView ivButtonAccessFavorites;
 
     private static AllTracksFragment context;
+
 
     public AllTracksFragment() {// Required empty public constructor
     }
@@ -186,6 +188,9 @@ public class AllTracksFragment extends Fragment {
         });
     }
 
+    /**
+     * When the user click long on a song to add it to a playlist
+     */
     @SuppressLint({"ClickableViewAccessibility", "CheckResult"})
     private void installOnLongItemClickListener() {
         this.lv.setOnItemLongClickListener((arg0, arg1, pos, id) -> {
@@ -195,13 +200,13 @@ public class AllTracksFragment extends Fragment {
                 androidx.appcompat.app.AlertDialog.Builder alertDialogBuilder = new androidx.appcompat.app.AlertDialog.Builder(this.getContext());
                 alertDialogBuilder.setTitle("Ajouter à une playlist");
 
-                // Array adapter to show a list of playlist
-                List<Playlist> playlistList = this.soundroidDatabaseInstance.playlistDao().getAllPlayLists();
+                // Array adapter to show a list of playlist created by the user
+                // The user don't have the possibility to add a song in an automatic playlist(favorite, most played, history)
+                List<Playlist> playlistList = this.soundroidDatabaseInstance.playlistDao().getAllPlayLists().stream().filter(Playlist::isAutomatic).collect(Collectors.toList());
                 // transform the playlist list into an array of playlist name
                 String[] playlistsNames = playlistList.stream().map(Playlist::getName).toArray(String[]::new);
                 ArrayAdapter<String> adapter = new ArrayAdapter<>(this.getContext(),
                         android.R.layout.simple_dropdown_item_1line, playlistsNames);
-
 
                 final AutoCompleteTextView autoCompleteTextView = new AutoCompleteTextView(this.getContext());
                 autoCompleteTextView.setAdapter(adapter);
@@ -217,7 +222,6 @@ public class AllTracksFragment extends Fragment {
                         new Thread(()-> {
                             Playlist playlistClicked = playlistList.stream().filter(p -> p.getName().equals(playlistName)).findAny().get();
                             SoundroidDatabase.getInstance(getContext()).junctionDAO().insertSongIntoPlayList(songPressed.getSongId(), playlistClicked.getPlaylistId());
-                            Log.d("PlaylistCLicked size ", String.valueOf(SoundroidDatabase.getInstance(getContext()).junctionDAO().findAllSongsByPlaylistId(playlistClicked.getPlaylistId()).size()));
                         }).start();
                     }
                 });

@@ -144,6 +144,7 @@ public class SongService extends Service implements MediaPlayer.OnPreparedListen
 
     private Notification createNotification() {
 
+
         // Create intent for notification
         Intent notificationIntent = new Intent(this, MainActivity.class);
         notificationIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -223,11 +224,7 @@ public class SongService extends Service implements MediaPlayer.OnPreparedListen
         this.player.reset();
         Song currentSong = playlistSongs.get(songIndex);
         long currentSongID = currentSong.getSongId();
-        Log.i("SongService", "Current song to play = " + currentSong);
         Uri songUri = Uri.parse(currentSong.getLink());
-
-        Log.i("SongService", "isPlayByToolbar" + this.isToolbarPushed);
-        Log.i("SongService", "mp isPlaying" + this.player.isPlaying());
 
         try {
             this.player.setDataSource(getApplicationContext(), songUri);
