@@ -10,9 +10,11 @@ import androidx.room.RoomDatabase;
 import androidx.sqlite.db.SupportSQLiteDatabase;
 
 import fr.crt.dc.ngn.soundroid.async.DBAsyncTask;
+import fr.crt.dc.ngn.soundroid.database.dao.HistoryDao;
 import fr.crt.dc.ngn.soundroid.database.dao.JunctionPlaylistSongDao;
 import fr.crt.dc.ngn.soundroid.database.dao.PlaylistDao;
 import fr.crt.dc.ngn.soundroid.database.dao.SongDao;
+import fr.crt.dc.ngn.soundroid.database.entity.History;
 import fr.crt.dc.ngn.soundroid.database.entity.JunctionPlaylistSong;
 import fr.crt.dc.ngn.soundroid.database.entity.Playlist;
 import fr.crt.dc.ngn.soundroid.database.entity.Song;
@@ -20,7 +22,7 @@ import fr.crt.dc.ngn.soundroid.database.entity.Song;
 /**
  * Created by CRETE JONATHAN on 01/05/2020.
  */
-@Database(entities = {Playlist.class, Song.class, JunctionPlaylistSong.class}, version = 1)
+@Database(entities = {Playlist.class, Song.class, JunctionPlaylistSong.class, History.class}, version = 1)
 public abstract class SoundroidDatabase extends RoomDatabase {
 
     // Singleton
@@ -32,6 +34,7 @@ public abstract class SoundroidDatabase extends RoomDatabase {
     public abstract PlaylistDao playlistDao();
     public abstract SongDao songDao();
     public abstract JunctionPlaylistSongDao junctionDAO();
+    public abstract HistoryDao historyDao();
 
     private static final Object MUTEX = new Object();
     private static final Object MUTEX2 = new Object();

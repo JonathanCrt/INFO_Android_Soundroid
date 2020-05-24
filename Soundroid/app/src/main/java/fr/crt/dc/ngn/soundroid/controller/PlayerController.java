@@ -191,10 +191,10 @@ public class PlayerController extends AbstractController {
     private void pushPlayControl() {
         this.songService.setToolbarPushed(true);
         if(!songService.playOrPauseSong()) {
-            Toast.makeText(this.context, "State : Pause", Toast.LENGTH_SHORT).show();
+            //Toast.makeText(this.context, "State : Pause", Toast.LENGTH_SHORT).show();
             setImagePlay(ivControlPlaySong, this.context);
         } else {
-            Toast.makeText(this.context, "State : Play", Toast.LENGTH_SHORT).show();
+            //Toast.makeText(this.context, "State : Play", Toast.LENGTH_SHORT).show();
             setImagePause(ivControlPlaySong, context);
             //setWidgetsValues();
         }

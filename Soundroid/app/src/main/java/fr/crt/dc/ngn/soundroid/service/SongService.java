@@ -31,6 +31,8 @@ import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 import fr.crt.dc.ngn.soundroid.MainActivity;
 import fr.crt.dc.ngn.soundroid.R;
+import fr.crt.dc.ngn.soundroid.database.SoundroidDatabase;
+import fr.crt.dc.ngn.soundroid.database.entity.History;
 import fr.crt.dc.ngn.soundroid.database.entity.Song;
 import fr.crt.dc.ngn.soundroid.utility.Utility;
 
@@ -62,6 +64,7 @@ public class SongService extends Service implements MediaPlayer.OnPreparedListen
     public static final String NOTIFY_NEXT = "fr.crt.dc.ngn.soundroid.NEXT";
     public static final String NOTIFY_DELETE = "fr.crt.dc.ngn.soundroid.DELETE";
 
+    private SoundroidDatabase soundroidDatabaseInstance;
     /**
      * Class that returns an instance of service
      */
@@ -86,6 +89,7 @@ public class SongService extends Service implements MediaPlayer.OnPreparedListen
                 .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
                 .build());
         this.createNotificationChannel();
+        this.soundroidDatabaseInstance = SoundroidDatabase.getInstance(getApplicationContext());
 
     }
 
@@ -207,6 +211,15 @@ public class SongService extends Service implements MediaPlayer.OnPreparedListen
         return false;
     }
 
+    private void insertInHistory(long songId){
+        new Thread(()->{
+            History history = new History(songId);
+            this.soundroidDatabaseInstance.historyDao().insertHistory(history);
+            Log.d("HISTORY", "insert in history song id = " + songId);
+            Log.d("HISTORY", "history = " + history.toString());
+        }).start();
+
+    }
 
     private void initializeSong() {
         this.player.reset();
@@ -229,6 +242,9 @@ public class SongService extends Service implements MediaPlayer.OnPreparedListen
             this.player.prepare();
             Log.i("SongService", "play!");
             startPlayBack();
+            // Insert the song in the history
+            insertInHistory(currentSongID);
+
         } catch (IOException e) {
             Log.e("SongService", "Error to prepare player", e);
             e.getMessage();

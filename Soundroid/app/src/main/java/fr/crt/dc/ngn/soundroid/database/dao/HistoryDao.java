@@ -23,16 +23,16 @@ import fr.crt.dc.ngn.soundroid.database.relation.SongWithPlaylists;
 public interface HistoryDao {
 
     @Query("SELECT * FROM History")
-    List<Song> getAllHistory();
+    List<History> getAllHistory();
 
     @Query("SELECT * FROM History WHERE :songId= FK_songId")
     History getHistorySong(long songId);
 
     @Query("SELECT * FROM History WHERE dateLastPlayed >= :dateAfter")
-    List<History> getAllHistoryAfterDate(Date dateAfter);
+    List<History> getAllHistoryAfterDate(long dateAfter);
 
     @Query("SELECT * FROM History WHERE dateLastPlayed <= :dateBefore")
-    List<History> getAllHistoryBeforeDate(Date dateBefore);
+    List<History> getAllHistoryBeforeDate(long dateBefore);
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insertHistory(History history);
@@ -41,7 +41,7 @@ public interface HistoryDao {
     void updateHistory(History history);
 
     @Query("UPDATE History SET nbTimesPlayed = nbTimesPlayed +1 AND dateLastPlayed = :newDate WHERE FK_songId = :songId")
-    void updateHistoryBySongId(long songId, Date newDate);
+    void updateHistoryBySongId(long songId, long newDate);
 
     @Delete
     void deleteHistory(History history);
