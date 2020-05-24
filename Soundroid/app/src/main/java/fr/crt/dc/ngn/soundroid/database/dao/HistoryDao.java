@@ -17,7 +17,7 @@ import fr.crt.dc.ngn.soundroid.database.relation.PlaylistWithSongs;
 import fr.crt.dc.ngn.soundroid.database.relation.SongWithPlaylists;
 
 /**
- * Created by CRETE JONATHAN on 01/05/2020.
+ * Created by DA COSTA Mélissa on 24/05/2020.
  */
 @Dao
 public interface HistoryDao {

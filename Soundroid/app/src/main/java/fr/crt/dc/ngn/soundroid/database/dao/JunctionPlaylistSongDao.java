@@ -13,6 +13,8 @@ import fr.crt.dc.ngn.soundroid.database.entity.JunctionPlaylistSong;
 import fr.crt.dc.ngn.soundroid.database.entity.Song;
 import fr.crt.dc.ngn.soundroid.database.relation.PlaylistWithSongs;
 import fr.crt.dc.ngn.soundroid.database.relation.SongWithPlaylists;
+import io.reactivex.Completable;
+import io.reactivex.Maybe;
 
 /**
  * Created by CRETE JONATHAN on 13/05/2020.

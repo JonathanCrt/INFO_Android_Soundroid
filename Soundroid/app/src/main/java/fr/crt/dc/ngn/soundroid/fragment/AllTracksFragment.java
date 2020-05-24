@@ -72,6 +72,7 @@ public class AllTracksFragment extends Fragment {
     private ImageView ivButtonAccessPlaylists;
     private int currentNumbersOfSongs;
     private TextView tvNumberOfSongs;
+    private ImageView ivButtonAccessFavorites;
 
     private static AllTracksFragment context;
 
@@ -120,6 +121,7 @@ public class AllTracksFragment extends Fragment {
         this.tvNumberOfSongs = v.findViewById(R.id.tv_list_number_songs);
         this.ivButtonAccessHistory = v.findViewById(R.id.iv_list_go_history);
         this.ivButtonAccessPlaylists = v.findViewById(R.id.iv_list_go_playlists);
+        this.ivButtonAccessFavorites = v.findViewById(R.id.iv_list_go_favoris);
         ConstraintLayout constraintLayout = requireActivity().findViewById(R.id.crt_layout);
         this.toolbarController = new ToolbarController(getActivity(), constraintLayout);
         this.installOnItemClickListener();
@@ -170,9 +172,21 @@ public class AllTracksFragment extends Fragment {
             fragmentTransaction.replace(R.id.nav_host_fragment, new PlaylistFragment());
             fragmentTransaction.commit();
         });
+
+        this.ivButtonAccessFavorites.setOnClickListener(v -> {
+            Bundle arguments = new Bundle();
+            arguments.putString("name of playlist", "favoris");
+            PlaylistFragmentDetail playlistFragmentDetail = new PlaylistFragmentDetail();
+            playlistFragmentDetail.setArguments(arguments);
+            FragmentTransaction fragmentTransaction = getParentFragmentManager().beginTransaction();
+            fragmentTransaction
+                    .replace(R.id.nav_host_fragment, playlistFragmentDetail)
+                    .addToBackStack(null)
+                    .commit();
+        });
     }
 
-    @SuppressLint("ClickableViewAccessibility")
+    @SuppressLint({"ClickableViewAccessibility", "CheckResult"})
     private void installOnLongItemClickListener() {
         this.lv.setOnItemLongClickListener((arg0, arg1, pos, id) -> {
             new Thread(()->{
@@ -201,7 +215,6 @@ public class AllTracksFragment extends Fragment {
                         Toast.makeText(getContext(), "Click on a playlist name !", Toast.LENGTH_SHORT).show();
                     }else{
                         new Thread(()-> {
-                            Log.d("LOG", "PlaylistName = " + playlistName);
                             Playlist playlistClicked = playlistList.stream().filter(p -> p.getName().equals(playlistName)).findAny().get();
                             SoundroidDatabase.getInstance(getContext()).junctionDAO().insertSongIntoPlayList(songPressed.getSongId(), playlistClicked.getPlaylistId());
                             Log.d("PlaylistCLicked size ", String.valueOf(SoundroidDatabase.getInstance(getContext()).junctionDAO().findAllSongsByPlaylistId(playlistClicked.getPlaylistId()).size()));
