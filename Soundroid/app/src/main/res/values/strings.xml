@@ -57,4 +57,7 @@
     <string name="exporter_la_base_de_donn_es">Exporter Metadonnées</string>
     <string name="si_vous_le_souhaitez_vous_pouvez_sauvegarder_votre_base_de_donn_es_musicale">Si vous le souhaitez, vous pouvez sauvegarder les métadonnées de vos musiques préférées dans un fichier json :</string>
     <string name="btn_volume_control">Bouton de contrôle du volume</string>
+    <string name="most_played">Les plus écoutées</string>
+    <string name="favorites">Favoris</string>
+    <string name="tag">Avec tag</string>
 </resources>

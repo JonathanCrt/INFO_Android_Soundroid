@@ -19,13 +19,15 @@ public class Playlist {
 
     @ColumnInfo(name = "isAutomatic")
     private boolean isAutomatic;
+    // true for playlist made with automatic request in DB
+    // false for playlist created by the user
 
     public Playlist() {}
 
     @Ignore
-    public Playlist(String name) {
+    public Playlist(String name, boolean isAutomatic) {
         this.name = name;
-        this.isAutomatic = false;   // playlist made with a search
+        this.isAutomatic = isAutomatic;
     }
 
     public long getPlaylistId() {

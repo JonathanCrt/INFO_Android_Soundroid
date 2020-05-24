@@ -16,6 +16,7 @@ import java.util.concurrent.ExecutionException;
 
 import fr.crt.dc.ngn.soundroid.R;
 import fr.crt.dc.ngn.soundroid.database.SoundroidDatabase;
+import fr.crt.dc.ngn.soundroid.database.entity.History;
 import fr.crt.dc.ngn.soundroid.database.entity.Playlist;
 import fr.crt.dc.ngn.soundroid.database.entity.Song;
 
@@ -64,14 +65,18 @@ public class HistoryFragment extends Fragment {
             long historyPlaylistPreviousId = this.soundroidDatabaseInstance.playlistDao().deletePlaylist("history");
             this.soundroidDatabaseInstance.junctionDAO().deleteSongsInPlaylistId(historyPlaylistPreviousId);
 
+            List<History> h =  this.soundroidDatabaseInstance.historyDao().getAllHistoryH();
+            Log.i("PLAYLIST History H= ", h.toString());
+
             List<Song> songsHistory = this.soundroidDatabaseInstance.historyDao().getAllHistory();
             Log.i("PLAYLIST History ", songsHistory.toString());
-            Playlist playlistHistory = new Playlist("history");
+            Playlist playlistHistory = new Playlist("history", true);
             long playlistHistoryId = this.soundroidDatabaseInstance.playlistDao().insertPlayList(playlistHistory);
             playlistHistory.setPlaylistId(playlistHistoryId);
 
             List<Song> songInHistoryPlaylist= this.soundroidDatabaseInstance.junctionDAO().findAllSongsByPlaylistId(playlistHistoryId);
             for (Song s : songsHistory) {
+                Log.i("PLAYLIST History song  ", s.toString());
                 this.soundroidDatabaseInstance.junctionDAO().insertSongIntoPlayList(s.getSongId(), playlistHistoryId);
             }
             Log.i("PLAYLIST HISTORY ", soundroidDatabaseInstance.junctionDAO().findAllSongsByPlaylistId(playlistHistoryId).toString());

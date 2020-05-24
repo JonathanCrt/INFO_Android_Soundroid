@@ -82,8 +82,9 @@ public class PlaylistFragmentDetail extends Fragment {
         // set the name of the playlist
         toolbar.setTitle(namePlaylist);
 
-        if(this.songs.size() == 0) {
+        if(this.songs.isEmpty()) {
             Toast.makeText(getContext(), "Cette liste de lecture est vide", Toast.LENGTH_LONG).show();
+            return v;   // return, the user cannot do anything
         }
 
         // listeners
