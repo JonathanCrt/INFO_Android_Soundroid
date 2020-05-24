@@ -50,6 +50,7 @@ public class PlaylistFragment extends Fragment {
     ArrayList<Playlist> playlists;
     private ListView lvPlayLists;
     private PlaylistAdapter playlistAdapter;
+    private ImageView iv_playlist_most_played;
 
     public PlaylistFragment() {
         // Required empty public constructor
@@ -66,6 +67,7 @@ public class PlaylistFragment extends Fragment {
         this.btnAddPlaylist = view.findViewById(R.id.btn_add_playlist);
         this.iv_playlist_songs_with_tag = view.findViewById(R.id.iv_playlist_songs_with_tag);
         this.iv_playlist_favourites_songs = view.findViewById(R.id.iv_playlist_favourites_songs);
+        this.iv_playlist_most_played = view.findViewById(R.id.iv_playlist_most_played);
     }
 
     @Override
@@ -88,29 +90,28 @@ public class PlaylistFragment extends Fragment {
         this.installOnItemClickListener();
         this.installPlaylistTagButtonListener();
         this.installPlaylistFavorisButtonListener();
+        this.installPlaylistMostPlayedButtonListener();
         int nbSongsInPlaylistWithTag = 0;
-        // Put the number of songs in playlistWithTag
         int nbSongsInPlaylistFavoris = 0;
+        int nbSongsInPlaylistMostPlayed = 0;
         try {
             nbSongsInPlaylistWithTag = this.createPlaylistWithTag();
             nbSongsInPlaylistFavoris = this.createPlaylistInFavorites();
+            nbSongsInPlaylistMostPlayed = this.createPlaylistMostPlayed();
         } catch (ExecutionException | InterruptedException e) {
-            e.printStackTrace();
+            Log.e("PlaylistFragment", e.getMessage());
         }
-        // Put the number of songs in FavorisPlaylist
+        // Put the number of songs in textview
         this.tvPlaylistSongsWithTagCounter.setText(nbSongsInPlaylistWithTag + " chansons");
         this.tvPlaylistFavouritesSongsCounter.setText(nbSongsInPlaylistFavoris + " chansons");
+        this.tvPlaylistMostPlayedCounter.setText(nbSongsInPlaylistMostPlayed + " chansons");
 
         Thread t = new Thread(()->{
             this.playlists = (ArrayList<Playlist>) this.soundroidDatabaseInstance.playlistDao().getAllPlayLists();
-            Log.d("PlaylistFragment all songs", this.soundroidDatabaseInstance.songDao().getAllSongs().toString());
-            Log.d("PlaylistFragment all playlists", this.soundroidDatabaseInstance.playlistDao().getAllPlayLists().toString());
-            Log.d("PlaylistFragment songs into Playlist", this.soundroidDatabaseInstance.junctionDAO().getPlaylistsWithSongs().toString());
-            Log.d("PlaylistFragment songs for playlist n°2", this.soundroidDatabaseInstance.junctionDAO().findAllSongsByPlaylistId(2).toString());
             this.playlistAdapter = new PlaylistAdapter(getContext(), playlists);
             this.lvPlayLists.setAdapter(this.playlistAdapter);
-
         });
+
         t.start();
         try {
             t.join();
@@ -204,6 +205,49 @@ public class PlaylistFragment extends Fragment {
                     .addToBackStack(null)
                     .commit();
         });
+    }
+
+    private void installPlaylistMostPlayedButtonListener(){
+        iv_playlist_most_played.setOnClickListener(v->{
+            Log.d("PLAYLIST", "MOST PLAYED");
+            Bundle arguments = new Bundle();
+            arguments.putString("name of playlist", "most_played");
+            PlaylistFragmentDetail playlistFragmentDetail = new PlaylistFragmentDetail();
+            playlistFragmentDetail.setArguments(arguments);
+            FragmentTransaction fragmentTransaction = getParentFragmentManager().beginTransaction();
+            fragmentTransaction
+                    .replace(R.id.nav_host_fragment, playlistFragmentDetail)
+                    .addToBackStack(null)
+                    .commit();
+        });
+    }
+
+    /**
+     *
+     * @return number of songs in favorite playlist
+     */
+    private int createPlaylistMostPlayed() throws ExecutionException, InterruptedException {
+        return CompletableFuture.supplyAsync(() -> {
+            List<Song> songsMostPlayed = this.soundroidDatabaseInstance.historyDao().getSongsMostPlayed();
+            Log.i("PLAYLIST MOST PLAYED ", songsMostPlayed.toString());
+            Playlist playlistMostPlayed = this.soundroidDatabaseInstance.playlistDao().findByName("most_played");
+            // No most_played playlist yet
+            if(playlistMostPlayed == null) {
+                playlistMostPlayed = new Playlist("most_played");
+                this.soundroidDatabaseInstance.playlistDao().insertPlayList(playlistMostPlayed);
+            }
+
+            long playlistMostPlayedId = playlistMostPlayed.getPlaylistId();
+            List<Song> songInMostPlayedPlaylist= this.soundroidDatabaseInstance.junctionDAO().findAllSongsByPlaylistId(playlistMostPlayedId);
+            for (Song s : songsMostPlayed) {
+                // Song not in the playlist most_played yet
+                if(!songInMostPlayedPlaylist.contains(s)){
+                    this.soundroidDatabaseInstance.junctionDAO().insertSongIntoPlayList(s.getSongId(), playlistMostPlayedId);
+                }
+            }
+            Log.i("PLAYLIST MOST PLAYED ", soundroidDatabaseInstance.junctionDAO().findAllSongsByPlaylistId(playlistMostPlayedId).toString());
+            return soundroidDatabaseInstance.junctionDAO().findAllSongsByPlaylistId(playlistMostPlayedId).size();
+        }).get();
     }
 
 

@@ -26,7 +26,7 @@ public interface PlaylistDao {
     Long findPlaylistIdByName(String name);
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    void insertPlayList(Playlist playlist);
+    long insertPlayList(Playlist playlist);
 
     @Update
     void updatePlayList(Playlist playlist);
@@ -34,8 +34,18 @@ public interface PlaylistDao {
     @Delete
     void deletePlaylist(Playlist playlist);
 
+
+    @Query("SELECT playlistId FROM PLAYLIST WHERE name = :name")
+    long getIdPlaylistByName(String name);
+
     @Query("DELETE FROM Playlist WHERE name = :name")
-    void deleteOnePlayListByName(String name);
+    void deleteOnePlaylistByName(String name);
+
+    default long deletePlaylist(String name){
+        long id = getIdPlaylistByName(name);
+        deleteOnePlaylistByName(name);
+        return id;
+    }
 
     @Query("DELETE FROM Playlist")
     void deleteAll();

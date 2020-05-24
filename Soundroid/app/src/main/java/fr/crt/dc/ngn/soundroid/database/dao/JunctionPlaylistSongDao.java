@@ -49,4 +49,8 @@ public interface JunctionPlaylistSongDao {
             "WHERE Playlist.name = :name " +
             "ORDER BY Song.songId")
     int countNumberOfSongsByName(String name);
+
+    @Query("DELETE FROM JunctionPlayListSong WHERE playlistId=:playlistId")
+    void deleteSongsInPlaylistId(long playlistId);
+
 }

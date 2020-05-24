@@ -25,10 +25,12 @@ import fr.crt.dc.ngn.soundroid.database.relation.SongWithPlaylists;
 public interface HistoryDao {
 
     // define the size of the table History
-    int MAX_SIZE_HISTORY = 5;
+    int MAX_SIZE_HISTORY = 100;
+    // define the size of the playlist most played songs
+    int MAX_SIZE_MOST_PLAYED = 50;
 
-    @Query("SELECT * FROM History")
-    List<History> getAllHistory();
+    @Query("SELECT * FROM History JOIN Song ON FK_songId = songId ORDER BY dateLastPlayed DESC")
+    List<Song> getAllHistory();
 
     @Query("SELECT * FROM History WHERE :songId= FK_songId")
     History getHistoryBySongId(long songId);
@@ -38,6 +40,13 @@ public interface HistoryDao {
 
     @Query("SELECT * FROM History WHERE dateLastPlayed <= :dateBefore")
     List<History> getAllHistoryBeforeDate(long dateBefore);
+
+    @Query("SELECT * FROM History JOIN Song ON FK_songId = songId ORDER BY nbTimesPlayed DESC LIMIT :limit")
+    List<Song> getSongsMostPlayed(int limit);
+
+    default List<Song> getSongsMostPlayed(){
+        return getSongsMostPlayed(MAX_SIZE_MOST_PLAYED);
+    }
 
     @Query("DELETE FROM History where FK_songId NOT IN (SELECT FK_songId from History ORDER BY dateLastPlayed DESC LIMIT :limit)")
     void limitHistorySize(int limit);
