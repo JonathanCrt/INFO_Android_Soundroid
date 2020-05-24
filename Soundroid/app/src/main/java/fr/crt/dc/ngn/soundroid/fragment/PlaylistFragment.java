@@ -104,7 +104,7 @@ public class PlaylistFragment extends Fragment {
 
         Thread t = new Thread(()->{
             // Get the playlist created by the user (not automatic playlist displayed)
-            this.playlists = (ArrayList<Playlist>) this.soundroidDatabaseInstance.playlistDao().getAllPlayLists().stream().filter(Playlist::isAutomatic).collect(Collectors.toList());
+            this.playlists = (ArrayList<Playlist>) this.soundroidDatabaseInstance.playlistDao().getAllPlayLists().stream().filter(p->!p.isAutomatic()).collect(Collectors.toList());
             this.playlistAdapter = new PlaylistAdapter(getContext(), playlists);
             this.lvPlayLists.setAdapter(this.playlistAdapter);
         });
@@ -137,7 +137,6 @@ public class PlaylistFragment extends Fragment {
             // No playlist with tag yet
             if (playlistWithTag == null) {
                 playlistWithTag = new Playlist(getString(R.string.tag));
-                String r = getString(R.string.tag);
                 long playlistId = this.soundroidDatabaseInstance.playlistDao().insertPlayList(playlistWithTag);
                 playlistWithTag.setPlaylistId(playlistId);
             }
@@ -282,7 +281,7 @@ public class PlaylistFragment extends Fragment {
                         Log.d("PlaylistFragment add playlist", this.soundroidDatabaseInstance.playlistDao().getAllPlayLists().toString());
                         Log.d("PlaylistFragment songs into Playlist", this.soundroidDatabaseInstance.junctionDAO().getPlaylistsWithSongs().toString());
                         this.playlists.clear();
-                        this.playlists.addAll(this.soundroidDatabaseInstance.playlistDao().getAllPlayLists().stream().filter(Playlist::isAutomatic).collect(Collectors.toList()));
+                        this.playlists.addAll(this.soundroidDatabaseInstance.playlistDao().getAllPlayLists().stream().filter(p->!p.isAutomatic()).collect(Collectors.toList()));
                         getActivity().runOnUiThread(()-> this.playlistAdapter.notifyDataSetChanged());
                     }).start();
                 }

@@ -202,7 +202,7 @@ public class AllTracksFragment extends Fragment {
 
                 // Array adapter to show a list of playlist created by the user
                 // The user don't have the possibility to add a song in an automatic playlist(favorite, most played, history)
-                List<Playlist> playlistList = this.soundroidDatabaseInstance.playlistDao().getAllPlayLists().stream().filter(Playlist::isAutomatic).collect(Collectors.toList());
+                List<Playlist> playlistList = this.soundroidDatabaseInstance.playlistDao().getAllPlayLists().stream().filter(p->!p.isAutomatic()).collect(Collectors.toList());
                 // transform the playlist list into an array of playlist name
                 String[] playlistsNames = playlistList.stream().map(Playlist::getName).toArray(String[]::new);
                 ArrayAdapter<String> adapter = new ArrayAdapter<>(this.getContext(),
