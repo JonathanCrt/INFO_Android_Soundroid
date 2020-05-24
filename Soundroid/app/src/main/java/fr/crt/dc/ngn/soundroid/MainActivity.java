@@ -136,18 +136,22 @@ public class MainActivity extends AppCompatActivity {
         //launch Player Activity
         toolbarPlayer.setOnClickListener(v -> this.launchPlayerActivity());
 
-        // launch async task
         AtomicReference<ArrayList<Song>> listSongs = new AtomicReference<>();
         Thread t = new Thread(() -> {
-            try {
-                listSongs.set((ArrayList<Song>) soundroidDatabase.songDao().getAllSongs());
-                Log.d("LOG", String.valueOf(soundroidDatabase.playlistDao().getAllPlayLists().size()));
+            listSongs.set((ArrayList<Song>) soundroidDatabase.songDao().getAllSongs());
+        });
+        t.start();
+        try {
+            t.join();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
 
-                if (listSongs.get().isEmpty()) {
-                    // first launch of the app
-                    Log.i("LOG", "First launch of the app");
+        if (listSongs.get().isEmpty()) {
+            // first launch of the app
+            Log.i("LOG", "First launch of the app");
 
-                } else {
+        } else {
                 /*
                 Log.i("LOG", "already LAUNCHED");
                 // test to delete all in DB and restart with a new DB clean
@@ -162,22 +166,16 @@ public class MainActivity extends AppCompatActivity {
 
                  */
 
-                    //Collections.sort(listSongs, (a, b) -> a.getTitle().compareTo(b.getTitle()));
-                }
-
-                SongAdapter adapter = new SongAdapter(getAppContext(), listSongs.get());
-                RootList.callAsyncTask(adapter, listSongs.get());
-            } catch (ExecutionException | InterruptedException e) {
-                Log.e("MainActivity", Objects.requireNonNull(e.getMessage()));
-            }
-        });
-        t.start();
-        try {
-            t.join();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+            //Collections.sort(listSongs, (a, b) -> a.getTitle().compareTo(b.getTitle()));
         }
 
+        try {
+            SongAdapter adapter = new SongAdapter(getAppContext(), listSongs.get());
+            // launch async task
+            RootList.callAsyncTask(adapter, listSongs.get());
+        } catch (ExecutionException | InterruptedException e) {
+            Log.e("MainActivity", Objects.requireNonNull(e.getMessage()));
+        }
         this.listCriteria = getResources().getStringArray(R.array.search_criteria);
         this.checkedItems = new boolean[listCriteria.length];
         this.searchList = findViewById(R.id.list_songs);

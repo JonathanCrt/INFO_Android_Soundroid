@@ -17,20 +17,18 @@ import java.util.Date;
  */
 
 @Entity(foreignKeys = @ForeignKey(entity = Song.class, parentColumns = "songId", childColumns = "FK_songId"))
-
-
+@TypeConverters({DateConverters.class})
 public class History {
 
     @PrimaryKey
     private long FK_songId;
-
 
     @ColumnInfo(name = "dateLastPlayed")
     @TypeConverters({DateConverters.class})
     public Date dateLastPlayed;
 
     @ColumnInfo(name = "nbTimesPlayed")
-    private long nbTimesPlayed;
+    private int nbTimesPlayed;
 
     public History() {}
 
@@ -49,7 +47,7 @@ public class History {
         return dateLastPlayed;
     }
 
-    public long getNbTimesPlayed() {
+    public int getNbTimesPlayed() {
         return nbTimesPlayed;
     }
 
@@ -61,7 +59,7 @@ public class History {
         this.dateLastPlayed = dateLastPlayed;
     }
 
-    public void setNbTimesPlayed(long nbTimesPlayed) {
+    public void setNbTimesPlayed(int nbTimesPlayed) {
         this.nbTimesPlayed = nbTimesPlayed;
     }
 

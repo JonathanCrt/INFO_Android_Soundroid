@@ -1,5 +1,7 @@
 package fr.crt.dc.ngn.soundroid.database.dao;
 
+import android.util.Log;
+
 import androidx.room.Dao;
 import androidx.room.Delete;
 import androidx.room.Insert;
@@ -22,11 +24,14 @@ import fr.crt.dc.ngn.soundroid.database.relation.SongWithPlaylists;
 @Dao
 public interface HistoryDao {
 
+    // define the size of the table History
+    int MAX_SIZE_HISTORY = 5;
+
     @Query("SELECT * FROM History")
     List<History> getAllHistory();
 
     @Query("SELECT * FROM History WHERE :songId= FK_songId")
-    History getHistorySong(long songId);
+    History getHistoryBySongId(long songId);
 
     @Query("SELECT * FROM History WHERE dateLastPlayed >= :dateAfter")
     List<History> getAllHistoryAfterDate(long dateAfter);
@@ -34,13 +39,32 @@ public interface HistoryDao {
     @Query("SELECT * FROM History WHERE dateLastPlayed <= :dateBefore")
     List<History> getAllHistoryBeforeDate(long dateBefore);
 
+    @Query("DELETE FROM History where FK_songId NOT IN (SELECT FK_songId from History ORDER BY dateLastPlayed DESC LIMIT :limit)")
+    void limitHistorySize(int limit);
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    void insertHistory(History history);
+    void insert(History history);
 
-    @Update
-    void updateHistory(History history);
+    default void insertHistory(long idSong){
+        // the song has already been inserted in the history
+        if(getHistoryBySongId(idSong)!=null){
+            // update the history
+            updateHistoryBySongId(idSong, System.currentTimeMillis());
+            Log.d("HISTORY", " UPDATE HISTORY = " + getHistoryBySongId(idSong).toString());
+            return;
+        }
+        // If the size of the table history is too big
+        if(getAllHistory().size() >= MAX_SIZE_HISTORY){
+            // delete the oldest songs inserted in the table
+            // limit the table to MAX_SIZE_HISTORY -1 rows to allow to add a ong (the row number MAX_SIZE_HISTORY)
+            Log.d("HISTORY", " LIMIT HISTORY TABLE");
+            limitHistorySize(MAX_SIZE_HISTORY -1);
+        }
+        History history = new History(idSong);
+        insert(history);
+    }
 
-    @Query("UPDATE History SET nbTimesPlayed = nbTimesPlayed +1 AND dateLastPlayed = :newDate WHERE FK_songId = :songId")
+    @Query("UPDATE History SET nbTimesPlayed = nbTimesPlayed + 1, dateLastPlayed = :newDate WHERE FK_songId = :songId")
     void updateHistoryBySongId(long songId, long newDate);
 
     @Delete
@@ -48,4 +72,5 @@ public interface HistoryDao {
 
     @Query("DELETE FROM History")
     void deleteAllHistory();
+
 }

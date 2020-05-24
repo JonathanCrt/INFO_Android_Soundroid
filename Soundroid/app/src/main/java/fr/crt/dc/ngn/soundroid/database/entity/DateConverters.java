@@ -12,7 +12,7 @@ public class DateConverters {
     }
 
     @TypeConverter
-    public static Long fromDate(Date date){
+    public static Long toLong(Date date){
         return date == null ? null : date.getTime();
     }
 }

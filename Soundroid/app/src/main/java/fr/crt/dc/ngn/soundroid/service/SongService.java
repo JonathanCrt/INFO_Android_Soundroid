@@ -213,10 +213,8 @@ public class SongService extends Service implements MediaPlayer.OnPreparedListen
 
     private void insertInHistory(long songId){
         new Thread(()->{
-            History history = new History(songId);
-            this.soundroidDatabaseInstance.historyDao().insertHistory(history);
+            this.soundroidDatabaseInstance.historyDao().insertHistory(songId);
             Log.d("HISTORY", "insert in history song id = " + songId);
-            Log.d("HISTORY", "history = " + history.toString());
         }).start();
 
     }
