@@ -136,7 +136,7 @@ public class PlaylistFragment extends Fragment {
             Playlist playlistWithTag = this.soundroidDatabaseInstance.playlistDao().findByName(getString(R.string.tag));
             // No playlist with tag yet
             if (playlistWithTag == null) {
-                playlistWithTag = new Playlist(getString(R.string.tag));
+                playlistWithTag = new Playlist(getString(R.string.tag), true);
                 long playlistId = this.soundroidDatabaseInstance.playlistDao().insertPlayList(playlistWithTag);
                 playlistWithTag.setPlaylistId(playlistId);
             }
@@ -180,7 +180,7 @@ public class PlaylistFragment extends Fragment {
             Playlist playlistFavoris = this.soundroidDatabaseInstance.playlistDao().findByName(getString(R.string.favoris));
             // No favoris playlist yet
             if(playlistFavoris == null) {
-                playlistFavoris = new Playlist(getString(R.string.favoris));
+                playlistFavoris = new Playlist(getString(R.string.favoris), true);
                 long playlistId = this.soundroidDatabaseInstance.playlistDao().insertPlayList(playlistFavoris);
                 playlistFavoris.setPlaylistId(playlistId);
             }
@@ -239,7 +239,7 @@ public class PlaylistFragment extends Fragment {
             Playlist playlistMostPlayed = this.soundroidDatabaseInstance.playlistDao().findByName(getString(R.string.most_played));
             // No most_played playlist yet
             if(playlistMostPlayed == null) {
-                playlistMostPlayed = new Playlist(getString(R.string.most_played));
+                playlistMostPlayed = new Playlist(getString(R.string.most_played), true);
                 long playlistId = this.soundroidDatabaseInstance.playlistDao().insertPlayList(playlistMostPlayed);
                 playlistMostPlayed.setPlaylistId(playlistId);
             }
@@ -277,7 +277,7 @@ public class PlaylistFragment extends Fragment {
                 } else {
                     new Thread(()->{
                         String correctFormatPlaylistName = playlistName.substring(0, 1).toUpperCase() + playlistName.substring(1);
-                        this.soundroidDatabaseInstance.playlistDao().insertPlayList(new Playlist(correctFormatPlaylistName));
+                        this.soundroidDatabaseInstance.playlistDao().insertPlayList(new Playlist(correctFormatPlaylistName, false));
                         Log.d("PlaylistFragment add playlist", this.soundroidDatabaseInstance.playlistDao().getAllPlayLists().toString());
                         Log.d("PlaylistFragment songs into Playlist", this.soundroidDatabaseInstance.junctionDAO().getPlaylistsWithSongs().toString());
                         this.playlists.clear();

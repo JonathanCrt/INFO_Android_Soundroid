@@ -70,7 +70,7 @@ public class HistoryFragment extends Fragment {
 
             List<Song> songsHistory = this.soundroidDatabaseInstance.historyDao().getAllHistory();
             Log.i("PLAYLIST History ", songsHistory.toString());
-            Playlist playlistHistory = new Playlist("history");
+            Playlist playlistHistory = new Playlist("history", true);
             long playlistHistoryId = this.soundroidDatabaseInstance.playlistDao().insertPlayList(playlistHistory);
             playlistHistory.setPlaylistId(playlistHistoryId);
 
