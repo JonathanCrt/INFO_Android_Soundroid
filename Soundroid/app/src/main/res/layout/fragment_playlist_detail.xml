@@ -58,11 +58,10 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical|start"
         android:layout_margin="@dimen/fab_margin"
+        android:backgroundTint="@android:color/holo_red_dark"
         app:layout_anchor="@+id/playlist_detail_container"
         app:layout_anchorGravity="top|end"
-        app:srcCompat="@drawable/ic_play_white_big"
-        android:backgroundTint="@android:color/darker_gray"
-        />
+        app:srcCompat="@drawable/ic_play_white_big" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
 

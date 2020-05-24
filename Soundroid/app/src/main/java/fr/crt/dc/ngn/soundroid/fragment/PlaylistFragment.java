@@ -133,10 +133,11 @@ public class PlaylistFragment extends Fragment {
     private int createPlaylistWithTag() throws ExecutionException, InterruptedException {
         return CompletableFuture.supplyAsync(() -> {
             List<Song> songWithTag = this.soundroidDatabaseInstance.songDao().getAllSongsWithTag();
-            Playlist playlistWithTag = this.soundroidDatabaseInstance.playlistDao().findByName("tag");
+            Playlist playlistWithTag = this.soundroidDatabaseInstance.playlistDao().findByName(getString(R.string.tag));
             // No playlist with tag yet
             if (playlistWithTag == null) {
-                playlistWithTag = new Playlist("tag");
+                playlistWithTag = new Playlist(getString(R.string.tag));
+                String r = getString(R.string.tag);
                 long playlistId = this.soundroidDatabaseInstance.playlistDao().insertPlayList(playlistWithTag);
                 playlistWithTag.setPlaylistId(playlistId);
             }
@@ -158,7 +159,7 @@ public class PlaylistFragment extends Fragment {
         iv_playlist_songs_with_tag.setOnClickListener(v->{
             Log.d("PLAYLIST", "WITH TAG");
             Bundle arguments = new Bundle();
-            arguments.putString("name of playlist", "tag");
+            arguments.putString("name of playlist", getString(R.string.tag));
             PlaylistFragmentDetail playlistFragmentDetail = new PlaylistFragmentDetail();
             playlistFragmentDetail.setArguments(arguments);
             FragmentTransaction fragmentTransaction = getParentFragmentManager().beginTransaction();
@@ -177,10 +178,10 @@ public class PlaylistFragment extends Fragment {
         return CompletableFuture.supplyAsync(() -> {
             List<Song> songFavorites = this.soundroidDatabaseInstance.songDao().getAllSongsInFavorites();
             Log.i("PLAYLIST FAV ", songFavorites.toString());
-            Playlist playlistFavoris = this.soundroidDatabaseInstance.playlistDao().findByName("favoris");
+            Playlist playlistFavoris = this.soundroidDatabaseInstance.playlistDao().findByName(getString(R.string.favoris));
             // No favoris playlist yet
             if(playlistFavoris == null) {
-                playlistFavoris = new Playlist("favoris");
+                playlistFavoris = new Playlist(getString(R.string.favoris));
                 long playlistId = this.soundroidDatabaseInstance.playlistDao().insertPlayList(playlistFavoris);
                 playlistFavoris.setPlaylistId(playlistId);
             }
@@ -202,7 +203,7 @@ public class PlaylistFragment extends Fragment {
         iv_playlist_favourites_songs.setOnClickListener(v->{
             Log.d("PLAYLIST", "FAVORIS");
             Bundle arguments = new Bundle();
-            arguments.putString("name of playlist", "favoris");
+            arguments.putString("name of playlist", getString(R.string.favoris));
             PlaylistFragmentDetail playlistFragmentDetail = new PlaylistFragmentDetail();
             playlistFragmentDetail.setArguments(arguments);
             FragmentTransaction fragmentTransaction = getParentFragmentManager().beginTransaction();
@@ -217,7 +218,7 @@ public class PlaylistFragment extends Fragment {
         iv_playlist_most_played.setOnClickListener(v->{
             Log.d("PLAYLIST", "MOST PLAYED");
             Bundle arguments = new Bundle();
-            arguments.putString("name of playlist", "most_played");
+            arguments.putString("name of playlist", getString(R.string.most_played));
             PlaylistFragmentDetail playlistFragmentDetail = new PlaylistFragmentDetail();
             playlistFragmentDetail.setArguments(arguments);
             FragmentTransaction fragmentTransaction = getParentFragmentManager().beginTransaction();
@@ -236,10 +237,10 @@ public class PlaylistFragment extends Fragment {
         return CompletableFuture.supplyAsync(() -> {
             List<Song> songsMostPlayed = this.soundroidDatabaseInstance.historyDao().getSongsMostPlayed();
             Log.i("PLAYLIST MOST PLAYED ", songsMostPlayed.toString());
-            Playlist playlistMostPlayed = this.soundroidDatabaseInstance.playlistDao().findByName("most_played");
+            Playlist playlistMostPlayed = this.soundroidDatabaseInstance.playlistDao().findByName(getString(R.string.most_played));
             // No most_played playlist yet
             if(playlistMostPlayed == null) {
-                playlistMostPlayed = new Playlist("most_played");
+                playlistMostPlayed = new Playlist(getString(R.string.most_played));
                 long playlistId = this.soundroidDatabaseInstance.playlistDao().insertPlayList(playlistMostPlayed);
                 playlistMostPlayed.setPlaylistId(playlistId);
             }
@@ -329,15 +330,10 @@ public class PlaylistFragment extends Fragment {
 
     private void installOnItemClickListener() {
         this.lvPlayLists.setOnItemClickListener((arg0, arg1, pos, id) -> {
-            Log.d("long clicked pos","pos: " + pos);
-            Log.d("long clicked id","id: " + id);
-            Log.d("long clicked item","item: " + lvPlayLists.getItemAtPosition(pos));
-
             Playlist playlistSelected = (Playlist) lvPlayLists.getItemAtPosition(pos);
             Log.d("long clicked playlist","Playlist name: " + playlistSelected.getName());
             Bundle arguments = new Bundle();
             arguments.putString("name of playlist", playlistSelected.getName());
-
             PlaylistFragmentDetail playlistFragmentDetail = new PlaylistFragmentDetail();
             playlistFragmentDetail.setArguments(arguments);
             FragmentTransaction fragmentTransaction = getParentFragmentManager().beginTransaction();

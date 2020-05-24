@@ -177,7 +177,7 @@ public class AllTracksFragment extends Fragment {
 
         this.ivButtonAccessFavorites.setOnClickListener(v -> {
             Bundle arguments = new Bundle();
-            arguments.putString("name of playlist", "favoris");
+            arguments.putString("name of playlist", getString(R.string.favoris));
             PlaylistFragmentDetail playlistFragmentDetail = new PlaylistFragmentDetail();
             playlistFragmentDetail.setArguments(arguments);
             FragmentTransaction fragmentTransaction = getParentFragmentManager().beginTransaction();
