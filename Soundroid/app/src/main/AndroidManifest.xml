@@ -38,16 +38,7 @@
         <activity android:name=".MainActivity" />
 
         <receiver
-            android:name=".notification.NotificationBroadcast"
-            android:exported="false">
-            <intent-filter>
-                <action android:name="fr.crt.dc.ngn.soundroid.PREVIOUS" />
-                <action android:name="fr.crt.dc.ngn.soundroid.NEXT" />
-                <action android:name="fr.crt.dc.ngn.soundroid.PAUSE" />
-                <action android:name="fr.crt.dc.ngn.soundroid.PLAY" />
-                <action android:name="fr.crt.dc.ngn.soundroid.DELETE" />
-                <action android:name="test" />
-            </intent-filter>
+            android:name=".service.SongService$NotificationReceiver" android:enabled="true">
         </receiver>
 
         <service android:name=".service.SongService" />

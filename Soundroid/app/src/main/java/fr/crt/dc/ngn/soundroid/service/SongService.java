@@ -15,6 +15,7 @@ import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Binder;
 import android.os.Build;
+import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.util.Log;
@@ -25,12 +26,16 @@ import android.widget.Toast;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
+import java.util.Objects;
 import java.util.Random;
+import java.util.Set;
 
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 import fr.crt.dc.ngn.soundroid.MainActivity;
 import fr.crt.dc.ngn.soundroid.R;
+import fr.crt.dc.ngn.soundroid.controller.ToolbarController;
 import fr.crt.dc.ngn.soundroid.database.SoundroidDatabase;
 import fr.crt.dc.ngn.soundroid.database.entity.History;
 import fr.crt.dc.ngn.soundroid.database.entity.Song;
@@ -58,6 +63,7 @@ public class SongService extends Service implements MediaPlayer.OnPreparedListen
     //Identifier of the channel used for notification (required since API 26)
     public static final String CHANNEL_ID = SongService.class.getName() + ".SOUNDROID_CHANNEL";
 
+
     public static final String NOTIFY_PREVIOUS = "fr.crt.dc.ngn.soundroid.PREVIOUS";
     public static final String NOTIFY_PLAY = "fr.crt.dc.ngn.soundroid.PLAY";
     public static final String NOTIFY_PAUSE = "fr.crt.dc.ngn.soundroid.PAUSE";
@@ -65,6 +71,9 @@ public class SongService extends Service implements MediaPlayer.OnPreparedListen
     public static final String NOTIFY_DELETE = "fr.crt.dc.ngn.soundroid.DELETE";
 
     private SoundroidDatabase soundroidDatabaseInstance;
+    private static SongService songServiceInstance;
+    private MediaSessionCompat mediaSessionCompat;
+
     /**
      * Class that returns an instance of service
      */
@@ -74,8 +83,12 @@ public class SongService extends Service implements MediaPlayer.OnPreparedListen
         }
     }
 
-    public SongService getSongService() {
-        return SongService.this;
+    public SongService() {
+        songServiceInstance = this;
+    }
+
+    public static SongService getSongService() {
+        return songServiceInstance;
     }
 
     @Override
@@ -90,7 +103,7 @@ public class SongService extends Service implements MediaPlayer.OnPreparedListen
                 .build());
         this.createNotificationChannel();
         this.soundroidDatabaseInstance = SoundroidDatabase.getInstance(getApplicationContext());
-
+        this.mediaSessionCompat =  new MediaSessionCompat(this.getApplicationContext(), "tag");
     }
 
     @Nullable
@@ -142,67 +155,98 @@ public class SongService extends Service implements MediaPlayer.OnPreparedListen
         }
     }
 
+
+    public static class NotificationReceiver extends BroadcastReceiver {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+
+            switch (Objects.requireNonNull(intent.getAction())) {
+                case "PLAY_ACTION":
+                    Toast.makeText(context, "PLAY_ACTION", Toast.LENGTH_LONG).show();
+                    if(SongService.getSongService().getPlayer().isPlaying()) {
+                        SongService.getSongService().player.pause();
+                    } else {
+                        SongService.getSongService().player.start();
+                    }
+                    break;
+                case "PREV_ACTION":
+                    Toast.makeText(context, "PREV_ACTION", Toast.LENGTH_LONG).show();
+                    SongService.getSongService().playPreviousSong();
+
+                    break;
+                case "NEXT_ACTION":
+                    Toast.makeText(context, "NEXT_ACTION", Toast.LENGTH_LONG).show();
+                    SongService.getSongService().playNextSong();
+                    break;
+                case "RANDOM_ACTION":
+                    Toast.makeText(context, "RANDOM_ACTION", Toast.LENGTH_LONG).show();
+                    SongService.getSongService().toShuffle();
+                    break;
+            }
+
+        }
+    }
+
+
     private Notification createNotification() {
 
-        // Create intent for notification
-        Intent notificationIntent = new Intent(this, MainActivity.class);
-        notificationIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        // Create intents for notification
+        Intent playIntent = new Intent(this, NotificationReceiver.class);
+        playIntent.setAction("PLAY_ACTION");
+
+        Intent previousIntent = new Intent(this, NotificationReceiver.class);
+        previousIntent.setAction("PREV_ACTION");
+
+        Intent nextIntent = new Intent(this, NotificationReceiver.class);
+        nextIntent.setAction("NEXT_ACTION");
+
+        Intent randomPlaybackIntent = new Intent(this, NotificationReceiver.class);
+        randomPlaybackIntent.setAction("RANDOM_ACTION");
 
         // PendingIntent makes the return of the user when selecting the notification MainActivity
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        PendingIntent piPlayIntent = PendingIntent.getBroadcast(this, 0, playIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        PendingIntent piPreviousIntent = PendingIntent.getBroadcast(this, 0, previousIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        PendingIntent piNextIntent = PendingIntent.getBroadcast(this, 0, nextIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        PendingIntent piRandomIntent = PendingIntent.getBroadcast(this, 0, randomPlaybackIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
-        RemoteViews expandedView = new RemoteViews(getPackageName(), R.layout.notification_playback);
-        expandedView.setImageViewBitmap(R.id.iv_expanded_panel_artwork, Utility.convertByteToBitmap(playlistSongs.get(songIndex).getArtwork()));
-        expandedView.setTextViewText(R.id.tv_expanded_panel_title, playlistSongs.get(songIndex).getTitle());
-        expandedView.setTextViewText(R.id.tv_expanded_panel_artist, playlistSongs.get(songIndex).getArtist());
-
-
-        Intent previousIntent = new Intent(NOTIFY_PREVIOUS);
-        Intent nextIntent = new Intent(NOTIFY_NEXT);
-        Intent pauseIntent = new Intent(NOTIFY_PAUSE);
-        Intent playIntent = new Intent(NOTIFY_PLAY);
-        Intent deleteIntent = new Intent(NOTIFY_DELETE);
-
-        Intent testIntent = new Intent("test");
-
-        PendingIntent piPrevious = PendingIntent.getBroadcast(this, 0, previousIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-        PendingIntent piNext = PendingIntent.getBroadcast(this, 0, nextIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-        PendingIntent piPause = PendingIntent.getBroadcast(this, 0, pauseIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-        PendingIntent piPlay = PendingIntent.getBroadcast(this, 0, playIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-        PendingIntent piDelete = PendingIntent.getBroadcast(this, 0, deleteIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-        PendingIntent piTest = PendingIntent.getBroadcast(this, 0, testIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-
-        /*
-        expandedView.setPendingIntentTemplate(R.id.btn_panel_previous, piPrevious);
-        expandedView.setPendingIntentTemplate(R.id.btn_panel_next, piNext);
-        expandedView.setPendingIntentTemplate(R.id.btn_panel_pause, piPause);
-        expandedView.setPendingIntentTemplate(R.id.btn_panel_play, piPlay);
-        expandedView.setPendingIntentTemplate(R.id.btn_expanded_panel_delete, piDelete);
-
-        expandedView.setOnClickPendingIntent(R.id.btn_panel_play, piTest);
-
-         */
 
         // build a read notification to display it in the notifications panel
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID)
-                .setContentIntent(pendingIntent)
+                // Set notification information
+                .setContentTitle(this.playlistSongs.get(getSongService().getSongIndex()).getTitle())
+                .setContentText(this.playlistSongs.get(getSongService().getSongIndex()).getArtist())
+
+                // Set notification style
+                .setStyle(
+                        new androidx.media.app.NotificationCompat.MediaStyle()
+                                .setShowActionsInCompactView(0, 1, 2, 3)
+                                .setMediaSession(mediaSessionCompat.getSessionToken()))
+                .setColor(getResources().getColor(R.color.colorPrimary))
+                .setColorized(true)
+
+                // Set notification property
                 .setSmallIcon(R.drawable.soundroid_logo)
-                .setAutoCancel(true)
-                .setCustomBigContentView(expandedView)
-                .setContentTitle(getString(R.string.app_name))
-                .setContentText("Control Audio")
+                .setLargeIcon(Utility.convertByteToBitmap(playlistSongs.get(getSongService().getSongIndex()).getArtwork()))
                 .setOnlyAlertOnce(true)
                 .setPriority(Notification.PRIORITY_HIGH)
-                .setDefaults(Notification.DEFAULT_VIBRATE);
+                .setDefaults(Notification.DEFAULT_VIBRATE)
+                .setChannelId(CHANNEL_ID)
+                .setShowWhen(false)
 
-        //installListeners(expandedView, getBaseContext());
+                // set notification actions
+                .addAction(R.drawable.ic_previous_white, "previous", piPreviousIntent)
+                .addAction(R.drawable.ic_play_white, "play/pause", piPlayIntent)
+                .addAction(R.drawable.ic_next_white, "next", piNextIntent)
+                .addAction(R.drawable.ic_shuffle_white, "random", piRandomIntent);
 
 
         return builder.build();
     }
 
     @Override
-    public void onCompletion(MediaPlayer mp) { }
+    public void onCompletion(MediaPlayer mp) {
+    }
 
     @Override
     public boolean onError(MediaPlayer mp, int what, int extra) {
@@ -211,8 +255,8 @@ public class SongService extends Service implements MediaPlayer.OnPreparedListen
         return false;
     }
 
-    private void insertInHistory(long songId){
-        new Thread(()->{
+    private void insertInHistory(long songId) {
+        new Thread(() -> {
             this.soundroidDatabaseInstance.historyDao().insertHistory(songId);
             Log.d("HISTORY", "insert in history song id = " + songId);
         }).start();

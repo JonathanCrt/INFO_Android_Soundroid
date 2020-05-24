@@ -56,6 +56,11 @@ public class ToolbarController extends AbstractController   {
         this.artwork = (ImageView) constraintLayout.getViewById(R.id.iv_toolbar_artwork);
     }
 
+
+    public ToolbarController() {
+
+    }
+
     public ToolbarController(Context context, ConstraintLayout mainActivity){
         this.context = context;
         this.constraintLayout = mainActivity;
