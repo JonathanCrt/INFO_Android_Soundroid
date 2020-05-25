@@ -11,9 +11,11 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import androidx.annotation.Nullable;
 import fr.crt.dc.ngn.soundroid.R;
+import fr.crt.dc.ngn.soundroid.database.SoundroidDatabase;
 import fr.crt.dc.ngn.soundroid.database.entity.Song;
 import fr.crt.dc.ngn.soundroid.utility.Utility;
 
@@ -24,11 +26,13 @@ public class HistoryAdapter extends ArrayAdapter<Song> {
 
     private LayoutInflater historyInflater;
     private ArrayList<Song> songs;
+    private SoundroidDatabase soundroidDatabaseInstance;
 
     public HistoryAdapter(Context context, List<Song> songs) {
         super(context, 0);
         this.songs = (ArrayList<Song>) songs;
         this.historyInflater = LayoutInflater.from(context);
+        this.soundroidDatabaseInstance = SoundroidDatabase.getInstance(context);
     }
 
     static class ViewHolder {
@@ -70,11 +74,30 @@ public class HistoryAdapter extends ArrayAdapter<Song> {
         // now we can set populate the data via the ViewHolder into views
         mViewHolder.tvTitle.setText(currentSong.getTitle());
         mViewHolder.tvArtist.setText(currentSong.getArtist());
-        mViewHolder.tvCounterPlayback.setText(Song.convertDuration(currentSong.getDuration()));
+        mViewHolder.tvCounterPlayback.setText(String.valueOf(getCountSongPlayed(currentSong.getSongId())));
         mViewHolder.ivArtwork.setImageBitmap(Utility.convertByteToBitmap(currentSong.getArtwork()));
 
         // Update position as position tag that will start the right song when the user clicks a list item
         return convertView;
+    }
+
+    /**
+     * Get the number of times a songs has been played
+     * @param idSong
+     * @return
+     */
+    private int getCountSongPlayed(long idSong){
+        AtomicInteger countSongPlayed = new AtomicInteger();
+        Thread t = new Thread(()->{
+            countSongPlayed.set(this.soundroidDatabaseInstance.historyDao().getTimesPlayedBySongId(idSong));
+        });
+        t.start();
+        try {
+            t.join();
+        } catch (InterruptedException e) {
+            Log.e("HistoryAdapter", e.getMessage());
+        }
+        return countSongPlayed.get();
     }
 
     @Override
@@ -98,7 +121,5 @@ public class HistoryAdapter extends ArrayAdapter<Song> {
         }
         return songs.get(position);
     }
-
-
 }
 

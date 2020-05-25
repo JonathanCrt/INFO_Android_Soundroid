@@ -41,9 +41,6 @@ public class Song {
     @ColumnInfo(name = "album")
     private String album;
 
-    @ColumnInfo(name = "countSongPlayed")
-    private int countSongPlayed;
-
     @ColumnInfo(name = "tag")
     private String tag;
 
@@ -74,7 +71,6 @@ public class Song {
         this.artwork = artwork;
         this.style = style;
         this.album = album;
-        this.countSongPlayed = 0;
         this.tag = null;
         this.rating = 0;
         this.link = link;
@@ -139,14 +135,6 @@ public class Song {
         this.album = album;
     }
 
-    public int getCountSongPlayed() {
-        return countSongPlayed;
-    }
-
-    public void setCountSongPlayed(int countSongPlayed) {
-        this.countSongPlayed = countSongPlayed;
-    }
-
     public String getTag() {
         return tag;
     }
@@ -178,6 +166,7 @@ public class Song {
     public void setFootprint(String footprint) {
         this.footprint = footprint;
     }
+
 
     /*
     public long getPlaylistId() {

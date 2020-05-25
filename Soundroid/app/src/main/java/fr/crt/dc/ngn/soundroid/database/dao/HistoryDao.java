@@ -38,6 +38,9 @@ public interface HistoryDao {
     @Query("SELECT * FROM History WHERE :songId= FK_songId")
     History getHistoryBySongId(long songId);
 
+    @Query("SELECT nbTimesPlayed FROM History WHERE :songId= FK_songId")
+    int getTimesPlayedBySongId(long songId);
+
     @Query("SELECT * FROM History WHERE dateLastPlayed >= :dateAfter")
     List<History> getAllHistoryAfterDate(long dateAfter);
 

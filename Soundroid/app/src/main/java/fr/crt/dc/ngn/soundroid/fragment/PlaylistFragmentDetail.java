@@ -13,6 +13,9 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Adapter;
+import android.widget.ArrayAdapter;
+import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 import android.widget.Toolbar;
@@ -22,6 +25,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import java.util.ArrayList;
 
 import fr.crt.dc.ngn.soundroid.R;
+import fr.crt.dc.ngn.soundroid.adapter.HistoryAdapter;
 import fr.crt.dc.ngn.soundroid.adapter.PlaylistDetailAdapter;
 import fr.crt.dc.ngn.soundroid.controller.ToolbarController;
 import fr.crt.dc.ngn.soundroid.database.SoundroidDatabase;
@@ -39,6 +43,7 @@ public class PlaylistFragmentDetail extends Fragment {
     private boolean connectionEstablished;
     private ToolbarController toolbarController;
     private ListView lvPlaylistDetail;
+    private ArrayAdapter adapter;
 
     public PlaylistFragmentDetail() {
         // Required empty public constructor
@@ -56,31 +61,42 @@ public class PlaylistFragmentDetail extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        // Inflate the layout for this fragmentapp
-        View v = inflater.inflate(R.layout.fragment_playlist_detail, container, false);
+        // Inflate the layout for this fragment app
+        View v;
+        // If the playlist to display is the most played songs, we need another adapter to display number of times the songs has been played
+        if(namePlaylist.equals(getString(R.string.most_played))){
+            v = inflater.inflate(R.layout.fragment_history, container, false);
+        }else{
+            v = inflater.inflate(R.layout.fragment_playlist_detail, container, false);
+        }
         Thread t = new Thread(()-> {
             Toolbar toolbar = v.findViewById(R.id.detail_toolbar);
             // set the name of the playlist
             toolbar.setTitle(namePlaylist);
             this.songs = (ArrayList<Song>) this.soundroidDatabaseInstance.junctionDAO().findAllSongsByPlaylistId(this.soundroidDatabaseInstance.playlistDao().findPlaylistIdByName(namePlaylist));
-            PlaylistDetailAdapter playlistDetailAdapter = new PlaylistDetailAdapter(getContext(), songs);
-            this.lvPlaylistDetail = v.findViewById(R.id.list_playlist_detail);
-            lvPlaylistDetail.setAdapter(playlistDetailAdapter);
+
+            // If the playlist to display is the most played songs, we need another adapter to display number of times the songs has been played
+            if(namePlaylist.equals(getString(R.string.most_played))){
+                Log.i("LOG", "DISPLAY PLAYLIST LES PLUS ");
+                this.adapter = new HistoryAdapter(getContext(), songs);
+                this.lvPlaylistDetail = v.findViewById(R.id.list_history);
+                this.floatingActionButton = v.findViewById(R.id.fabHistoryPlayback);
+            }else{
+                this.adapter = new PlaylistDetailAdapter(getContext(), songs);
+                this.lvPlaylistDetail = v.findViewById(R.id.list_playlist_detail);
+                this.floatingActionButton = v.findViewById(R.id.fabPlaylistDetailPlayback);
+            }
+
+            lvPlaylistDetail.setAdapter(adapter);
         });
         t.start();
         try {
             t.join();
         } catch (InterruptedException e) {
-            Log.e("InterruptedException", e.getMessage());
+            Log.e("PlaylistFragmentDetail", e.getMessage());
         }
 
-        Toolbar toolbar = v.findViewById(R.id.detail_toolbar);
-
-        this.floatingActionButton = v.findViewById(R.id.fabPlaylistDetailPlayback);
         this.toolbarController = new ToolbarController(getActivity(), requireActivity().findViewById(R.id.crt_layout));
-
-        // set the name of the playlist
-        toolbar.setTitle(namePlaylist);
 
         if(this.songs.isEmpty()) {
             Toast.makeText(getContext(), "Cette liste de lecture est vide", Toast.LENGTH_LONG).show();
@@ -118,6 +134,7 @@ public class PlaylistFragmentDetail extends Fragment {
     private void installOnItemClickListener() {
         this.lvPlaylistDetail.setOnItemClickListener((parent, view, position, id) -> {
             this.setSongServiceAndToolbar(position);
+            getActivity().runOnUiThread(()-> this.adapter.notifyDataSetChanged());
         });
     }
 
