@@ -133,10 +133,8 @@ public class ToolbarController extends AbstractController {
     private void pushPlayControl() {
         this.songService.setToolbarPushed(true);
         if (!songService.playOrPauseSong()) {
-            Toast.makeText(this.context, "State : Pause", Toast.LENGTH_SHORT).show();
             this.setImagePlay(ivPlayControl, this.context);
         } else {
-            Toast.makeText(this.context, "State : Play", Toast.LENGTH_SHORT).show();
             this.setImagePause(ivPlayControl, this.context);
             this.setWidgetsValues();
         }

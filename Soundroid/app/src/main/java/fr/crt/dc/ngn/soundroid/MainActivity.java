@@ -227,7 +227,6 @@ public class MainActivity extends AppCompatActivity {
             }
         }).start();
         String statePlayer = sharedPreferences.getString("playback_state", "");
-        Toast.makeText(this, "" + statePlayer, Toast.LENGTH_LONG).show();
         this.runOnUiThread(() -> {
             switch (statePlayer) {
                 case "PLAYING":

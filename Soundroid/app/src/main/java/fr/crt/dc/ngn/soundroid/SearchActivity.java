@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.os.Parcelable;
 import android.util.Log;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -42,6 +43,13 @@ public class SearchActivity extends AppCompatActivity {
         }else {
             throw new AssertionError("not good flag: " + flag);
         }
+
+        if (resultList.isEmpty()){
+            Toast.makeText(getApplicationContext(), "Auncun résultat", Toast.LENGTH_LONG).show();
+            this.onBackPressed();
+            return;
+        }
+
         SongAdapter songAdapter = new SongAdapter(this,resultList);
         list.setAdapter(songAdapter);
 
@@ -60,7 +68,6 @@ public class SearchActivity extends AppCompatActivity {
                     .putExtra("DURATION_SONG", song.getDuration())
                     .putExtra("TAG_SONG", song.getTag());
             startActivity(intent);
-
         });
     }
 }

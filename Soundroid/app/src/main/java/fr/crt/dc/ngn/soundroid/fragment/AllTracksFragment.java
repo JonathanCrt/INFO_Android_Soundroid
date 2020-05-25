@@ -247,7 +247,6 @@ public class AllTracksFragment extends Fragment {
     public void onStart() {
         super.onStart();
         this.doBindService();
-        Toast.makeText(this.getContext(), "PlayList size: " + RootList.getRootList().size(), Toast.LENGTH_SHORT).show();
         this.tvNumberOfSongs.setText(String.valueOf(RootList.getRootList().size()));
     }
 

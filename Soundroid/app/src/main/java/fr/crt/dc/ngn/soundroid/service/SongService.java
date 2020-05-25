@@ -166,7 +166,6 @@ public class SongService extends Service implements MediaPlayer.OnPreparedListen
 
             switch (Objects.requireNonNull(intent.getAction())) {
                 case "PLAY_ACTION":
-                    Toast.makeText(context, "PLAY_ACTION", Toast.LENGTH_LONG).show();
                     if (SongService.getSongService().getPlayer().isPlaying()) {
                         SongService.getSongService().player.pause();
                     } else {
@@ -174,16 +173,13 @@ public class SongService extends Service implements MediaPlayer.OnPreparedListen
                     }
                     break;
                 case "PREV_ACTION":
-                    Toast.makeText(context, "PREV_ACTION", Toast.LENGTH_LONG).show();
                     SongService.getSongService().playPreviousSong();
 
                     break;
                 case "NEXT_ACTION":
-                    Toast.makeText(context, "NEXT_ACTION", Toast.LENGTH_LONG).show();
                     SongService.getSongService().playNextSong();
                     break;
                 case "RANDOM_ACTION":
-                    Toast.makeText(context, "RANDOM_ACTION", Toast.LENGTH_LONG).show();
                     SongService.getSongService().toShuffle();
                     break;
             }
