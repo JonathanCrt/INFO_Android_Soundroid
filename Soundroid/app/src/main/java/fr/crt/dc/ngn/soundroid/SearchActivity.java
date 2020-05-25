@@ -36,8 +36,8 @@ public class SearchActivity extends AppCompatActivity {
         List<Song> resultList = null;
         long storageID = getIntent().getLongExtra("storageID",-1);
         Log.i("storage", "storage ID " + storageID);
-        String[] authorizedFlags = new String[]{"TITLE", "ARTIST", "ALBUM"};
-        if(Arrays.asList(authorizedFlags).contains(flag)){
+        Criteria[] authorizedCriteria = new Criteria[]{Criteria.TITLE, Criteria.ALBUM, Criteria.ARTIST};
+        if(Arrays.asList(authorizedCriteria).contains(flag)){
             resultList = (List<Song>) StorageContainer.getInstance().get(storageID);
         }else {
             throw new AssertionError("not good flag: " + flag);
