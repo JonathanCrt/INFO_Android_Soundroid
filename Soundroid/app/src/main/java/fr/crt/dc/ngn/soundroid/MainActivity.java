@@ -12,6 +12,7 @@ import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.media.AudioManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.IBinder;
@@ -19,6 +20,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.preference.PreferenceManager;
 import android.provider.ContactsContract;
+import android.provider.MediaStore;
 import android.speech.tts.TextToSpeech;
 import android.telephony.SmsMessage;
 import android.util.Log;
@@ -86,6 +88,7 @@ public class MainActivity extends AppCompatActivity {
     private Bitmap currentBitmapSong;
     private ImageView ivToolbarControlPlay;
     private Toolbar toolbarPlayer;
+    private AudioManager audioManager;
 
     //TextToSpeech API
     private final int CHECK_CODE = 0x1;
@@ -194,6 +197,7 @@ public class MainActivity extends AppCompatActivity {
         this.checkTTS();
         this.initializeSMSReceiver();
         this.registerSMSReceiver();
+        this.audioManager = (AudioManager) getApplicationContext().getSystemService(Context.AUDIO_SERVICE);
     }
 
     @Override
@@ -460,15 +464,20 @@ public class MainActivity extends AppCompatActivity {
                         SmsMessage message = SmsMessage.createFromPdu(pdu);
                         String text = message.getDisplayMessageBody();
                         String sender = getContactName(message.getOriginatingAddress());
-                        speaker.pause(LONG_DURATION);
+
+                        SongService.getSongService().pausePlayback();
+                        speaker.pause(SHORT_DURATION);
                         speaker.speakText("Vous avez reçu un message de " + sender + "!");
                         speaker.pause(SHORT_DURATION);
                         speaker.speakText(text);
+                        ivToolbarControlPlay.setImageDrawable(getDrawable(R.drawable.ic_play_white));
+
                     }
                 }
 
             }
         };
+
     }
 
     private String getContactName(String phone) {
