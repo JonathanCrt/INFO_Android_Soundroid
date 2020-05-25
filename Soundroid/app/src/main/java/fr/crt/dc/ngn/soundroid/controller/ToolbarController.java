@@ -1,5 +1,6 @@
 package fr.crt.dc.ngn.soundroid.controller;
 
+import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -29,7 +30,7 @@ import fr.crt.dc.ngn.soundroid.utility.Utility;
 /**
  * Created by CRETE JONATHAN on 09/04/2020.
  */
-public class ToolbarController extends AbstractController   {
+public class ToolbarController extends AbstractController {
 
     private Toolbar toolbar;
     private ImageView artwork;
@@ -47,7 +48,22 @@ public class ToolbarController extends AbstractController   {
     private Context context;
     private ConstraintLayout constraintLayout;
 
-    private void initialization(){
+    private static ToolbarController toolbarControllerInstance;
+
+    public ToolbarController getInstanceToolbar() {
+        return this;
+    }
+
+
+    public ToolbarController() {
+        toolbarControllerInstance = this;
+    }
+
+    public static ToolbarController getToolbarControllerInstance() {
+        return toolbarControllerInstance;
+    }
+
+    private void initialization() {
         this.tvTitleSong = (TextView) constraintLayout.getViewById(R.id.tv_toolbar_title);
         this.tvArtistSong = (TextView) constraintLayout.getViewById(R.id.tv_toolbar_artist);
         this.ivPlayControl = (ImageView) constraintLayout.getViewById(R.id.iv_control_play);
@@ -56,12 +72,7 @@ public class ToolbarController extends AbstractController   {
         this.artwork = (ImageView) constraintLayout.getViewById(R.id.iv_toolbar_artwork);
     }
 
-
-    public ToolbarController() {
-
-    }
-
-    public ToolbarController(Context context, ConstraintLayout mainActivity){
+    public ToolbarController(Context context, ConstraintLayout mainActivity) {
         this.context = context;
         this.constraintLayout = mainActivity;
         this.initialization();
@@ -87,10 +98,10 @@ public class ToolbarController extends AbstractController   {
         installListener();
     }
 
-    private void installListener(){
-        this.ivPlayControl.setOnClickListener(v-> pushPlayControl());
-        this.ivPrevControl.setOnClickListener(v-> pushPreviousControl());
-        this.ivNextControl.setOnClickListener(v-> pushNextControl());
+    private void installListener() {
+        this.ivPlayControl.setOnClickListener(v -> pushPlayControl());
+        this.ivPrevControl.setOnClickListener(v -> pushPreviousControl());
+        this.ivNextControl.setOnClickListener(v -> pushNextControl());
     }
 
     public void setTextViewSelected() {
@@ -121,7 +132,7 @@ public class ToolbarController extends AbstractController   {
      */
     private void pushPlayControl() {
         this.songService.setToolbarPushed(true);
-        if(!songService.playOrPauseSong()) {
+        if (!songService.playOrPauseSong()) {
             Toast.makeText(this.context, "State : Pause", Toast.LENGTH_SHORT).show();
             this.setImagePlay(ivPlayControl, this.context);
         } else {

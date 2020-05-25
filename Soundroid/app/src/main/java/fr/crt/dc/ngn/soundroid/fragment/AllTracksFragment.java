@@ -20,17 +20,14 @@ import androidx.fragment.app.Fragment;
 
 import android.os.Handler;
 import android.os.IBinder;
-import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.PopupMenu;
@@ -77,7 +74,6 @@ public class AllTracksFragment extends Fragment {
 
     private static AllTracksFragment context;
 
-
     public AllTracksFragment() {// Required empty public constructor
     }
 
@@ -87,6 +83,7 @@ public class AllTracksFragment extends Fragment {
     }
 
     private SoundroidDatabase soundroidDatabaseInstance;
+
     /**
      * initialize the fields
      */
@@ -126,6 +123,7 @@ public class AllTracksFragment extends Fragment {
         this.ivButtonAccessFavorites = v.findViewById(R.id.iv_list_go_favoris);
         ConstraintLayout constraintLayout = requireActivity().findViewById(R.id.crt_layout);
         this.toolbarController = new ToolbarController(getActivity(), constraintLayout);
+
         this.installOnItemClickListener();
         this.installOnLongItemClickListener();
         FragmentTransaction fragmentTransaction = getParentFragmentManager().beginTransaction();
@@ -154,6 +152,9 @@ public class AllTracksFragment extends Fragment {
 
     }
 
+    /**
+     * install onClick listeners for buttons
+     */
     private void installOnItemClickListener() {
 
         lv.setOnItemClickListener((parent, view, position, id) -> {
@@ -194,15 +195,15 @@ public class AllTracksFragment extends Fragment {
     @SuppressLint({"ClickableViewAccessibility", "CheckResult"})
     private void installOnLongItemClickListener() {
         this.lv.setOnItemLongClickListener((arg0, arg1, pos, id) -> {
-            new Thread(()->{
+            new Thread(() -> {
                 Song songPressed = songAdapter.getItem(pos);
-                Log.d("long clicked","song " +songPressed.toString());
+                Log.d("long clicked", "song " + songPressed.toString());
                 androidx.appcompat.app.AlertDialog.Builder alertDialogBuilder = new androidx.appcompat.app.AlertDialog.Builder(this.getContext());
                 alertDialogBuilder.setTitle("Ajouter à une playlist");
 
                 // Array adapter to show a list of playlist created by the user
                 // The user don't have the possibility to add a song in an automatic playlist(favorite, most played, history)
-                List<Playlist> playlistList = this.soundroidDatabaseInstance.playlistDao().getAllPlayLists().stream().filter(p->!p.isAutomatic()).collect(Collectors.toList());
+                List<Playlist> playlistList = this.soundroidDatabaseInstance.playlistDao().getAllPlayLists().stream().filter(p -> !p.isAutomatic()).collect(Collectors.toList());
                 // transform the playlist list into an array of playlist name
                 String[] playlistsNames = playlistList.stream().map(Playlist::getName).toArray(String[]::new);
                 ArrayAdapter<String> adapter = new ArrayAdapter<>(this.getContext(),
@@ -216,16 +217,16 @@ public class AllTracksFragment extends Fragment {
                 alertDialogBuilder.setPositiveButton("OK", (dialog, which) -> {
                     String playlistName = autoCompleteTextView.getText().toString();
                     // If the playlist name is not correct
-                    if (playlistName.length()==0 || !Arrays.asList(playlistsNames).contains(playlistName)){
+                    if (playlistName.length() == 0 || !Arrays.asList(playlistsNames).contains(playlistName)) {
                         Toast.makeText(getContext(), "Click on a playlist name !", Toast.LENGTH_SHORT).show();
-                    }else{
-                        new Thread(()-> {
+                    } else {
+                        new Thread(() -> {
                             Playlist playlistClicked = playlistList.stream().filter(p -> p.getName().equals(playlistName)).findAny().get();
                             SoundroidDatabase.getInstance(getContext()).junctionDAO().insertSongIntoPlayList(songPressed.getSongId(), playlistClicked.getPlaylistId());
                         }).start();
                     }
                 });
-                getActivity().runOnUiThread(()->{
+                getActivity().runOnUiThread(() -> {
                     new Handler().postDelayed(autoCompleteTextView::showDropDown, 100);
                     alertDialogBuilder.setIcon(R.drawable.ic_menu_playlists);
                     // Add scroll in the dropdown list
@@ -273,7 +274,7 @@ public class AllTracksFragment extends Fragment {
      */
     @Override
     public void onStop() {
-        this.currentNumbersOfSongs =  Integer.parseInt(this.tvNumberOfSongs.getText().toString());
+        this.currentNumbersOfSongs = Integer.parseInt(this.tvNumberOfSongs.getText().toString());
         super.onStop();
     }
 
@@ -284,7 +285,9 @@ public class AllTracksFragment extends Fragment {
         super.onDestroy();
     }
 
-
+    /**
+     * to bind songService with our AllTracksFragment
+     */
     private void doBindService() {
         if (intent == null) {
             intent = new Intent(getContext(), SongService.class);
@@ -293,6 +296,9 @@ public class AllTracksFragment extends Fragment {
         requireActivity().startService(intent);
     }
 
+    /**
+     * to unbind songService with AllTracksFragment
+     */
     private void doUnbindService() {
         if (connectionEstablished) {
             songService.unbindService(serviceConnection);
@@ -317,13 +323,16 @@ public class AllTracksFragment extends Fragment {
         songService.playPreviousSong();
     }
 
+    /**
+     * to begin random playback on click to shuffle button
+     */
     private void toShuffle() {
         this.shuffleButton.setOnClickListener(e -> {
-            if(this.songService.toShuffle()){
+            if (this.songService.toShuffle()) {
                 this.songService.playOrPauseSong();
                 this.toolbarController.setPlayImageOnPushed();
                 this.shuffleButton.setTextColor(this.shuffleButton.getContext().getResources().getColor(R.color.colorPrimaryFlash));
-            }else{
+            } else {
                 this.shuffleButton.setTextColor(Color.BLACK);
             }
             this.toolbarController.setWidgetsValues();

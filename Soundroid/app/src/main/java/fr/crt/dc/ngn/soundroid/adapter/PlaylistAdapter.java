@@ -25,9 +25,9 @@ import fr.crt.dc.ngn.soundroid.database.entity.Playlist;
 public class PlaylistAdapter extends ArrayAdapter<Playlist> {
 
     private LayoutInflater playlistInflater;
-    ArrayList<Playlist> playlists;
+    private ArrayList<Playlist> playlists;
     ArrayList<Playlist> filteredPlayList;
-    SoundroidDatabase soundroidDatabaseInstance = SoundroidDatabase.getInstance(this.getContext());
+    private SoundroidDatabase soundroidDatabaseInstance = SoundroidDatabase.getInstance(this.getContext());
 
     public PlaylistAdapter(Context context, List<Playlist> playlists) {
         super(context, 0);

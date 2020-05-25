@@ -63,13 +63,6 @@ public class SongService extends Service implements MediaPlayer.OnPreparedListen
     //Identifier of the channel used for notification (required since API 26)
     public static final String CHANNEL_ID = SongService.class.getName() + ".SOUNDROID_CHANNEL";
 
-
-    public static final String NOTIFY_PREVIOUS = "fr.crt.dc.ngn.soundroid.PREVIOUS";
-    public static final String NOTIFY_PLAY = "fr.crt.dc.ngn.soundroid.PLAY";
-    public static final String NOTIFY_PAUSE = "fr.crt.dc.ngn.soundroid.PAUSE";
-    public static final String NOTIFY_NEXT = "fr.crt.dc.ngn.soundroid.NEXT";
-    public static final String NOTIFY_DELETE = "fr.crt.dc.ngn.soundroid.DELETE";
-
     private SoundroidDatabase soundroidDatabaseInstance;
     private static SongService songServiceInstance;
     private MediaSessionCompat mediaSessionCompat;
@@ -113,7 +106,7 @@ public class SongService extends Service implements MediaPlayer.OnPreparedListen
     }
 
     /**
-     * Permet libérer des ressources lorsque l'instance du service est non liée
+     * allows free resources when the service instance is untied
      *
      * @param intent
      * @return
@@ -188,7 +181,10 @@ public class SongService extends Service implements MediaPlayer.OnPreparedListen
         }
     }
 
-
+    /**
+     * allow a creation of a new notification with media style, to control playback
+     * @return a new notification
+     */
     private Notification createNotification() {
 
         // Create intents for notification
@@ -210,7 +206,7 @@ public class SongService extends Service implements MediaPlayer.OnPreparedListen
         PendingIntent piNextIntent = PendingIntent.getBroadcast(this, 0, nextIntent, PendingIntent.FLAG_UPDATE_CURRENT);
         PendingIntent piRandomIntent = PendingIntent.getBroadcast(this, 0, randomPlaybackIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
-
+        
         // build a read notification to display it in the notifications panel
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID)
                 // Set notification information

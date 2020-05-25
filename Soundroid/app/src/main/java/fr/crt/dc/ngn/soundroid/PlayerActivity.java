@@ -255,6 +255,9 @@ public class PlayerActivity extends AppCompatActivity implements GestureDetector
         }
     }
 
+    /**
+     * set properties of textView, ImageView...
+     */
     public void setWidgetsValues() {
         new Thread(() -> {
             Song currentSong = this.songService.getPlaylistSongs().get(this.songService.getSongIndex());
@@ -268,12 +271,17 @@ public class PlayerActivity extends AppCompatActivity implements GestureDetector
         }).start();
     }
 
-
+    /**
+     * to allow scroll textView
+     */
     private void setTextViewSelected() {
         this.tvTitleSong.setSelected(true);
         this.tvArtistSong.setSelected(true);
     }
 
+    /**
+     * install onClick listeners on playback control buttons
+     */
     private void installListener() {
         this.ivControlPlaySong.setOnClickListener(v -> pushPlayControl());
         this.ivControlNextSong.setOnClickListener(v -> pushNextControl());
@@ -282,6 +290,9 @@ public class PlayerActivity extends AppCompatActivity implements GestureDetector
         this.ivAddTag.setOnClickListener(v -> openAlertDialogToAddTag());
     }
 
+    /**
+     * open alert dialog when the user wants to add a new playlist
+     */
     private void openAlertDialogToAddTag() {
         new Thread(() -> {
             long currentSongId = this.songService.getPlaylistSongs().get(songService.getSongIndex()).getSongId();
@@ -318,12 +329,15 @@ public class PlayerActivity extends AppCompatActivity implements GestureDetector
     }
 
     /**
-     * return to MainActivity by clicking on the Imageview ivBack
+     * Return to MainActivity by clicking on the Imageview ivBack
      */
     public void setIvBackListener() {
         this.ivBack.setOnClickListener(v -> finish());
     }
 
+    /**
+     * Reset rating to 0, and set outlines stars
+     */
     private void resetRating() {
         for (ImageView star : this.stars) {
             star.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_outline_star_note));
@@ -397,6 +411,9 @@ public class PlayerActivity extends AppCompatActivity implements GestureDetector
         });
     }
 
+    /**
+     * run on UI Thread runnable to display seekbar progression
+     */
     private void runUIThreadToSetProgressSeekBar() {
         this.mRunnable = new Runnable() { // UI Thread
             @Override
@@ -425,6 +442,9 @@ public class PlayerActivity extends AppCompatActivity implements GestureDetector
         }
     }
 
+    /**
+     * install onclick listener when user wants to delete tag
+     */
     private void installOnClickListenerButtonDeleteTag() {
         this.ivDeleteTag.setOnClickListener(v -> {
             AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
