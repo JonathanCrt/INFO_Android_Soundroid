@@ -64,7 +64,7 @@ public class PlaylistFragment extends Fragment {
         this.tvPlaylistFavouritesSongsCounter = view.findViewById(R.id.tv_playlist_label_favourites_songs_counter);
         this.ivPlaylistSongsWithTag = view.findViewById(R.id.iv_playlist_songs_with_tag);
         this.tvPlaylistSongsWithTagCounter = view.findViewById(R.id.tv_playlist_label_songs_with_tag_counter);
-        this.ivPlaylistfilter = view.findViewById(R.id.iv_playlist_filter);
+        //this.ivPlaylistfilter = view.findViewById(R.id.iv_playlist_filter);
         this.btnAddPlaylist = view.findViewById(R.id.btn_add_playlist);
         this.iv_playlist_songs_with_tag = view.findViewById(R.id.iv_playlist_songs_with_tag);
         this.iv_playlist_favourites_songs = view.findViewById(R.id.iv_playlist_favourites_songs);
