@@ -241,8 +241,7 @@ public class SongService extends Service implements MediaPlayer.OnPreparedListen
     }
 
     @Override
-    public void onCompletion(MediaPlayer mp) {
-    }
+    public void onCompletion(MediaPlayer mp) { }
 
     @Override
     public boolean onError(MediaPlayer mp, int what, int extra) {

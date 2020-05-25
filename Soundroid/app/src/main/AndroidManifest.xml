@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="fr.crt.dc.ngn.soundroid">
 
     <uses-permission android:name="android.permission.WAKE_LOCK" />
@@ -22,11 +23,15 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".adapter.SearchAdapter"></activity>
-        <activity android:name=".SearchActivity" />
-        <activity android:name=".PlayerActivity" />
+        <activity
+            android:name=".SearchActivity"
+            android:configChanges="orientation|screenSize" />
+        <activity
+            android:name=".PlayerActivity"
+            android:configChanges="orientation|screenSize" />
         <activity
             android:name=".animation.SplashScreen"
+            android:configChanges="orientation|screenSize"
             android:label="@string/app_name"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
@@ -35,11 +40,12 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".MainActivity" />
-
+        <activity
+            android:name=".MainActivity"
+            android:configChanges="orientation|screenSize" />
         <receiver
-            android:name=".service.SongService$NotificationReceiver" android:enabled="true">
-        </receiver>
+            android:name=".service.SongService$NotificationReceiver"
+            android:enabled="true" />
 
         <service android:name=".service.SongService" />
     </application>

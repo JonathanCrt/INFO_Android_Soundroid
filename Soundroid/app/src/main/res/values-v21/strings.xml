@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="mes_pistes">Mes pistes</string>
-    <string name="playlists">Playlists</string>
+    <string name="playlists">Listes de lecture</string>
     <string name="exporter">Exporter</string>
     <string name="historique">Historique</string>
     <string name="param_tres">Paramètres</string>

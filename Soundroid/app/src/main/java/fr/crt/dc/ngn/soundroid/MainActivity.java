@@ -15,6 +15,8 @@ import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.preference.PreferenceManager;
 import android.provider.ContactsContract;
 import android.speech.tts.TextToSpeech;
@@ -32,12 +34,14 @@ import android.widget.Toast;
 
 import com.google.android.material.navigation.NavigationView;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicReference;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.app.ActivityCompat;
@@ -81,6 +85,7 @@ public class MainActivity extends AppCompatActivity {
     private ImageView ivToolbarArtworkSong;
     private Bitmap currentBitmapSong;
     private ImageView ivToolbarControlPlay;
+    private Toolbar toolbarPlayer;
 
     //TextToSpeech API
     private final int CHECK_CODE = 0x1;
@@ -89,6 +94,7 @@ public class MainActivity extends AppCompatActivity {
     private Speaker speaker;
 
     int PERMISSION_ALL = 1;
+    // array of all permissions needed
     String[] PERMISSIONS = {
             android.Manifest.permission.WRITE_EXTERNAL_STORAGE,
             android.Manifest.permission.READ_EXTERNAL_STORAGE,
@@ -104,6 +110,8 @@ public class MainActivity extends AppCompatActivity {
     public static Context getAppContext() {
         return MainActivity.context;
     }
+
+
 
     @SuppressLint("WrongThread")
     @Override
@@ -131,10 +139,10 @@ public class MainActivity extends AppCompatActivity {
         NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
         NavigationUI.setupWithNavController(navigationView, navController);
 
-        Toolbar toolbarPlayer = findViewById(R.id.toolbar_player);
+        this.toolbarPlayer = findViewById(R.id.toolbar_player);
 
         //launch Player Activity
-        toolbarPlayer.setOnClickListener(v -> this.launchPlayerActivity());
+        this.toolbarPlayer.setOnClickListener(v -> this.launchPlayerActivity());
 
         AtomicReference<ArrayList<Song>> listSongs = new AtomicReference<>();
         Thread t = new Thread(() -> {

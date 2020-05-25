@@ -16,6 +16,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
+import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.hardware.Sensor;
@@ -123,7 +124,6 @@ public class PlayerActivity extends AppCompatActivity implements GestureDetector
         this.ivControlVolume = findViewById(R.id.iv_player_control_volume);
         this.stars = new ImageView[]{ivNoteStarOne, ivNoteStarTwo, ivNoteStarThree, ivNoteStarFour, ivNoteStarFive};
     }
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
