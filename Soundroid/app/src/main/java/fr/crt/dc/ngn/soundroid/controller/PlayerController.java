@@ -119,7 +119,8 @@ public class PlayerController extends AbstractController {
         for(int i=0; i<this.stars.length; i++){
             this.stars[i].setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_outline_star_note));
         }
-        this.songService.getPlaylistSongs().get(this.songService.getSongIndex()).setRating(0);
+        int songIndex = (int) this.songService.getSongIndex();
+        this.songService.getPlaylistSongs().get(songIndex).setRating(0);
     }
 
     /**

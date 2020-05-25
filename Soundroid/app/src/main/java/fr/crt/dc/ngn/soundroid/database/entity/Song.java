@@ -1,5 +1,6 @@
 package fr.crt.dc.ngn.soundroid.database.entity;
 
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Locale;
 import java.util.Objects;
@@ -21,7 +22,7 @@ import androidx.room.PrimaryKey;
 
  */
 @Entity(indices = @Index("title"))
-public class Song {
+public class Song implements Serializable {
 
     @PrimaryKey
     private long songId;

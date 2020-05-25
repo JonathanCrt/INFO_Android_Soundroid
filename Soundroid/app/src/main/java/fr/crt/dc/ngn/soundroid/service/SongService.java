@@ -446,5 +446,4 @@ public class SongService extends Service implements MediaPlayer.OnPreparedListen
     public int getCurrentPositionPlayer() {
         return player.getCurrentPosition();
     }
-
 }

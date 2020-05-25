@@ -4,10 +4,13 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.util.Log;
 import android.widget.ListView;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import fr.crt.dc.ngn.soundroid.adapter.SongAdapter;
@@ -33,33 +36,23 @@ public class SearchActivity extends AppCompatActivity {
         List<Song> resultList = null;
         long storageID = getIntent().getLongExtra("storageID",-1);
         Log.i("storage", "storage ID " + storageID);
-        switch (flag){
-            case TITLE:
-                resultList = (List<Song>) StorageContainer.getInstance().get(storageID);
-                break;
-
-            case ARTIST:
-                resultList = (List<Song>) StorageContainer.getInstance().get(storageID);
-                break;
-
-            case ALBUM:
-                resultList = (List<Song>) StorageContainer.getInstance().get(storageID);
-                break;
-
-            default:
-                throw new AssertionError("not good flag: " + flag);
+        String[] authorizedFlags = new String[]{"TITLE", "ARTIST", "ALBUM"};
+        if(Arrays.asList(authorizedFlags).contains(flag)){
+            resultList = (List<Song>) StorageContainer.getInstance().get(storageID);
+        }else {
+            throw new AssertionError("not good flag: " + flag);
         }
-        Log.i("INTENT", "resultList:  " + resultList);
         SongAdapter songAdapter = new SongAdapter(this,resultList);
         list.setAdapter(songAdapter);
-        String input = getIntent().getStringExtra("input");
 
         list.setOnItemClickListener((parent, view, position, id) ->{
             Song song = songAdapter.getItem(position);
-            Log.i("ITEM", "CURRENT ITEM : " + song);
             Intent intent = new Intent(this, PlayerActivity.class);
             intent
+                    .putExtra("SEARCH", true)
                     .putExtra("ID_SONG", song.getSongId())
+                    .putExtra("SONG_POSITION", position)
+                    .putExtra("SONG", song)
                     .putExtra("TITLE_SONG", song.getTitle())
                     .putExtra("ARTIST_SONG", song.getArtist())
                     .putExtra("RATING_SONG", song.getRating())
