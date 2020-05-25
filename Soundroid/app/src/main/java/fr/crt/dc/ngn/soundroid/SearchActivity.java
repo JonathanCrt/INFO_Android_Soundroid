@@ -44,7 +44,7 @@ public class SearchActivity extends AppCompatActivity {
             throw new AssertionError("not good flag: " + flag);
         }
 
-        if (resultList.isEmpty()){
+        if (resultList != null && resultList.isEmpty()){
             Toast.makeText(getApplicationContext(), "Auncun résultat", Toast.LENGTH_LONG).show();
             this.onBackPressed();
             return;

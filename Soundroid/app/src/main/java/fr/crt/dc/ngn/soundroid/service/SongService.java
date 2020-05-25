@@ -370,6 +370,7 @@ public class SongService extends Service implements MediaPlayer.OnPreparedListen
             return endPlayOrPauseSong(true); // music is playing
         } else if (this.player.isPlaying() && this.isToolbarPushed) {  // music is playing so user want to pause
             this.player.pause();
+            initializeSong=false;
             return endPlayOrPauseSong(false); // music is paused
         } else {
             // user click on a music on the list
@@ -460,9 +461,14 @@ public class SongService extends Service implements MediaPlayer.OnPreparedListen
      *
      * @param songIndex index de la chanson
      */
-    public void setCurrentSong(int songIndex) {
+    public void setCurrentSongIndex(int songIndex) {
         this.songIndex = songIndex;
     }
+
+    public void setCurrentSong(Song song) {
+        this.songIndex = this.playlistSongs.indexOf(song);
+    }
+
 
 
     public MediaPlayer getPlayer() {

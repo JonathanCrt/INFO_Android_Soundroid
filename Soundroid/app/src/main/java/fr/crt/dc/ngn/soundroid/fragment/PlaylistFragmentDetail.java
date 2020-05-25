@@ -13,9 +13,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Adapter;
 import android.widget.ArrayAdapter;
-import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 import android.widget.Toolbar;
@@ -139,7 +137,7 @@ public class PlaylistFragmentDetail extends Fragment {
     }
 
     private void setSongServiceAndToolbar(int position) {
-        this.songService.setCurrentSong(position);
+        this.songService.setCurrentSongIndex(position);
         this.songService.playOrPauseSong();
         this.toolbarController.setImagePauseFromFragment();
         this.toolbarController.setWidgetsValues();

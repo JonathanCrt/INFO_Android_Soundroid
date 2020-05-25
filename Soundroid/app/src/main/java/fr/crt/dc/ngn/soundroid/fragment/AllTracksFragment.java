@@ -4,15 +4,11 @@ import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.ComponentName;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
-import android.content.SharedPreferences;
 import android.graphics.Color;
-import android.os.AsyncTask;
 import android.os.Bundle;
 
-import androidx.annotation.ColorRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
@@ -144,12 +140,11 @@ public class AllTracksFragment extends Fragment {
                 Toast.makeText(this.getContext(), "You clicked on : " + item.getTitle(), Toast.LENGTH_SHORT).show();
                 songAdapter.getFilter().filter(item.getTitle());
                 this.songAdapter.notifyDataSetChanged();
+                this.songService.setPlaylistSongs(songAdapter.getFilteredPlayList());
                 return true;
             });
             popup.show(); //showing popup menu
         });
-
-
     }
 
     /**
@@ -158,7 +153,7 @@ public class AllTracksFragment extends Fragment {
     private void installOnItemClickListener() {
 
         lv.setOnItemClickListener((parent, view, position, id) -> {
-            this.songService.setCurrentSong(position);
+            this.songService.setCurrentSongIndex(position);
             this.songService.playOrPauseSong();
             this.toolbarController.setImagePauseFromFragment();
             this.toolbarController.setWidgetsValues();

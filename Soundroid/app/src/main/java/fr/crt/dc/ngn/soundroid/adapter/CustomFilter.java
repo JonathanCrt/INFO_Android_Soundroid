@@ -9,6 +9,8 @@ import java.util.Collections;
 import java.util.Comparator;
 
 import fr.crt.dc.ngn.soundroid.database.entity.Song;
+import fr.crt.dc.ngn.soundroid.service.SongService;
+import fr.crt.dc.ngn.soundroid.utility.RootList;
 
 /**
  * Created by CRETE JONATHAN on 30/04/2020.
@@ -20,7 +22,6 @@ public class CustomFilter extends Filter {
 
     CustomFilter(ArrayList<Song> filteredList, SongAdapter adapter) {
         this.filteredList = filteredList;
-        Log.d("CustomFilter", filteredList.toString());
         this.adapter = adapter;
     }
 
@@ -39,11 +40,8 @@ public class CustomFilter extends Filter {
             this.filteredSongs = new ArrayList<>();
 
             // Loop through filter list
-            for (int i = 0; i < filteredList.size(); i++) {
-                // filter
-                filteredSongs.add(filteredList.get(i));
-                Log.i("CustomFilter", filteredSongs.toString());
-            }
+            // filter
+            filteredSongs.addAll(filteredList);
             switch (constraint.toString()) {
                 case "TITLE":
                     Collections.sort(filteredSongs, (a, b) -> a.getTitle().compareTo(b.getTitle()));
@@ -65,20 +63,19 @@ public class CustomFilter extends Filter {
 
             results.count = filteredSongs.size();
             results.values = filteredSongs;
-            Log.i("CustomFilter sorting", " " + filteredSongs.toString());
         } else {
             results.count = filteredList.size();
             results.values = filteredList;
         }
-
         return results;
     }
 
     @Override
     protected void publishResults(CharSequence constraint, FilterResults results) {
-        Log.i("CustomFilter pusblishResults", " " + results.values);
         adapter.filteredPlayList = (ArrayList<Song>) results.values;
-
         adapter.notifyDataSetChanged();
+        // Update song service list songs
+        SongService.getSongService().setPlaylistSongs(filteredSongs);
     }
+
 }

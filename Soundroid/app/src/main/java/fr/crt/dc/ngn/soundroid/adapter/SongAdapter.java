@@ -118,4 +118,8 @@ public class SongAdapter extends ArrayAdapter<Song>  implements Filterable {
         }
         return filteredPlayList.get(position);
     }
+
+    public ArrayList<Song> getFilteredPlayList() {
+        return filteredPlayList;
+    }
 }

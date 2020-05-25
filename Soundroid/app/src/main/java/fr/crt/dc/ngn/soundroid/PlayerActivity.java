@@ -3,7 +3,7 @@ package fr.crt.dc.ngn.soundroid;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.core.view.GestureDetectorCompat;
-import fr.crt.dc.ngn.soundroid.controller.ToolbarController;
+
 import fr.crt.dc.ngn.soundroid.database.SoundroidDatabase;
 import fr.crt.dc.ngn.soundroid.database.dao.SongDao;
 import fr.crt.dc.ngn.soundroid.database.entity.Song;
@@ -16,7 +16,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
-import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.hardware.Sensor;
@@ -30,7 +29,6 @@ import android.os.IBinder;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.GestureDetector;
-import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.animation.Animation;
@@ -40,10 +38,8 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.Random;
-import java.util.concurrent.atomic.AtomicReference;
 
 
 public class PlayerActivity extends AppCompatActivity implements GestureDetector.OnGestureListener, GestureDetector.OnDoubleTapListener, SensorEventListener {
@@ -473,8 +469,7 @@ public class PlayerActivity extends AppCompatActivity implements GestureDetector
         if(isSearched){
             // get the song clicked after the search
             Song songSearched = (Song) getIntent().getSerializableExtra("SONG");
-            int songPosition = this.songService.getPlaylistSongs().indexOf(songSearched);
-            this.songService.setCurrentSong(songPosition);
+            this.songService.setCurrentSong(songSearched);
         }
         if (!songService.playOrPauseSong()) {
             this.playerState = PlayerState.PAUSE;
@@ -642,7 +637,7 @@ public class PlayerActivity extends AppCompatActivity implements GestureDetector
                 if (speed > SHAKE_THRESHOLD) {
                     Random random = new Random();
                     int randomSong = random.nextInt(this.songService.getPlaylistSongs().size());
-                    this.songService.setCurrentSong(randomSong);
+                    this.songService.setCurrentSongIndex(randomSong);
                     this.songService.playOrPauseSong();
                     this.setWidgetsValues();
                     this.shakeAnimateOnArtworkImageView();

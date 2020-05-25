@@ -157,7 +157,7 @@ public class HistoryFragment extends Fragment {
     }
 
     private void setSongServiceAndToolbar(int position) {
-        this.songService.setCurrentSong(position);
+        this.songService.setCurrentSongIndex(position);
         this.songService.playOrPauseSong();
         this.toolbarController.setImagePauseFromFragment();
         this.toolbarController.setWidgetsValues();
