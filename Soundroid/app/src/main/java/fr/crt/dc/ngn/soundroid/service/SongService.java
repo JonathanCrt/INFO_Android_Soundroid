@@ -11,6 +11,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Color;
 import android.media.AudioAttributes;
+import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Binder;
@@ -44,7 +45,7 @@ import fr.crt.dc.ngn.soundroid.utility.Utility;
 /**
  * Created by CRETE JONATHAN on 05/04/2020.
  */
-public class SongService extends Service implements MediaPlayer.OnPreparedListener, MediaPlayer.OnErrorListener, MediaPlayer.OnCompletionListener {
+public class SongService extends Service implements MediaPlayer.OnPreparedListener, MediaPlayer.OnErrorListener, MediaPlayer.OnCompletionListener, AudioManager.OnAudioFocusChangeListener {
 
 
     private MediaPlayer player;
@@ -89,15 +90,24 @@ public class SongService extends Service implements MediaPlayer.OnPreparedListen
         super.onCreate();
         this.songIndex = 0;
         this.rand = new Random();
+        this.initMediaPlayer();
+        this.createNotificationChannel();
+        this.soundroidDatabaseInstance = SoundroidDatabase.getInstance(getApplicationContext());
+        this.mediaSessionCompat = new MediaSessionCompat(this.getApplicationContext(), "tag");
+    }
+
+    private void initMediaPlayer() {
         this.player = new MediaPlayer();
         this.player.setAudioAttributes(new AudioAttributes.Builder()
                 .setUsage(AudioAttributes.USAGE_MEDIA)
                 .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
                 .build());
-        this.createNotificationChannel();
-        this.soundroidDatabaseInstance = SoundroidDatabase.getInstance(getApplicationContext());
-        this.mediaSessionCompat =  new MediaSessionCompat(this.getApplicationContext(), "tag");
+        this.player.setOnCompletionListener(this);
+        this.player.setOnErrorListener(this);
+        this.player.setOnPreparedListener(this);
+        this.player.reset();
     }
+
 
     @Nullable
     @Override
@@ -157,7 +167,7 @@ public class SongService extends Service implements MediaPlayer.OnPreparedListen
             switch (Objects.requireNonNull(intent.getAction())) {
                 case "PLAY_ACTION":
                     Toast.makeText(context, "PLAY_ACTION", Toast.LENGTH_LONG).show();
-                    if(SongService.getSongService().getPlayer().isPlaying()) {
+                    if (SongService.getSongService().getPlayer().isPlaying()) {
                         SongService.getSongService().player.pause();
                     } else {
                         SongService.getSongService().player.start();
@@ -183,6 +193,7 @@ public class SongService extends Service implements MediaPlayer.OnPreparedListen
 
     /**
      * allow a creation of a new notification with media style, to control playback
+     *
      * @return a new notification
      */
     private Notification createNotification() {
@@ -206,7 +217,7 @@ public class SongService extends Service implements MediaPlayer.OnPreparedListen
         PendingIntent piNextIntent = PendingIntent.getBroadcast(this, 0, nextIntent, PendingIntent.FLAG_UPDATE_CURRENT);
         PendingIntent piRandomIntent = PendingIntent.getBroadcast(this, 0, randomPlaybackIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
-        
+
         // build a read notification to display it in the notifications panel
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID)
                 // Set notification information
@@ -241,12 +252,72 @@ public class SongService extends Service implements MediaPlayer.OnPreparedListen
     }
 
     @Override
-    public void onCompletion(MediaPlayer mp) { }
+    public void onCompletion(MediaPlayer mp) {
+    }
+
+    @Override
+    public void onAudioFocusChange(int focusState) {
+        //Invoked when the audio focus of the system is updated.
+        switch (focusState) {
+            case AudioManager.AUDIOFOCUS_GAIN:
+                // resume playback
+                if (this.player == null){
+                    this.initMediaPlayer();
+                }
+                else if (!this.player.isPlaying()){
+                    player.start();
+                }
+                this.player.setVolume(1.0f, 1.0f);
+                break;
+            case AudioManager.AUDIOFOCUS_LOSS:
+                // Lost focus for an unbounded amount of time: stop playback and release media player
+                if (this.player.isPlaying()){
+                    this.player.stop();
+                }
+                this.player.release();
+                this.player = null;
+                break;
+            case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT:
+                // Lost focus for a short time, but we have to stop
+                // playback. We don't release the media player because playback
+                // is likely to resume
+                if (this.player.isPlaying()) {
+                    this.player.pause();
+                }
+                break;
+            case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK:
+                // Lost focus for a short time, but it's ok to keep playing
+                // at an attenuated level
+                if (this.player.isPlaying()) {
+                    this.player.setVolume(0.1f, 0.1f);
+                }
+                break;
+
+        }
+    }
+
+
+
+
 
     @Override
     public boolean onError(MediaPlayer mp, int what, int extra) {
         Toast.makeText(getApplicationContext(), "Une erreur est survenue lors de la lecture", Toast.LENGTH_SHORT).show();
-        this.player.reset();
+        //Invoked when there has been an error during an asynchronous operation
+        switch (what) {
+            case MediaPlayer.MEDIA_ERROR_NOT_VALID_FOR_PROGRESSIVE_PLAYBACK:
+                this.player.reset();
+                Log.d("MediaPlayer Error", "MEDIA ERROR NOT VALID FOR PROGRESSIVE PLAYBACK " + extra);
+                break;
+            case MediaPlayer.MEDIA_ERROR_SERVER_DIED:
+                this.player.reset();
+                Log.d("MediaPlayer Error", "MEDIA ERROR SERVER DIED " + extra);
+                break;
+            case MediaPlayer.MEDIA_ERROR_UNKNOWN:
+                this.player.reset();
+                Log.d("MediaPlayer Error", "MEDIA ERROR UNKNOWN " + extra);
+                break;
+        }
         return false;
     }
 
