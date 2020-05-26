@@ -53,6 +53,7 @@ public class SearchActivity extends AppCompatActivity {
         SongAdapter songAdapter = new SongAdapter(this,resultList);
         list.setAdapter(songAdapter);
 
+        //start PlayActivity
         list.setOnItemClickListener((parent, view, position, id) ->{
             Song song = songAdapter.getItem(position);
             Intent intent = new Intent(this, PlayerActivity.class);
