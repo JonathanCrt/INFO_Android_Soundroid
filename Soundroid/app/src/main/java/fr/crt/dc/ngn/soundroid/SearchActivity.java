@@ -20,6 +20,9 @@ import fr.crt.dc.ngn.soundroid.service.SongService;
 import fr.crt.dc.ngn.soundroid.utility.StorageContainer;
 import fr.crt.dc.ngn.soundroid.utility.Utility;
 
+/**
+ * Class to display songs from the search function
+ */
 public class SearchActivity extends AppCompatActivity {
 
     public enum Criteria implements Serializable {

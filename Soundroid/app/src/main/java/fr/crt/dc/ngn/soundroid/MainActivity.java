@@ -271,7 +271,9 @@ public class MainActivity extends AppCompatActivity {
         this.songService = null;
     }
 
-
+    /**
+     *  launch the PlayerActivity with the current song's metadata
+     */
     private void launchPlayerActivity() {
         new Thread(() -> {
             Intent currentSongIntent = new Intent(this, PlayerActivity.class);
@@ -484,7 +486,7 @@ public class MainActivity extends AppCompatActivity {
         if (cursor.moveToFirst()) {
             return cursor.getString(0);
         } else {
-            return "numéro inconuu";
+            return "numéro inconnu";
         }
     }
 

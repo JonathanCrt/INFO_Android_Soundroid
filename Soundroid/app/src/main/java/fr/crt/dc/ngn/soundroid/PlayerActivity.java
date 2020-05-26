@@ -381,6 +381,7 @@ public class PlayerActivity extends AppCompatActivity implements GestureDetector
         };
     }
 
+
     public void setListenerRating() {
         for (int i = 0; i < this.stars.length; i++) {
             this.stars[i].setOnClickListener(getStarsListener(i + 1));
@@ -512,6 +513,9 @@ public class PlayerActivity extends AppCompatActivity implements GestureDetector
         }
     }
 
+    /**
+     * shake artwork image when smartphone is shaked
+     */
     private void shakeAnimateOnArtworkImageView() {
         RotateAnimation rotate = new RotateAnimation(-5, 5, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
         rotate.setDuration(200);
@@ -521,12 +525,18 @@ public class PlayerActivity extends AppCompatActivity implements GestureDetector
         this.ivArtworkSong.startAnimation(rotate);
     }
 
+    /**
+     * change background color randomly
+     */
     private void setRandomBackgroundRedRange() {
         Random rnd = new Random();
         int color = Color.argb(255, rnd.nextInt(256), rnd.nextInt(20), rnd.nextInt(20));
         findViewById(R.id.crtLay_player).setBackgroundColor(color);
     }
 
+    /**
+     * control volume while being in the PlayerActivity
+     */
     private void installOnClickListenerButtonControlVolume() {
         this.ivControlVolume.setOnClickListener(v -> this.audioManager.adjustStreamVolume(AudioManager.STREAM_MUSIC, AudioManager.ADJUST_SAME, AudioManager.FLAG_SHOW_UI));
     }
