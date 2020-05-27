@@ -289,9 +289,7 @@ public class PlaylistFragment extends Fragment {
             AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getContext());
             alertDialogBuilder
                     .setTitle("Suppression").setMessage("Voulez-vous vraiment supprimer cette playlist ?")
-                    .setPositiveButton("OUI", ((dialog, which) -> {
-                       this.deletePlaylist(playlistClicked);
-                    }))
+                    .setPositiveButton("OUI", ((dialog, which) -> this.deletePlaylist(playlistClicked)))
                     .setNegativeButton("NON", (dialog, whichButton) -> dialog.dismiss());
             AlertDialog ad = alertDialogBuilder.create();
             ad.show();

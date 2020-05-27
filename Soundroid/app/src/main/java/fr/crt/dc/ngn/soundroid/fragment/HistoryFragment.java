@@ -145,9 +145,7 @@ public class HistoryFragment extends Fragment {
     }
 
     private void onClickOnFloatingButton() {
-        this.floatingActionButton.setOnClickListener(v -> {
-            this.setSongServiceAndToolbar(0);
-        });
+        this.floatingActionButton.setOnClickListener(v -> this.setSongServiceAndToolbar(0));
     }
 
     private void installOnItemClickListener() {

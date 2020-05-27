@@ -1,9 +1,7 @@
 package fr.crt.dc.ngn.soundroid.fragment;
 
 import android.app.DownloadManager;
-import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -14,29 +12,19 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import com.google.gson.reflect.TypeToken;
 
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.ObjectOutputStream;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.io.Writer;
-import java.lang.reflect.Type;
 import java.util.List;
-import java.util.Objects;
-import java.util.concurrent.CompletableFuture;
+
 
 import fr.crt.dc.ngn.soundroid.R;
 import fr.crt.dc.ngn.soundroid.database.SoundroidDatabase;
@@ -86,9 +74,7 @@ public class ExportFragment extends Fragment {
                 writerOutput = new BufferedWriter(new FileWriter(new File(pathDownload)));
                 writerOutput.write(jsonArray.toString());
                 writerOutput.close();
-                this.requireActivity().runOnUiThread(() -> {
-                    Toast.makeText(this.getContext(), "Sauvegarde effectuée !", Toast.LENGTH_LONG).show();
-                });
+                this.requireActivity().runOnUiThread(() -> Toast.makeText(this.getContext(), "Sauvegarde effectuée !", Toast.LENGTH_LONG).show());
                 startActivity(new Intent(DownloadManager.ACTION_VIEW_DOWNLOADS));
             } catch (IOException e) {
                 Log.e("ExportFragment", "Error during writing json file" + e.getMessage());

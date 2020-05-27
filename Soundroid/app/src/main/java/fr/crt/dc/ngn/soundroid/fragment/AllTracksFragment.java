@@ -221,7 +221,7 @@ public class AllTracksFragment extends Fragment {
                         } else {
                             new Thread(() -> {
                                 Playlist playlistClicked = playlistList.stream().filter(p -> p.getName().equals(playlistName)).findAny().get();
-                                SoundroidDatabase.getInstance(getContext()).junctionDAO().insertSongIntoPlayList(songPressed.getSongId(), playlistClicked.getPlaylistId());
+                                SoundroidDatabase.getInstance(requireContext()).junctionDAO().insertSongIntoPlayList(songPressed.getSongId(), playlistClicked.getPlaylistId());
                             }).start();
                         }
                     });
