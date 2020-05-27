@@ -68,31 +68,32 @@ public class ExportFragment extends Fragment {
         return v;
     }
 
+    /**
+     * Serialize and generates a new json file with all database entities
+     * open also file explorer of android system
+     */
     private void generateJSONFileAndOpenFileManager() {
-        this.btnExport.setOnClickListener(v -> {
-            new Thread(() -> {
-                this.responseSongsList = this.soundroidDatabaseInstance.songDao().getAllSongs();
-                Gson gson = new Gson();
-                this.jsonData = gson.toJson(this.responseSongsList);
-                JsonParser jsonParser = new JsonParser();
-                JsonArray jsonArray = jsonParser.parse(this.jsonData).getAsJsonArray();
+        this.btnExport.setOnClickListener(v -> new Thread(() -> {
+            this.responseSongsList = this.soundroidDatabaseInstance.songDao().getAllSongs();
+            Gson gson = new Gson();
+            this.jsonData = gson.toJson(this.responseSongsList);
+            JsonParser jsonParser = new JsonParser();
+            JsonArray jsonArray = jsonParser.parse(this.jsonData).getAsJsonArray();
 
-                try {
-                    Writer writerOutput;
-                    String pathDownload = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getAbsolutePath() + "/Soundroid.json";
-                    writerOutput = new BufferedWriter(new FileWriter(new File(pathDownload)));
-                    writerOutput.write(jsonArray.toString());
-                    writerOutput.close();
-                    this.getActivity().runOnUiThread(() -> {
-                        Toast.makeText(this.getContext(), "Sauvegarde effectuée !", Toast.LENGTH_LONG).show();
-                    });
-                    startActivity(new Intent(DownloadManager.ACTION_VIEW_DOWNLOADS));
-                } catch (IOException e) {
-                    Log.e("ExportFragment", "Error during writing json file" + e.getMessage());
-                }
-            }).start();
-
-        });
+            try {
+                Writer writerOutput;
+                String pathDownload = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getAbsolutePath() + "/Soundroid.json";
+                writerOutput = new BufferedWriter(new FileWriter(new File(pathDownload)));
+                writerOutput.write(jsonArray.toString());
+                writerOutput.close();
+                this.requireActivity().runOnUiThread(() -> {
+                    Toast.makeText(this.getContext(), "Sauvegarde effectuée !", Toast.LENGTH_LONG).show();
+                });
+                startActivity(new Intent(DownloadManager.ACTION_VIEW_DOWNLOADS));
+            } catch (IOException e) {
+                Log.e("ExportFragment", "Error during writing json file" + e.getMessage());
+            }
+        }).start());
     }
 
 

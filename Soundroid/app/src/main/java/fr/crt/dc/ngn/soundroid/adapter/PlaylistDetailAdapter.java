@@ -27,7 +27,6 @@ public class PlaylistDetailAdapter extends ArrayAdapter<Song>  {
 
     private LayoutInflater songInflater;
     private Context context;
-    CustomFilter filter;
     private ArrayList<Song> listSongs;
 
     public PlaylistDetailAdapter(Context context, List<Song> listSongs) {
@@ -46,6 +45,13 @@ public class PlaylistDetailAdapter extends ArrayAdapter<Song>  {
         ImageView iv_artwork;
     }
 
+    /**
+     * get the view that display our listView
+     * @param position position of item
+     * @param convertView reused View
+     * @param parent viewGroup parent
+     * @return new View
+     */
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
 
@@ -89,18 +95,30 @@ public class PlaylistDetailAdapter extends ArrayAdapter<Song>  {
         return convertView;
     }
 
+    /**
+     * get number of songs into list
+     * @return number of songs
+     */
     @Override
     public int getCount() {
         return listSongs.size();
     }
 
-
+    /**
+     * add a song to the list
+     * @param object a song object
+     */
     @Override
     public void add(@Nullable Song object) {
         super.add(object);
        listSongs.add(object);
     }
 
+    /**
+     * get an specific item as song at position into list
+     * @param position specifif position
+     * @return Song a specific song
+     */
     @Nullable
     @Override
     public Song getItem(int position) {

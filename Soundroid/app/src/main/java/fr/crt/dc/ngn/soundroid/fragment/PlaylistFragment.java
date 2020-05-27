@@ -18,9 +18,9 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 import androidx.fragment.app.FragmentTransaction;
@@ -33,13 +33,10 @@ import fr.crt.dc.ngn.soundroid.database.entity.Song;
 public class PlaylistFragment extends Fragment {
 
 
-    private ImageView ivPlaylistMostPlayed;
     private TextView tvPlaylistMostPlayedCounter;
 
-    private ImageView ivPlaylistFavouritesSongs;
     private TextView tvPlaylistFavouritesSongsCounter;
 
-    private ImageView ivPlaylistSongsWithTag;
     private TextView tvPlaylistSongsWithTagCounter;
     private ImageView iv_playlist_favourites_songs;
 
@@ -47,8 +44,8 @@ public class PlaylistFragment extends Fragment {
     private Button btnAddPlaylist;
     private ImageView iv_playlist_songs_with_tag;
     private SoundroidDatabase soundroidDatabaseInstance;
-    public static int MAX_SIZE_NAME_PLAYLIST = 45;
-    ArrayList<Playlist> playlists;
+    private static int MAX_SIZE_NAME_PLAYLIST = 45;
+    private ArrayList<Playlist> playlists;
     private ListView lvPlayLists;
     private PlaylistAdapter playlistAdapter;
     private ImageView iv_playlist_most_played;
@@ -58,13 +55,9 @@ public class PlaylistFragment extends Fragment {
     }
 
     private void initializeViews(View view) {
-        this.ivPlaylistMostPlayed = view.findViewById(R.id.iv_playlist_most_played);
         this.tvPlaylistMostPlayedCounter = view.findViewById(R.id.tv_playlist_label_most_played_counter);
-        this.ivPlaylistFavouritesSongs = view.findViewById(R.id.iv_playlist_favourites_songs);
         this.tvPlaylistFavouritesSongsCounter = view.findViewById(R.id.tv_playlist_label_favourites_songs_counter);
-        this.ivPlaylistSongsWithTag = view.findViewById(R.id.iv_playlist_songs_with_tag);
         this.tvPlaylistSongsWithTagCounter = view.findViewById(R.id.tv_playlist_label_songs_with_tag_counter);
-        //this.ivPlaylistfilter = view.findViewById(R.id.iv_playlist_filter);
         this.btnAddPlaylist = view.findViewById(R.id.btn_add_playlist);
         this.iv_playlist_songs_with_tag = view.findViewById(R.id.iv_playlist_songs_with_tag);
         this.iv_playlist_favourites_songs = view.findViewById(R.id.iv_playlist_favourites_songs);
@@ -74,7 +67,7 @@ public class PlaylistFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        this.soundroidDatabaseInstance = SoundroidDatabase.getInstance(this.getContext());
+        this.soundroidDatabaseInstance = SoundroidDatabase.getInstance(this.requireContext());
     }
 
     @SuppressLint("SetTextI18n")
@@ -95,7 +88,7 @@ public class PlaylistFragment extends Fragment {
             nbSongsInPlaylistFavoris = this.createPlaylistInFavorites();
             nbSongsInPlaylistMostPlayed = this.createPlaylistMostPlayed();
         } catch (ExecutionException | InterruptedException e) {
-            Log.e("PlaylistFragment", e.getMessage());
+            Log.e("PlaylistFragment", Objects.requireNonNull(e.getMessage()));
         }
         // Put the number of songs in textview
         this.tvPlaylistSongsWithTagCounter.setText(nbSongsInPlaylistWithTag + " chansons");
@@ -113,7 +106,7 @@ public class PlaylistFragment extends Fragment {
         try {
             t.join();
         } catch (InterruptedException e) {
-            Log.e("InterruptedException", e.getMessage());
+            Log.e("InterruptedException", Objects.requireNonNull(e.getMessage()));
         }
         return v;
     }
@@ -276,7 +269,7 @@ public class PlaylistFragment extends Fragment {
                         Log.d("PlaylistFragment songs into Playlist", this.soundroidDatabaseInstance.junctionDAO().getPlaylistsWithSongs().toString());
                         this.playlists.clear();
                         this.playlists.addAll(this.soundroidDatabaseInstance.playlistDao().getAllPlayLists().stream().filter(p->!p.isAutomatic()).collect(Collectors.toList()));
-                        getActivity().runOnUiThread(()-> this.playlistAdapter.notifyDataSetChanged());
+                        requireActivity().runOnUiThread(()-> this.playlistAdapter.notifyDataSetChanged());
                     }).start();
                 }
             }).create();
@@ -310,14 +303,14 @@ public class PlaylistFragment extends Fragment {
 
     /**
      * Remove the playlist clicked
-     * @param playlistClicked
+     * @param playlistClicked Playlist object
      */
     private void deletePlaylist(Playlist playlistClicked){
         new Thread(() -> {
             long playlistDeletedId = this.soundroidDatabaseInstance.playlistDao().deletePlaylist(playlistClicked);
             this.soundroidDatabaseInstance.junctionDAO().deleteSongsInPlaylistId(playlistDeletedId);
             this.playlists.remove(playlistClicked);
-            getActivity().runOnUiThread(()-> this.playlistAdapter.notifyDataSetChanged());
+            requireActivity().runOnUiThread(()-> this.playlistAdapter.notifyDataSetChanged());
         }).start();
     }
 

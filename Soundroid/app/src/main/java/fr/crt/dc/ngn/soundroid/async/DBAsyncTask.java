@@ -20,7 +20,7 @@ public class DBAsyncTask extends AsyncTask<Void, Void, PlaylistDao> {
     public interface AsyncResponse {
         PlaylistDao processFinish(PlaylistDao playlistDao);
     }
-    public AsyncResponse delegate = null;
+    public AsyncResponse delegate;
 
     private final PlaylistDao playlistDao;
     private final SongDao songDao;

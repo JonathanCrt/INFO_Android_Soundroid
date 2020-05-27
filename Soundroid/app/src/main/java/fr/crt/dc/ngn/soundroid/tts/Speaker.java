@@ -37,6 +37,10 @@ public class Speaker implements TextToSpeech.OnInitListener {
         }
     }
 
+    /**
+     * if speaker is ready, speak text added into TextToSpeech queue
+     * @param textToSpeak text to speak
+     */
     public void speakText(String textToSpeak) {
         if(this.isReady) {
             Log.d("Speaker tts", "speakText");
@@ -46,10 +50,17 @@ public class Speaker implements TextToSpeech.OnInitListener {
         }
     }
 
+    /**
+     * ask to play silence of speaker
+     * @param duration time of silence
+     */
     public void pause(int duration) {
         this.textToSpeech.playSilentUtterance(duration, TextToSpeech.QUEUE_ADD, null);
     }
 
+    /**
+     * release TextToSpeech object
+     */
     public void shutdownTTS() {
         this.textToSpeech.shutdown();
     }

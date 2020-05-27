@@ -8,37 +8,27 @@ import android.app.Service;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
-import android.graphics.Color;
 import android.media.AudioAttributes;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Binder;
 import android.os.Build;
-import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.util.Log;
 import android.widget.Button;
-import android.widget.RemoteViews;
 import android.widget.Toast;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
 import java.util.Objects;
 import java.util.Random;
-import java.util.Set;
 
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
-import fr.crt.dc.ngn.soundroid.MainActivity;
 import fr.crt.dc.ngn.soundroid.R;
-import fr.crt.dc.ngn.soundroid.controller.ToolbarController;
 import fr.crt.dc.ngn.soundroid.database.SoundroidDatabase;
-import fr.crt.dc.ngn.soundroid.database.entity.History;
 import fr.crt.dc.ngn.soundroid.database.entity.Song;
 import fr.crt.dc.ngn.soundroid.utility.Utility;
 
@@ -46,7 +36,6 @@ import fr.crt.dc.ngn.soundroid.utility.Utility;
  * Created by CRETE JONATHAN on 05/04/2020.
  */
 public class SongService extends Service implements MediaPlayer.OnPreparedListener, MediaPlayer.OnErrorListener, MediaPlayer.OnCompletionListener, AudioManager.OnAudioFocusChangeListener {
-
 
     private MediaPlayer player;
     private int songIndex;
@@ -118,8 +107,8 @@ public class SongService extends Service implements MediaPlayer.OnPreparedListen
     /**
      * allows free resources when the service instance is untied
      *
-     * @param intent
-     * @return
+     * @param intent called intent
+     * @return false to indicate unbinding of service
      */
     @Override
     public boolean onUnbind(Intent intent) {
@@ -158,7 +147,9 @@ public class SongService extends Service implements MediaPlayer.OnPreparedListen
         }
     }
 
-
+    /**
+     * static class to do actions of notification when we receive a pendingIntent
+     */
     public static class NotificationReceiver extends BroadcastReceiver {
 
         @Override
@@ -228,7 +219,7 @@ public class SongService extends Service implements MediaPlayer.OnPreparedListen
                 .setColor(getResources().getColor(R.color.colorPrimary))
                 .setColorized(true)
 
-                // Set notification property
+                // Set notification properties
                 .setSmallIcon(R.drawable.soundroid_logo)
                 .setLargeIcon(Utility.convertByteToBitmap(playlistSongs.get(getSongService().getSongIndex()).getArtwork()))
                 .setOnlyAlertOnce(true)
@@ -292,10 +283,14 @@ public class SongService extends Service implements MediaPlayer.OnPreparedListen
         }
     }
 
-
-
-
-
+    /**
+     * Manage all potentials erros of mediaplayer
+     * @param mp mediaplayer instance
+     * @param what the type of error that has occurred
+     * @param extra an extra code, specific to the error
+     * @return True if the method handled the error, false if it didn't. Returning false,
+     * or not having an OnErrorListener at all, will cause the OnCompletionListener to be called.
+     */
     @Override
     public boolean onError(MediaPlayer mp, int what, int extra) {
         Toast.makeText(getApplicationContext(), "Une erreur est survenue lors de la lecture", Toast.LENGTH_SHORT).show();
@@ -379,12 +374,13 @@ public class SongService extends Service implements MediaPlayer.OnPreparedListen
         }
     }
 
+
     /**
-     * permet de gerer le mode aleatoire des music a lancer
-     * Permet de gérer le contrôle suivant
-     * On incrémente  l'index de la chanson,
-     * vérifier que nous ne sommes pas allés en dehors de la plage de la liste,
-     * et on appelle la méthode playSong()
+     * allows to manage the aleatory mode of music to launch
+     * Allows you to manage the following control
+     * The index of the song is incremented,
+     * check that we did not go outside the range in the list,
+     * and we call the playOrPausedSong() method
      */
     public void playNextSong() {
 
@@ -403,10 +399,10 @@ public class SongService extends Service implements MediaPlayer.OnPreparedListen
     }
 
     /**
-     * Permet de gérer le contrôle précédent
-     * On décrémente  l'index de la chanson,
-     * vérifier que nous ne sommes pas allés en dehors de la plage de la liste,
-     * et on appelle la méthode playSong()
+     * Manage previous control
+     * The index of the song is decremented,
+     * check that we did not go outside the range in the list,
+     * and we call the playOrPausedSong() method
      */
     public void playPreviousSong() {
         this.songIndex--;
@@ -416,31 +412,8 @@ public class SongService extends Service implements MediaPlayer.OnPreparedListen
         this.playOrPauseSong();
     }
 
-
-    //public void shuffleSongList(){
-    //ArrayList<Song> playlistSongToBeShuffled = new ArrayList<>();
-
-    //playlistSongToBeShuffled.addAll(this.playlistSongs); //copy playListSong in it, try to UNSHUFFLE
-    //if(this.isShuffled == false){
-    //Collections.shuffle(playlistSongToBeShuffled); //shuffle the copy
-    //setPlaylistSongs(playlistSongToBeShuffled); //set the copy
-    //  this.isShuffled = true;
-
-    //}else{
-    //hos to reset the playlistSong
-    //  setPlaylistSongs(this.playlistSongs);   //set the initial playListSong to unshuffle
-    //    this.isShuffled = false;                //is not shuffled anymore
-    //  }
-
-    //}
-
-
     public boolean toShuffle() {
-        if (this.isShuffled) {
-            this.isShuffled = false;
-        } else {
-            this.isShuffled = true;
-        }
+        this.isShuffled = !this.isShuffled;
         Log.d("SHUFFLE", "to shuffle " + this.isShuffled);
         return this.isShuffled;
     }
@@ -457,9 +430,9 @@ public class SongService extends Service implements MediaPlayer.OnPreparedListen
     }
 
     /**
-     * Set la chanson courante
+     * update current song
      *
-     * @param songIndex index de la chanson
+     * @param songIndex index of current song
      */
     public void setCurrentSongIndex(int songIndex) {
         this.songIndex = songIndex;
@@ -469,18 +442,8 @@ public class SongService extends Service implements MediaPlayer.OnPreparedListen
         this.songIndex = this.playlistSongs.indexOf(song);
     }
 
-
-
     public MediaPlayer getPlayer() {
         return player;
-    }
-
-    public void setPlayer(MediaPlayer player) {
-        this.player = player;
-    }
-
-    public IBinder getSongBinder() {
-        return songBinder;
     }
 
     public ArrayList<Song> getPlaylistSongs() {

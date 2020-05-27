@@ -21,6 +21,7 @@ import android.widget.Toolbar;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 import fr.crt.dc.ngn.soundroid.R;
 import fr.crt.dc.ngn.soundroid.adapter.HistoryAdapter;
@@ -75,7 +76,6 @@ public class PlaylistFragmentDetail extends Fragment {
 
             // If the playlist to display is the most played songs, we need another adapter to display number of times the songs has been played
             if(namePlaylist.equals(getString(R.string.most_played))){
-                Log.i("LOG", "DISPLAY PLAYLIST LES PLUS ");
                 this.adapter = new HistoryAdapter(getContext(), songs);
                 this.lvPlaylistDetail = v.findViewById(R.id.list_history);
                 this.floatingActionButton = v.findViewById(R.id.fabHistoryPlayback);
@@ -91,7 +91,7 @@ public class PlaylistFragmentDetail extends Fragment {
         try {
             t.join();
         } catch (InterruptedException e) {
-            Log.e("PlaylistFragmentDetail", e.getMessage());
+            Log.e("PlaylistFragmentDetail", Objects.requireNonNull(e.getMessage()));
         }
 
         this.toolbarController = new ToolbarController(getActivity(), requireActivity().findViewById(R.id.crt_layout));
@@ -124,15 +124,13 @@ public class PlaylistFragmentDetail extends Fragment {
     }
 
     private void onClickOnFloatingButton() {
-        this.floatingActionButton.setOnClickListener(v -> {
-            this.setSongServiceAndToolbar(0);
-        });
+        this.floatingActionButton.setOnClickListener(v -> this.setSongServiceAndToolbar(0));
     }
 
     private void installOnItemClickListener() {
         this.lvPlaylistDetail.setOnItemClickListener((parent, view, position, id) -> {
             this.setSongServiceAndToolbar(position);
-            getActivity().runOnUiThread(()-> this.adapter.notifyDataSetChanged());
+            requireActivity().runOnUiThread(()-> this.adapter.notifyDataSetChanged());
         });
     }
 

@@ -3,8 +3,6 @@ package fr.crt.dc.ngn.soundroid.utility;
 import java.util.HashMap;
 import java.util.Map;
 
-import fr.crt.dc.ngn.soundroid.model.Song;
-
 /**
  * singleton class
  */

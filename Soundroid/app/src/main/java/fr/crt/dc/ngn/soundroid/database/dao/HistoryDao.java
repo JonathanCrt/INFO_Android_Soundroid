@@ -7,16 +7,11 @@ import androidx.room.Delete;
 import androidx.room.Insert;
 import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
-import androidx.room.Transaction;
-import androidx.room.Update;
 
-import java.util.Date;
 import java.util.List;
 
 import fr.crt.dc.ngn.soundroid.database.entity.History;
 import fr.crt.dc.ngn.soundroid.database.entity.Song;
-import fr.crt.dc.ngn.soundroid.database.relation.PlaylistWithSongs;
-import fr.crt.dc.ngn.soundroid.database.relation.SongWithPlaylists;
 
 /**
  * Created by DA COSTA Mélissa on 24/05/2020.

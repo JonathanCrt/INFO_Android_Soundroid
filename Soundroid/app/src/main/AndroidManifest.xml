@@ -24,10 +24,10 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".SearchActivity"
+            android:name=".activity.SearchActivity"
             android:configChanges="orientation|screenSize" />
         <activity
-            android:name=".PlayerActivity"
+            android:name=".activity.PlayerActivity"
             android:configChanges="orientation|screenSize" />
         <activity
             android:name=".animation.SplashScreen"
@@ -41,7 +41,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".MainActivity"
+            android:name=".activity.MainActivity"
             android:configChanges="orientation|screenSize" />
         <receiver
             android:name=".service.SongService$NotificationReceiver"

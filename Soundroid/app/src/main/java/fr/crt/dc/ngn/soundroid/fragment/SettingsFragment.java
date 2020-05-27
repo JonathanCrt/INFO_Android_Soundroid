@@ -6,12 +6,10 @@ import android.os.Bundle;
 import androidx.fragment.app.Fragment;
 
 import android.preference.PreferenceManager;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Switch;
-import android.widget.Toast;
 
 import fr.crt.dc.ngn.soundroid.R;
 
@@ -49,7 +47,6 @@ public class SettingsFragment extends Fragment {
      * set switch checked if settings is activate or not
      */
     private void setStateOfSwitchs() {
-        //SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this.getContext());
         boolean autoPauseBatterySetting = sharedPreferences.getBoolean("AutoPauseBatterySetting", false);
         if(autoPauseBatterySetting){
             this.switchAutoPauseSetting.setChecked(true);
@@ -69,7 +66,6 @@ public class SettingsFragment extends Fragment {
      * to manage onClick of switch button (Auto pause setting)
      */
     private void handleAutoPauseSettingSwitch() {
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this.getContext());
         SharedPreferences.Editor editorSharedPrefs = this.sharedPreferences.edit();
         if (this.switchAutoPauseSetting != null) {
             this.switchAutoPauseSetting.setOnCheckedChangeListener((buttonView, isChecked) -> {
@@ -90,7 +86,6 @@ public class SettingsFragment extends Fragment {
      * to manage onClick of switch button (Speaker setting)
      */
     private void handleSpeakerSettingSwitch() {
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this.getContext());
         SharedPreferences.Editor editorSharedPrefs = this.sharedPreferences.edit();
         if (this.switchSpeakerSetting != null) {
             this.switchSpeakerSetting.setOnCheckedChangeListener((buttonView, isChecked) -> {

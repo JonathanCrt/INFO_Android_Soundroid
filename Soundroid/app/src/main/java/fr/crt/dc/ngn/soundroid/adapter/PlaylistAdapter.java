@@ -26,7 +26,6 @@ public class PlaylistAdapter extends ArrayAdapter<Playlist> {
 
     private LayoutInflater playlistInflater;
     private ArrayList<Playlist> playlists;
-    ArrayList<Playlist> filteredPlayList;
     private SoundroidDatabase soundroidDatabaseInstance = SoundroidDatabase.getInstance(this.getContext());
 
     public PlaylistAdapter(Context context, List<Playlist> playlists) {
@@ -40,7 +39,13 @@ public class PlaylistAdapter extends ArrayAdapter<Playlist> {
         TextView tvPlaylistCounterSongs;
     }
 
-
+    /**
+     * get the view that display our listView
+     * @param position position of item
+     * @param convertView reused View
+     * @param parent viewGroup parent
+     * @return new View
+     */
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         // holder of the views to be reused.
@@ -80,17 +85,30 @@ public class PlaylistAdapter extends ArrayAdapter<Playlist> {
         return convertView;
     }
 
+    /**
+     * get number of playlists into list
+     * @return number of playlists
+     */
     @Override
     public int getCount() {
         return playlists.size();
     }
 
+    /**
+     * add a playlist to the list
+     * @param object a playlist object
+     */
     @Override
     public void add(@Nullable Playlist object) {
         super.add(object);
         playlists.add(object);
     }
 
+    /**
+     * get an specific item as playlist at position into list
+     * @param position given position
+     * @return Playlist a specific playlist
+     */
     @Nullable
     @Override
     public Playlist getItem(int position) {

@@ -25,12 +25,11 @@ import fr.crt.dc.ngn.soundroid.utility.Utility;
 /**
  * Created by CRETE JONATHAN on 03/04/2020.
  */
-public class SongAdapter extends ArrayAdapter<Song>  implements Filterable {
+public class SongAdapter extends ArrayAdapter<Song> implements Filterable {
 
     private LayoutInflater songInflater;
-    private Context context;
     ArrayList<Song> filteredPlayList;
-    CustomFilter filter;
+    private CustomFilter filter;
     private ArrayList<Song> listSongs;
 
     public SongAdapter(Context context, List<Song> listSongs) {
@@ -38,7 +37,6 @@ public class SongAdapter extends ArrayAdapter<Song>  implements Filterable {
         this.listSongs = (ArrayList<Song>) listSongs;
         Log.d("SongAdapter", listSongs.toString());
         this.songInflater = LayoutInflater.from(context);
-        this.context = context;
         this.filteredPlayList = (ArrayList<Song>) listSongs;
     }
 
@@ -76,7 +74,6 @@ public class SongAdapter extends ArrayAdapter<Song>  implements Filterable {
 
         // Retrieve song using position index
         Song currentSong = filteredPlayList.get(position);
-        //Song currentSong = playlist.getSongList().get(position);
 
         // now we can set populate the data via the ViewHolder into views
         mViewHolder.tv_title.setText(currentSong.getTitle());
@@ -94,25 +91,41 @@ public class SongAdapter extends ArrayAdapter<Song>  implements Filterable {
         return listSongs.size();
     }
 
+    /**
+     * create instance (or not) of CustomFilter with new filtered list in arguments
+     *
+     * @return instance of CustomFilter
+     */
     @NonNull
     @Override
     public Filter getFilter() {
-        if(filter == null) {
-            filter=new CustomFilter(filteredPlayList,this);
+        if (filter == null) {
+            filter = new CustomFilter(filteredPlayList, this);
         }
         return filter;
     }
 
+    /**
+     * add a song to the list
+     *
+     * @param object a song object
+     */
     @Override
     public void add(@Nullable Song object) {
         super.add(object);
         filteredPlayList.add(object);
     }
 
+    /**
+     * get an specific item as song at position into list
+     *
+     * @param position given position
+     * @return Song a specific song
+     */
     @Nullable
     @Override
     public Song getItem(int position) {
-        if(filteredPlayList.isEmpty() || position > filteredPlayList.size()){
+        if (filteredPlayList.isEmpty() || position > filteredPlayList.size()) {
             Log.w("SongAdapter", "List contains 0 elements or position > size list");
             return null;
         }

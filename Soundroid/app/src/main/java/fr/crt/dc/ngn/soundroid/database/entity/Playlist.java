@@ -1,5 +1,6 @@
 package fr.crt.dc.ngn.soundroid.database.entity;
 
+import androidx.annotation.NonNull;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.Ignore;
@@ -54,6 +55,7 @@ public class Playlist {
         isAutomatic = automatic;
     }
 
+    @NonNull
     @Override
     public String toString() {
         return "Playlist{" +

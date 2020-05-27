@@ -87,7 +87,7 @@ public class AllTracksFragment extends Fragment {
         this.connectionEstablished = false;
         this.isOnBackground = false;
         this.context = this;
-        this.soundroidDatabaseInstance = SoundroidDatabase.getInstance(this.getContext());
+        this.soundroidDatabaseInstance = SoundroidDatabase.getInstance(this.requireContext());
     }
 
     @SuppressLint("WrongConstant")
@@ -159,6 +159,8 @@ public class AllTracksFragment extends Fragment {
             this.toolbarController.setWidgetsValues();
         });
 
+        // listeners for quick access
+        //---------------------------
         this.ivButtonAccessHistory.setOnClickListener(v -> {
             FragmentTransaction fragmentTransaction = getParentFragmentManager().beginTransaction();
             fragmentTransaction.replace(R.id.nav_host_fragment, new HistoryFragment());
@@ -192,8 +194,9 @@ public class AllTracksFragment extends Fragment {
         this.lv.setOnItemLongClickListener((arg0, arg1, pos, id) -> {
             new Thread(() -> {
                 Song songPressed = songAdapter.getItem(pos);
+                assert songPressed != null;
                 Log.d("long clicked", "song " + songPressed.toString());
-                androidx.appcompat.app.AlertDialog.Builder alertDialogBuilder = new androidx.appcompat.app.AlertDialog.Builder(this.getContext());
+                androidx.appcompat.app.AlertDialog.Builder alertDialogBuilder = new androidx.appcompat.app.AlertDialog.Builder(this.requireContext());
                 alertDialogBuilder.setTitle("Ajouter à une playlist");
 
                 // Array adapter to show a list of playlist created by the user
@@ -201,10 +204,10 @@ public class AllTracksFragment extends Fragment {
                 List<Playlist> playlistList = this.soundroidDatabaseInstance.playlistDao().getAllPlayLists().stream().filter(p -> !p.isAutomatic()).collect(Collectors.toList());
                 // transform the playlist list into an array of playlist name
                 String[] playlistsNames = playlistList.stream().map(Playlist::getName).toArray(String[]::new);
-                ArrayAdapter<String> adapter = new ArrayAdapter<>(this.getContext(),
+                ArrayAdapter<String> adapter = new ArrayAdapter<>(this.requireContext(),
                         android.R.layout.simple_dropdown_item_1line, playlistsNames);
 
-                getActivity().runOnUiThread(() -> {
+                requireActivity().runOnUiThread(() -> {
                     final AutoCompleteTextView autoCompleteTextView = new AutoCompleteTextView(this.getContext());
                     autoCompleteTextView.setAdapter(adapter);
                     alertDialogBuilder.setView(autoCompleteTextView);
@@ -276,7 +279,6 @@ public class AllTracksFragment extends Fragment {
     @Override
     public void onDestroy() {
         this.toolbarController = null;
-        //this.doUnbindService();
         super.onDestroy();
     }
 
@@ -301,21 +303,6 @@ public class AllTracksFragment extends Fragment {
         }
         this.songService.stopService(intent);
         this.songService = null;
-    }
-
-    public boolean isPlaying() {
-        if (songService != null && connectionEstablished) {
-            return songService.playerIsPlaying();
-        }
-        return false;
-    }
-
-    private void playNext() {
-        songService.playNextSong();
-    }
-
-    private void playPrevious() {
-        songService.playPreviousSong();
     }
 
     /**
@@ -357,6 +344,5 @@ public class AllTracksFragment extends Fragment {
             connectionEstablished = false;
         }
     };
-
 
 }

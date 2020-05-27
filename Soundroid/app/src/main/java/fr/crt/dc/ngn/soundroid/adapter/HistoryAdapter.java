@@ -42,6 +42,13 @@ public class HistoryAdapter extends ArrayAdapter<Song> {
         ImageView ivArtwork;
     }
 
+    /**
+     * get the view that display our listView
+     * @param position position of item
+     * @param convertView reused View
+     * @param parent viewGroup parent
+     * @return new View
+     */
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
 
@@ -69,7 +76,6 @@ public class HistoryAdapter extends ArrayAdapter<Song> {
 
         // Retrieve song using position index
         Song currentSong = songs.get(position);
-        //Song currentSong = playlist.getSongList().get(position);
 
         // now we can set populate the data via the ViewHolder into views
         mViewHolder.tvTitle.setText(currentSong.getTitle());
@@ -83,14 +89,12 @@ public class HistoryAdapter extends ArrayAdapter<Song> {
 
     /**
      * Get the number of times a songs has been played
-     * @param idSong
-     * @return
+     * @param idSong ID of song
+     * @return number of times a songs has been played
      */
     private int getCountSongPlayed(long idSong){
         AtomicInteger countSongPlayed = new AtomicInteger();
-        Thread t = new Thread(()->{
-            countSongPlayed.set(this.soundroidDatabaseInstance.historyDao().getTimesPlayedBySongId(idSong));
-        });
+        Thread t = new Thread(()-> countSongPlayed.set(this.soundroidDatabaseInstance.historyDao().getTimesPlayedBySongId(idSong)));
         t.start();
         try {
             t.join();
@@ -100,18 +104,30 @@ public class HistoryAdapter extends ArrayAdapter<Song> {
         return countSongPlayed.get();
     }
 
+    /**
+     * get number of songs into list
+     * @return number of songs
+     */
     @Override
     public int getCount() {
         return songs.size();
     }
 
-
+    /**
+     * add a song to the list
+     * @param object a song object
+     */
     @Override
     public void add(@Nullable Song object) {
         super.add(object);
         songs.add(object);
     }
 
+    /**
+     * get an specific item as song at position into list
+     * @param position given position
+     * @return Song a specific song
+     */
     @Nullable
     @Override
     public Song getItem(int position) {

@@ -13,7 +13,8 @@ import fr.crt.dc.ngn.soundroid.database.entity.Song;
  * Created by CRETE JONATHAN on 13/05/2020.
  */
 public class SongWithPlaylists {
-    @Embedded public Song song;
+    @Embedded
+    public Song song;
     @Relation(
             parentColumn = "songId",
             entityColumn = "playlistId",

@@ -1,13 +1,12 @@
 package fr.crt.dc.ngn.soundroid.utility;
 
-import android.os.AsyncTask;
 import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.concurrent.ExecutionException;
 
-import fr.crt.dc.ngn.soundroid.MainActivity;
+import fr.crt.dc.ngn.soundroid.activity.MainActivity;
 import fr.crt.dc.ngn.soundroid.adapter.SongAdapter;
 import fr.crt.dc.ngn.soundroid.async.CursorAsyncTask;
 import fr.crt.dc.ngn.soundroid.database.entity.Song;

@@ -75,33 +75,4 @@ public abstract class SoundroidDatabase extends RoomDatabase {
         return DB_INSTANCE;
     }
 
-    /*
-
-    public static SoundroidDatabase getInstance(Context context) {
-        if(DB_INSTANCE == null) {
-            synchronized (SoundroidDatabase.class) {
-                if(DB_INSTANCE == null) {
-                    DB_INSTANCE = Room.databaseBuilder(context.getApplicationContext(),
-                            SoundroidDatabase.class, DB_NAME).build();
-                }
-            }
-        }
-        return DB_INSTANCE;
-    }
-
-    public static Callback prePopulateDB() {
-        return new Callback() {
-            @Override
-            public void onCreate(@NonNull SupportSQLiteDatabase db) {
-                super.onCreate(db);
-                Executors.newSingleThreadExecutor().execute(() -> {
-                    getInstance()
-                });
-            }
-        };
-    }
-
-     */
-
-
 }

@@ -1,29 +1,19 @@
 package fr.crt.dc.ngn.soundroid.controller;
-
-import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
-import android.graphics.Bitmap;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
-import android.util.Log;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import androidx.appcompat.widget.Toolbar;
-
-import java.util.ArrayList;
 import java.util.Objects;
 
 import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.core.content.ContextCompat;
 
 import fr.crt.dc.ngn.soundroid.R;
-import fr.crt.dc.ngn.soundroid.model.Song;
 import fr.crt.dc.ngn.soundroid.service.SongService;
 import fr.crt.dc.ngn.soundroid.utility.Utility;
 
@@ -32,37 +22,20 @@ import fr.crt.dc.ngn.soundroid.utility.Utility;
  */
 public class ToolbarController extends AbstractController {
 
-    private Toolbar toolbar;
     private ImageView artwork;
     private TextView tvTitleSong;
     private TextView tvArtistSong;
-    private TextView tvDuration;
     private ImageView ivPlayControl;
     private ImageView ivNextControl;
     private ImageView ivPrevControl;
     private boolean connectionEstablished;
     private SongService songService;
-    private Intent intent;
-    public static final int RESULT_OK = 1;
-    public static final int TOOLBAR_CONTROLLER_REQUEST_CODE = 1;
     private Context context;
     private ConstraintLayout constraintLayout;
 
-    private static ToolbarController toolbarControllerInstance;
-
-    public ToolbarController getInstanceToolbar() {
-        return this;
-    }
-
-
-    public ToolbarController() {
-        toolbarControllerInstance = this;
-    }
-
-    public static ToolbarController getToolbarControllerInstance() {
-        return toolbarControllerInstance;
-    }
-
+    /**
+     * intialize all widgets view of constraint layout
+     */
     private void initialization() {
         this.tvTitleSong = (TextView) constraintLayout.getViewById(R.id.tv_toolbar_title);
         this.tvArtistSong = (TextView) constraintLayout.getViewById(R.id.tv_toolbar_artist);
@@ -72,17 +45,22 @@ public class ToolbarController extends AbstractController {
         this.artwork = (ImageView) constraintLayout.getViewById(R.id.iv_toolbar_artwork);
     }
 
+    /**
+     * Constructor of ToolbarController
+     * @param context current context
+     * @param mainActivity Layout of MainActivity
+     */
     public ToolbarController(Context context, ConstraintLayout mainActivity) {
         this.context = context;
         this.constraintLayout = mainActivity;
         this.initialization();
-        intent = new Intent(this.context, SongService.class);
+        Intent intent = new Intent(this.context, SongService.class);
 
         ServiceConnection serviceConnection = new ServiceConnection() {
             @Override
             public void onServiceConnected(ComponentName name, IBinder service) {
                 SongService.SongBinder songBinder = (SongService.SongBinder) service;
-                // Permet de récupérer le service
+                // to retrieve service
                 songService = songBinder.getService();
                 connectionEstablished = true;
             }
@@ -94,31 +72,31 @@ public class ToolbarController extends AbstractController {
         };
         this.context.bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
         Objects.requireNonNull(this.context).startService(intent); //demarrage du service;
-
         installListener();
     }
 
+    /**
+     * install listeners on push buttons
+     */
     private void installListener() {
         this.ivPlayControl.setOnClickListener(v -> pushPlayControl());
         this.ivPrevControl.setOnClickListener(v -> pushPreviousControl());
         this.ivNextControl.setOnClickListener(v -> pushNextControl());
     }
 
-    public void setTextViewSelected() {
-        this.tvTitleSong.setSelected(true);
-        this.tvArtistSong.setSelected(true);
-    }
 
     public void setImagePauseFromFragment() {
         setImagePause(ivPlayControl, context);
     }
 
+    /**
+     * set all widgets values (TextView, ImageView...)
+     */
     public void setWidgetsValues() {
         setTextSongInformation(this.songService.getPlaylistSongs().get(this.songService.getSongIndex()).getTitle(), this.tvTitleSong);
         setTextSongInformation(this.songService.getPlaylistSongs().get(this.songService.getSongIndex()).getArtist(), this.tvArtistSong);
         setArtworkSong(Utility.convertByteToBitmap(this.songService.getPlaylistSongs().get(this.songService.getSongIndex()).getArtwork()), this.artwork);
-        Log.i("PlayerActivity", "sharedPrefs edited ! ");
-        Log.i("PlayerActivity", "sharedPrefs values " + this.tvTitleSong.getText().toString() + " " + this.tvArtistSong.getText().toString());
+        // use SharedPreferences to keep current song
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString("current_song_title", this.tvTitleSong.getText().toString());
@@ -140,18 +118,27 @@ public class ToolbarController extends AbstractController {
         }
     }
 
+    /**
+     * Manage next song control
+     */
     private void pushNextControl() {
         this.songService.playNextSong();
         this.setImagePause(ivPlayControl, context);
         this.setWidgetsValues();
     }
 
+    /**
+     * Manage previous song control
+     */
     private void pushPreviousControl() {
         this.songService.playPreviousSong();
         this.setImagePause(ivPlayControl, context);
         this.setWidgetsValues();
     }
 
+    /**
+     * set play Image  if playback is paused
+     */
     public void setPlayImageOnPushed() {
         this.ivPlayControl.setImageDrawable(context.getDrawable(R.drawable.ic_pause_white));
     }

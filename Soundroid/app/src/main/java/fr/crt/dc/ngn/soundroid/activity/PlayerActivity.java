@@ -1,9 +1,10 @@
-package fr.crt.dc.ngn.soundroid;
+package fr.crt.dc.ngn.soundroid.activity;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.core.view.GestureDetectorCompat;
 
+import fr.crt.dc.ngn.soundroid.R;
 import fr.crt.dc.ngn.soundroid.database.SoundroidDatabase;
 import fr.crt.dc.ngn.soundroid.database.dao.SongDao;
 import fr.crt.dc.ngn.soundroid.database.entity.Song;

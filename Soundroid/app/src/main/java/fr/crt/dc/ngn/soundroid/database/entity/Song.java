@@ -1,26 +1,19 @@
 package fr.crt.dc.ngn.soundroid.database.entity;
 
+
 import java.io.Serializable;
-import java.util.Arrays;
 import java.util.Locale;
 import java.util.Objects;
 
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
-import androidx.room.ForeignKey;
 import androidx.room.Index;
 import androidx.room.PrimaryKey;
 
-/**s
+/**
  * Created by CRETE JONATHAN on 01/05/2020.
  */
 
-/*
-@Entity(foreignKeys = @ForeignKey(entity = Playlist.class, parentColumns = "id", childColumns = "playlist_id"), indices = {
-        @Index("title"), @Index("playlist_id")
-})
-
- */
 @Entity(indices = @Index("title"))
 public class Song implements Serializable {
 

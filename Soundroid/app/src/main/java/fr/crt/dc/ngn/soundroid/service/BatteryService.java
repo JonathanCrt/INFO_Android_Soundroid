@@ -46,10 +46,8 @@ public class BatteryService extends Service {
             SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
             boolean autoPauseBatterySetting  = sharedPreferences.getBoolean("AutoPauseBatterySetting", false);
             if(autoPauseBatterySetting) {
-                Log.i("BatteryService", "Settings Activé, pause en cours..." + autoPauseBatterySetting);
                 // if battery level is lower than 10%
                 if (batteryLevel < 10) {
-                    Log.i("Niveau de batterie", "Niveau de batterie convenable !");
                     if (SongService.getSongService().playerIsPlaying()) {
                         Log.i("Pause automatique", "Arrêt de la lecture par contrainte de batterie");
                         Toast.makeText(getBaseContext(), "Arrêt de la lecture par contrainte de batterie !", Toast.LENGTH_LONG).show();
@@ -61,7 +59,7 @@ public class BatteryService extends Service {
 
             // schedule next battery check
             handler.postDelayed(checkBatteryStatusRunnable, CHECK_BATTERY_INTERVAL);
-            Log.i("Niveau de batterie", "Batterie vérification il reste " + batteryLevel + " %");
+            Log.d("Niveau de batterie", "Batterie vérification il reste " + batteryLevel + " %");
         }
     };
 

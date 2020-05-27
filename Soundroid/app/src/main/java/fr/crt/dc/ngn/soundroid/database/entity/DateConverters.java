@@ -2,7 +2,6 @@ package fr.crt.dc.ngn.soundroid.database.entity;
 
 import androidx.room.TypeConverter;
 
-import java.util.Calendar;
 import java.util.Date;
 
 public class DateConverters {

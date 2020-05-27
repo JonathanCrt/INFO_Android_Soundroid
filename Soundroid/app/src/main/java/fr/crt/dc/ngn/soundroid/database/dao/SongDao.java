@@ -94,10 +94,10 @@ public interface SongDao {
 
     @Transaction
     @Query("SELECT * FROM Playlist")
-    public List<PlaylistWithSongs> getPlaylistsWithSongs();
+    List<PlaylistWithSongs> getPlaylistsWithSongs();
 
     @Transaction
     @Query("SELECT * FROM Song")
-    public List<SongWithPlaylists> getSongsWithPlaylists();
+    List<SongWithPlaylists> getSongsWithPlaylists();
 
 }

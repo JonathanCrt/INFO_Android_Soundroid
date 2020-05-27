@@ -1,6 +1,5 @@
 package fr.crt.dc.ngn.soundroid.utility;
 
-import android.annotation.SuppressLint;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 
@@ -28,8 +27,8 @@ public class Utility {
 
     /**
      * Convert a byte array to a bitmap
-     * @param byteArray
-     * @return
+     * @param byteArray given byte array
+     * @return new bitmap object
      */
     public static Bitmap convertByteToBitmap(byte[] byteArray){
         return BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);

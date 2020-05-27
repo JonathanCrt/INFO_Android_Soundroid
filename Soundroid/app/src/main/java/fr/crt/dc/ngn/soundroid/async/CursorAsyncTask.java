@@ -17,12 +17,14 @@ import android.widget.TextView;
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.nio.ByteBuffer;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Objects;
+
+import androidx.annotation.RequiresApi;
 import fr.crt.dc.ngn.soundroid.R;
 import fr.crt.dc.ngn.soundroid.adapter.SongAdapter;
 import fr.crt.dc.ngn.soundroid.database.SoundroidDatabase;
@@ -50,8 +52,8 @@ public class CursorAsyncTask extends AsyncTask<Void, Song, ArrayList<Song>> {
     private SoundroidDatabase soundroidDatabase;
 
     /**
-     * Constructeur de l'asyncTask.
-     * @param context
+     * Constructor of asyncTask.
+     * @param context current context
      */
     public CursorAsyncTask(Context context,  ArrayList<Song> rootSongs, AsyncResponse delegate) {
         this.rootSongs = rootSongs;
@@ -67,6 +69,7 @@ public class CursorAsyncTask extends AsyncTask<Void, Song, ArrayList<Song>> {
 
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.Q)
     @Override
     protected ArrayList<Song> doInBackground(Void... voids) {
         Uri uri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
@@ -90,12 +93,6 @@ public class CursorAsyncTask extends AsyncTask<Void, Song, ArrayList<Song>> {
                 int durationColumn = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DURATION);
                 int linkColumn = cursor.getColumnIndex
                         (MediaStore.Audio.Media.DATA);
-
-                /*
-                String style = cursor.getString(cursor
-                        .getColumnIndex(MediaStore.Audio.Genres.NAME));
-                 */
-                //Log.i("LOG", "style = " + style);
 
                 do {
 
@@ -131,7 +128,7 @@ public class CursorAsyncTask extends AsyncTask<Void, Song, ArrayList<Song>> {
                     String songLink = Uri.parse(cursor.getString(linkColumn)).toString();
 
                     Bitmap bitmap = null;
-                    Uri albumArtUri = null;
+                    Uri albumArtUri;
 
                     try {
                         // artwork bitmap already get
@@ -158,6 +155,7 @@ public class CursorAsyncTask extends AsyncTask<Void, Song, ArrayList<Song>> {
                     // Convert bitmap to Byte []
                     ByteArrayOutputStream bitmapStream = new ByteArrayOutputStream();
                     // quality 100 means no compress for max visual quality
+                    assert bitmap != null;
                     bitmap.compress(Bitmap.CompressFormat.PNG, 100, bitmapStream);
                     Song song = new Song(idSong, titleSong, artistSong, Long.parseLong(String.valueOf(durationSong)), bitmapStream.toByteArray(), null, albumSong, songLink, footprint);
                     // insert song in DB
@@ -169,7 +167,7 @@ public class CursorAsyncTask extends AsyncTask<Void, Song, ArrayList<Song>> {
                 while (cursor.moveToNext());
             }
         } catch (NoSuchAlgorithmException e) {
-            Log.e("CursorAsyncTask", e.getMessage());
+            Log.e("CursorAsyncTask", Objects.requireNonNull(e.getMessage()));
         }
         return rootSongs;
     }
@@ -190,9 +188,8 @@ public class CursorAsyncTask extends AsyncTask<Void, Song, ArrayList<Song>> {
     /**
      * Get the bitmap from an uri
      *
-     * @param albumArtUri
+     * @param albumArtUri uri of albumart
      * @return create a bitmap with an adapted size
-     * @throws IOException
      */
     private Bitmap getBitmapFromURI(Uri albumArtUri) throws IOException {
         Log.d("CursorAsyncTask", "getBitmap");

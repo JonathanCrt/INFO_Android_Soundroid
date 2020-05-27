@@ -18,6 +18,7 @@ import io.reactivex.Maybe;
 
 /**
  * Created by CRETE JONATHAN on 13/05/2020.
+ * represents a junction table
  */
 @Dao
 public interface JunctionPlaylistSongDao {

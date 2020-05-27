@@ -1,16 +1,12 @@
 package fr.crt.dc.ngn.soundroid.adapter;
 
-import android.util.Log;
 import android.widget.Filter;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
-import java.util.Comparator;
 
 import fr.crt.dc.ngn.soundroid.database.entity.Song;
 import fr.crt.dc.ngn.soundroid.service.SongService;
-import fr.crt.dc.ngn.soundroid.utility.RootList;
 
 /**
  * Created by CRETE JONATHAN on 30/04/2020.
@@ -55,10 +51,6 @@ public class CustomFilter extends Filter {
                 case "PLUS_LONGUES":
                     Collections.sort(filteredSongs, (a, b) -> String.valueOf(b.getDuration()).compareTo(String.valueOf(a.getDuration())));
                     break;
-
-                //if(filteredList.get(i).getTitle().toUpperCase().contains(constraint)) {
-                // filteredSongs.add(filteredList.get(i));
-                // }
             }
 
             results.count = filteredSongs.size();

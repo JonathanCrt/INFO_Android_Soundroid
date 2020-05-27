@@ -15,17 +15,4 @@ public interface Controller {
     void setImagePause(ImageView iv, Context context);
     void setTextSongInformation(String info, TextView tv);
     void setArtworkSong(Bitmap artwork, ImageView iv);
-
-
-    /*
-
-    void pushPlayControl(SongService service, Context context, ImageView iv);
-
-    void setWidgetsValues();
-    void pushNextControl();
-    void pushPreviousControl();
-
-     */
-
-
 }

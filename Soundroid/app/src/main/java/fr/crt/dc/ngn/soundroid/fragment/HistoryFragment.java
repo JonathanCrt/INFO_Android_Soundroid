@@ -21,6 +21,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
@@ -52,12 +53,12 @@ public class HistoryFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        this.soundroidDatabaseInstance = SoundroidDatabase.getInstance(this.getContext());
+        this.soundroidDatabaseInstance = SoundroidDatabase.getInstance(this.requireContext());
 
         try {
             this.createPlaylistHistory();
         } catch (ExecutionException | InterruptedException e) {
-            Log.e("PlaylistFragment", e.getMessage());
+            Log.e("PlaylistFragment", Objects.requireNonNull(e.getMessage()));
         }
     }
 
@@ -74,7 +75,7 @@ public class HistoryFragment extends Fragment {
             try {
                 this.historySongs = (ArrayList<Song>) this.createPlaylistHistory();
             } catch (ExecutionException | InterruptedException e) {
-                Log.e("HistoryFragment", e.getMessage());
+                Log.e("HistoryFragment", Objects.requireNonNull(e.getMessage()));
             }
             this.historyAdapter = new HistoryAdapter(getContext(), historySongs);
             this.lvHistory = v.findViewById(R.id.list_history);
@@ -84,7 +85,7 @@ public class HistoryFragment extends Fragment {
         try {
             t.join();
         } catch (InterruptedException e) {
-            Log.e("HistoryFragment", e.getMessage());
+            Log.e("HistoryFragment", Objects.requireNonNull(e.getMessage()));
         }
         this.floatingActionButton = v.findViewById(R.id.fabHistoryPlayback);
         this.toolbarController = new ToolbarController(getActivity(), requireActivity().findViewById(R.id.crt_layout));
@@ -152,7 +153,7 @@ public class HistoryFragment extends Fragment {
     private void installOnItemClickListener() {
         this.lvHistory.setOnItemClickListener((parent, view, position, id) -> {
             this.setSongServiceAndToolbar(position);
-            getActivity().runOnUiThread(()->this.historyAdapter.notifyDataSetChanged());
+            requireActivity().runOnUiThread(()->this.historyAdapter.notifyDataSetChanged());
         });
     }
 
@@ -187,7 +188,9 @@ public class HistoryFragment extends Fragment {
         }
     };
 
-
+    /**
+     * do binding of Songservice
+     */
     private void doBindService() {
         if (intent == null) {
             intent = new Intent(getContext(), SongService.class);
