@@ -61,4 +61,8 @@
     <string name="favorites">Favoris</string>
     <string name="tag">Avec tag</string>
     <string name ="nb_lectures">%1$s lectures</string>
+    <string name="mise_en_pause_automatique_du_lecteur">Mise en pause automatique du lecteur</string>
+    <string name="si_le_t_l_phone_est_notifi_de_l_arriv_e_d_un_sms_mettre_en_pause_la_lecture_pour_le_lire_vocalement">Si le téléphone est notifié de l\'arrivée d\'un SMS, mettre en pause la lecture pour le lire vocalement</string>
+    <string name="lecture_vocale_des_sms_entrants">Lecture vocale des SMS entrants</string>
+    <string name="si_la_batterie_du_t_l_phone_est_dessous_de_10_mettre_en_pause_la_lecture_pour_conomiser_la_batterie">Si la batterie du téléphone est dessous de 10%, mettre en pause la lecture pour économiser la batterie</string>
 </resources>

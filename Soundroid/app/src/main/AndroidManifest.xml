@@ -48,6 +48,7 @@
             android:enabled="true" />
 
         <service android:name=".service.SongService" />
+        <service android:name=".service.BatteryService" />
     </application>
 
 </manifest>

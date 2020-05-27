@@ -16,6 +16,12 @@
         <!--<item name="android:textColor">#FFFFFF</item>--> <!-- text color -->
     </style>
 
+    <style name="ThemeOverlay.MySwitch" parent="">
+        <item name="colorControlActivated">@color/colorPrimaryFlash</item>
+        <item name="colorSwitchThumbNormal">#f1f1f1</item>
+        <item name="android:colorForeground">#42221f1f</item>
+    </style>
+
     <style name="AppTheme.NoActionBar">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
