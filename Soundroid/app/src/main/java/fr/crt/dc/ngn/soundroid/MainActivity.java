@@ -59,6 +59,7 @@ import androidx.appcompat.widget.Toolbar;
 import fr.crt.dc.ngn.soundroid.adapter.SongAdapter;
 import fr.crt.dc.ngn.soundroid.controller.ToolbarController;
 import fr.crt.dc.ngn.soundroid.database.SoundroidDatabase;
+import fr.crt.dc.ngn.soundroid.service.BatteryService;
 import fr.crt.dc.ngn.soundroid.tts.Speaker;
 import fr.crt.dc.ngn.soundroid.utility.RootList;
 import fr.crt.dc.ngn.soundroid.database.entity.Song;
@@ -113,7 +114,6 @@ public class MainActivity extends AppCompatActivity {
     public static Context getAppContext() {
         return MainActivity.context;
     }
-
 
 
     @SuppressLint("WrongThread")
@@ -198,6 +198,7 @@ public class MainActivity extends AppCompatActivity {
         this.initializeSMSReceiver();
         this.registerSMSReceiver();
         this.audioManager = (AudioManager) getApplicationContext().getSystemService(Context.AUDIO_SERVICE);
+        startService(new Intent(this, BatteryService.class));
     }
 
     @Override
@@ -449,30 +450,33 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initializeSMSReceiver() {
-        //Log.d("Mainctivity tts", "initializeSMSReceiver");
         this.smsReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
-                //Log.d("Mainctivity tts", "onReceive");
-                Bundle bundle = intent.getExtras();
-                if (bundle != null) {
-                    Object[] pdus = (Object[]) bundle.get("pdus");
-                    assert pdus != null;
-                    for (Object o : pdus) {
-                        byte[] pdu = (byte[]) o;
-                        SmsMessage message = SmsMessage.createFromPdu(pdu);
-                        String text = message.getDisplayMessageBody();
-                        String sender = getContactName(message.getOriginatingAddress());
+                SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
+                boolean smsSpeakerSetting = sharedPreferences.getBoolean("SMSSpeakerSetting", false);
+                if (smsSpeakerSetting) {
+                    Bundle bundle = intent.getExtras();
+                    if (bundle != null) {
+                        Object[] pdus = (Object[]) bundle.get("pdus");
+                        assert pdus != null;
+                        for (Object o : pdus) {
+                            byte[] pdu = (byte[]) o;
+                            SmsMessage message = SmsMessage.createFromPdu(pdu);
+                            String text = message.getDisplayMessageBody();
+                            String sender = getContactName(message.getOriginatingAddress());
 
-                        SongService.getSongService().pausePlayback();
-                        speaker.pause(SHORT_DURATION);
-                        speaker.speakText("Vous avez reçu un message de " + sender + "!");
-                        speaker.pause(SHORT_DURATION);
-                        speaker.speakText(text);
-                        ivToolbarControlPlay.setImageDrawable(getDrawable(R.drawable.ic_play_white));
+                            SongService.getSongService().pausePlayback();
+                            speaker.pause(SHORT_DURATION);
+                            speaker.speakText("Vous avez reçu un message de " + sender + "!");
+                            speaker.pause(SHORT_DURATION);
+                            speaker.speakText(text);
+                            ivToolbarControlPlay.setImageDrawable(getDrawable(R.drawable.ic_play_white));
 
+                        }
                     }
                 }
+
 
             }
         };
