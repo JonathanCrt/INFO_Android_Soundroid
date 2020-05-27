@@ -272,7 +272,9 @@ public class MainActivity extends AppCompatActivity {
         this.songService = null;
     }
 
-
+    /**
+     *  launch the PlayerActivity with the current song's metadata
+     */
     private void launchPlayerActivity() {
         new Thread(() -> {
             Intent currentSongIntent = new Intent(this, PlayerActivity.class);
@@ -342,10 +344,12 @@ public class MainActivity extends AppCompatActivity {
         }
     };
 
-
+    /**
+     * open alertDialog for searhcing a song with one criteria
+     * @param item item from the checkbox
+     */
     public void monoSearch(MenuItem item) {
         item = item.setOnMenuItemClickListener(l -> {
-            //Log.d("SEARCH", "onCreateOptionsMenu: HERE");
             AlertDialog.Builder mBuilder = new AlertDialog.Builder(this, R.style.MyCheckBox);
             mBuilder.setTitle("Chercher une musique");
 
@@ -361,18 +365,12 @@ public class MainActivity extends AppCompatActivity {
             mBuilder.setMultiChoiceItems(this.listCriteria, this.checkedItems, (dialog, position, isChecked) -> {
                 if (isChecked) {
                     selectedCriteria = position;
-                    Log.i("SELECT", "onClick: position : " + position);
-
                 }
             });
 
             mBuilder.setPositiveButton("OK", (dialog, which) -> {
-                Toast.makeText(MainActivity.this, "OK", Toast.LENGTH_SHORT).show();
-                //doit faire appelle a methode annexe et passe en aparametre la position
                 String userInput = input.getText().toString();
-                Log.i("INPUT", "userInput:" + userInput);
                 requestToDatabase(selectedCriteria, userInput);
-
             });
 
             AlertDialog dialog = mBuilder.create();
@@ -383,11 +381,16 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    /**
+     *  request to the database and start new intent
+     *
+     * @param position position is the checkbox clicked
+     * @param userInput userInput is the input written by user
+     */
     public void requestToDatabase(int position, String userInput) {
         SearchActivity.Criteria flag = null;
         Intent intent = new Intent(this, SearchActivity.class);
         class Box {
-            // champs mutable
             private List<Song> resultList = null;
         }
         Runnable run = null;
@@ -399,17 +402,14 @@ public class MainActivity extends AppCompatActivity {
                     box.resultList = this.soundroidDatabase.songDao().findByTitle(userInput);
                 };
                 flag = SearchActivity.Criteria.TITLE;
-                Log.i("RESULT", "CURRENT SONG PLAYED by TITLE: " + box.resultList);
                 break;
             case 1:
                 run = () -> box.resultList = this.soundroidDatabase.songDao().findAllByArtist(userInput);
                 flag = SearchActivity.Criteria.ARTIST;
-                Log.i("RESULT", "CURRENT SONG PLAYED by ARTIST: " + box.resultList);
                 break;
             case 2:
                 run = () -> box.resultList = this.soundroidDatabase.songDao().findAllByAlbum(userInput);
                 flag = SearchActivity.Criteria.ALBUM;
-                Log.i("RESULT", "CURRENT SONG PLAYED by ALBUM: " + box.resultList);
                 break;
         }
         Thread td = new Thread(run);
@@ -423,7 +423,6 @@ public class MainActivity extends AppCompatActivity {
         intent.putExtra("flag", flag);
         intent.putExtra("storageID", StorageContainer.getInstance().add(box.resultList));
         startActivity(intent);
-
     }
 
 
@@ -491,7 +490,7 @@ public class MainActivity extends AppCompatActivity {
         if (cursor.moveToFirst()) {
             return cursor.getString(0);
         } else {
-            return "numéro inconuu";
+            return "numéro inconnu";
         }
     }
 

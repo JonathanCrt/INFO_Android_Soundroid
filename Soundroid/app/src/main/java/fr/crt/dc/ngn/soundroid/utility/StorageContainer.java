@@ -5,6 +5,9 @@ import java.util.Map;
 
 import fr.crt.dc.ngn.soundroid.model.Song;
 
+/**
+ * singleton class
+ */
 public class StorageContainer {
     private Map<Long, Object> map  = new HashMap<>();
     private long counter = 0L;
@@ -16,6 +19,11 @@ public class StorageContainer {
         return id;
     }
 
+    /**
+     *
+     * @param id
+     * @return return the Object associated to id in hashmap
+     */
     public Object get(long id){
         return map.get(id);
     }
