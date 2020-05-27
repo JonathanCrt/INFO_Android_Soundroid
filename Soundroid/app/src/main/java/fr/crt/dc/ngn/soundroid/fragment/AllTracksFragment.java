@@ -204,24 +204,25 @@ public class AllTracksFragment extends Fragment {
                 ArrayAdapter<String> adapter = new ArrayAdapter<>(this.getContext(),
                         android.R.layout.simple_dropdown_item_1line, playlistsNames);
 
-                final AutoCompleteTextView autoCompleteTextView = new AutoCompleteTextView(this.getContext());
-                autoCompleteTextView.setAdapter(adapter);
-                alertDialogBuilder.setView(autoCompleteTextView);
-                // Display later the playlist name because it takes time to set the adapter
-                alertDialogBuilder.setNegativeButton("Cancel", null);
-                alertDialogBuilder.setPositiveButton("OK", (dialog, which) -> {
-                    String playlistName = autoCompleteTextView.getText().toString();
-                    // If the playlist name is not correct
-                    if (playlistName.length() == 0 || !Arrays.asList(playlistsNames).contains(playlistName)) {
-                        Toast.makeText(getContext(), "Click on a playlist name !", Toast.LENGTH_SHORT).show();
-                    } else {
-                        new Thread(() -> {
-                            Playlist playlistClicked = playlistList.stream().filter(p -> p.getName().equals(playlistName)).findAny().get();
-                            SoundroidDatabase.getInstance(getContext()).junctionDAO().insertSongIntoPlayList(songPressed.getSongId(), playlistClicked.getPlaylistId());
-                        }).start();
-                    }
-                });
                 getActivity().runOnUiThread(() -> {
+                    final AutoCompleteTextView autoCompleteTextView = new AutoCompleteTextView(this.getContext());
+                    autoCompleteTextView.setAdapter(adapter);
+                    alertDialogBuilder.setView(autoCompleteTextView);
+                    // Display later the playlist name because it takes time to set the adapter
+                    alertDialogBuilder.setNegativeButton("Cancel", null);
+                    alertDialogBuilder.setPositiveButton("OK", (dialog, which) -> {
+                        String playlistName = autoCompleteTextView.getText().toString();
+                        // If the playlist name is not correct
+                        if (playlistName.length() == 0 || !Arrays.asList(playlistsNames).contains(playlistName)) {
+                            Toast.makeText(getContext(), "Click on a playlist name !", Toast.LENGTH_SHORT).show();
+                        } else {
+                            new Thread(() -> {
+                                Playlist playlistClicked = playlistList.stream().filter(p -> p.getName().equals(playlistName)).findAny().get();
+                                SoundroidDatabase.getInstance(getContext()).junctionDAO().insertSongIntoPlayList(songPressed.getSongId(), playlistClicked.getPlaylistId());
+                            }).start();
+                        }
+                    });
+
                     new Handler().postDelayed(autoCompleteTextView::showDropDown, 100);
                     alertDialogBuilder.setIcon(R.drawable.ic_menu_playlists);
                     // Add scroll in the dropdown list
