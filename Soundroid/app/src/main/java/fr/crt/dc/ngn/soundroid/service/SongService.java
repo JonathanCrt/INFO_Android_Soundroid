@@ -28,6 +28,7 @@ import java.util.Random;
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 import fr.crt.dc.ngn.soundroid.R;
+import fr.crt.dc.ngn.soundroid.controller.ToolbarController;
 import fr.crt.dc.ngn.soundroid.database.SoundroidDatabase;
 import fr.crt.dc.ngn.soundroid.database.entity.Song;
 import fr.crt.dc.ngn.soundroid.utility.Utility;
@@ -238,6 +239,14 @@ public class SongService extends Service implements MediaPlayer.OnPreparedListen
         return builder.build();
     }
 
+    /**
+     * Called when the end of a media source is reached during playback.
+     * Allows you to continue reading
+     * (Include cases where the user has chosen a new runway or
+     * skipped to the following / previous tracks, as well as when the track reaches the end of its playback)
+     *
+     * @param mp media player
+     **/
     @Override
     public void onCompletion(MediaPlayer mp) {
         if (this.player.getCurrentPosition() > 0) {
@@ -302,18 +311,18 @@ public class SongService extends Service implements MediaPlayer.OnPreparedListen
         switch (what) {
             case MediaPlayer.MEDIA_ERROR_NOT_VALID_FOR_PROGRESSIVE_PLAYBACK:
                 this.player.reset();
-                Log.d("MediaPlayer Error", "MEDIA ERROR NOT VALID FOR PROGRESSIVE PLAYBACK " + extra);
+                Log.e("MediaPlayer Error", "MEDIA ERROR NOT VALID FOR PROGRESSIVE PLAYBACK " + extra);
                 break;
             case MediaPlayer.MEDIA_ERROR_SERVER_DIED:
                 this.player.reset();
-                Log.d("MediaPlayer Error", "MEDIA ERROR SERVER DIED " + extra);
+                Log.e("MediaPlayer Error", "MEDIA ERROR SERVER DIED " + extra);
                 break;
             case MediaPlayer.MEDIA_ERROR_UNKNOWN:
                 this.player.reset();
-                Log.d("MediaPlayer Error", "MEDIA ERROR UNKNOWN " + extra);
+                Log.e("MediaPlayer Error", "MEDIA ERROR UNKNOWN " + extra);
                 break;
         }
-        return false;
+        return true;
     }
 
     private void insertInHistory(long songId) {

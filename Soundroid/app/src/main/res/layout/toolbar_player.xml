@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:gravity="bottom"
@@ -12,7 +13,6 @@
         android:layout_height="1dp" />
 
     <androidx.appcompat.widget.Toolbar
-        xmlns:app="http://schemas.android.com/apk/res-auto"
         android:id="@+id/toolbar_player"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -44,12 +44,13 @@
                 android:id="@+id/tv_toolbar_artist"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:maxLength="25"
                 android:text="@string/artiste"
                 android:textColor="@color/design_default_color_on_secondary"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@+id/iv_control_skip_previous"
-                app:layout_constraintHorizontal_bias="0.086"
-                app:layout_constraintStart_toEndOf="@+id/iv_toolbar_artwork"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="@+id/tv_toolbar_title"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintVertical_bias="0.7" />
 
@@ -61,6 +62,7 @@
                 android:focusable="true"
                 android:focusableInTouchMode="true"
                 android:marqueeRepeatLimit="marquee_forever"
+                android:maxLength="25"
                 android:scrollHorizontally="true"
                 android:singleLine="true"
                 android:text="@string/titre"
@@ -78,8 +80,8 @@
                 android:id="@+id/iv_control_play"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:tint="@color/colorPrimaryFlash"
                 android:contentDescription="@string/contr_le_pour_jouer_une_piste"
+                android:tint="@color/colorPrimaryFlash"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.771"
@@ -92,8 +94,8 @@
                 android:id="@+id/iv_control_skip_next"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:tint="@color/colorPrimaryFlash"
                 android:contentDescription="@string/contr_le_pour_passer_musique_suivante"
+                android:tint="@color/colorPrimaryFlash"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.91"
@@ -106,8 +108,8 @@
                 android:id="@+id/iv_control_skip_previous"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:tint="@color/colorPrimaryFlash"
                 android:contentDescription="@string/contr_le_pour_passer_a_la_piste_pr_c_dente"
+                android:tint="@color/colorPrimaryFlash"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.637"
