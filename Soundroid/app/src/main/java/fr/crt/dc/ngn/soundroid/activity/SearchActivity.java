@@ -15,6 +15,7 @@ import java.util.List;
 import fr.crt.dc.ngn.soundroid.R;
 import fr.crt.dc.ngn.soundroid.adapter.SongAdapter;
 import fr.crt.dc.ngn.soundroid.database.entity.Song;
+import fr.crt.dc.ngn.soundroid.service.SongService;
 import fr.crt.dc.ngn.soundroid.utility.StorageContainer;
 import fr.crt.dc.ngn.soundroid.utility.Utility;
 

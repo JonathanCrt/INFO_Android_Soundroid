@@ -474,6 +474,8 @@ public class PlayerActivity extends AppCompatActivity implements GestureDetector
             // get the song clicked after the search
             Song songSearched = (Song) getIntent().getSerializableExtra("SONG");
             this.songService.setCurrentSong(songSearched);
+            // A new song has been selected : need to initialize it
+            this.songService.setInitializeSong(false);
         }
         if (!songService.playOrPauseSong()) {
             this.playerState = PlayerState.PAUSE;
