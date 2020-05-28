@@ -117,7 +117,6 @@ public class MainActivity extends AppCompatActivity {
         }
 
         this.soundroidDatabase = SoundroidDatabase.getInstance(getApplicationContext());
-        Log.i("LOG", this.soundroidDatabase.toString());
 
         setContentView(R.layout.activity_main);
         MainActivity.context = getApplicationContext();
@@ -148,28 +147,6 @@ public class MainActivity extends AppCompatActivity {
             t.join();
         } catch (InterruptedException e) {
             e.printStackTrace();
-        }
-
-        if (listSongs.get().isEmpty()) {
-            // first launch of the app
-            Log.i("LOG", "First launch of the app");
-
-        } else {
-                /*
-                Log.i("LOG", "already LAUNCHED");
-                // test to delete all in DB and restart with a new DB clean
-
-                this.deleteDatabase("Soundroid.db_");
-                soundroidDatabase.clearAllTables();
-                soundroidDatabase.songDao().getAllSongs().forEach(s -> {
-                    Log.i("LOG", "delete song id : " + s.getSongId());
-                    soundroidDatabase.songDao().deleteSong(s);
-                });
-                return;
-
-                 */
-
-            //Collections.sort(listSongs, (a, b) -> a.getTitle().compareTo(b.getTitle()));
         }
 
         try {
@@ -236,7 +213,6 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onStop() {
         super.onStop();
-
     }
 
     @Override
@@ -324,10 +300,8 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
             SongService.SongBinder songBinder = (SongService.SongBinder) service;
-            // Permet de récupérer le service
+            // Allow to get the service
             songService = songBinder.getService();
-            // Permet de passer au service l'ArrayList
-            //songService.setPlaylistSongs(playlistSongs);
         }
 
         @Override
@@ -467,11 +441,8 @@ public class MainActivity extends AppCompatActivity {
                         }
                     }
                 }
-
-
             }
         };
-
     }
 
     private String getContactName(String phone) {

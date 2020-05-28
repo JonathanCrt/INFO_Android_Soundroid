@@ -187,7 +187,7 @@ public class PlayerActivity extends AppCompatActivity implements GestureDetector
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
             SongService.SongBinder songBinder = (SongService.SongBinder) service;
-            // Permet de récupérer le service
+            //Allow to get the service
             songService = songBinder.getService();
             connectionEstablished = true;
             runUIThreadToSetProgressSeekBar();

@@ -156,7 +156,7 @@ public class AllTracksFragment extends Fragment {
             this.songService.setCurrentSongIndex(position);
             this.songService.playOrPauseSong();
             this.toolbarController.setImagePauseFromFragment();
-            this.toolbarController.setWidgetsValues();
+            this.toolbarController.setWidgetsValuesToolbar();
         });
 
         // listeners for quick access
@@ -317,7 +317,7 @@ public class AllTracksFragment extends Fragment {
             } else {
                 this.shuffleButton.setTextColor(Color.BLACK);
             }
-            this.toolbarController.setWidgetsValues();
+            this.toolbarController.setWidgetsValuesToolbar();
         });
     }
 

@@ -166,7 +166,6 @@ public class SongService extends Service implements MediaPlayer.OnPreparedListen
                     break;
                 case "PREV_ACTION":
                     SongService.getSongService().playPreviousSong();
-
                     break;
                 case "NEXT_ACTION":
                     SongService.getSongService().playNextSong();
@@ -175,7 +174,6 @@ public class SongService extends Service implements MediaPlayer.OnPreparedListen
                     SongService.getSongService().toShuffle();
                     break;
             }
-
         }
     }
 

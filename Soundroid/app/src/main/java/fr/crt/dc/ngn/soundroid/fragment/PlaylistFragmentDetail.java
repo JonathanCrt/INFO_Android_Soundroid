@@ -139,7 +139,7 @@ public class PlaylistFragmentDetail extends Fragment {
         this.songService.setCurrentSongIndex(position);
         this.songService.playOrPauseSong();
         this.toolbarController.setImagePauseFromFragment();
-        this.toolbarController.setWidgetsValues();
+        this.toolbarController.setWidgetsValuesToolbar();
     }
 
     /**

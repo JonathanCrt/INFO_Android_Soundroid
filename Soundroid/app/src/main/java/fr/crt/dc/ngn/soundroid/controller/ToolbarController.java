@@ -6,6 +6,7 @@ import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
+import android.util.Log;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -92,7 +93,7 @@ public class ToolbarController extends AbstractController {
     /**
      * set all widgets values (TextView, ImageView...)
      */
-    public void setWidgetsValues() {
+    public void setWidgetsValuesToolbar() {
         setTextSongInformation(this.songService.getPlaylistSongs().get(this.songService.getSongIndex()).getTitle(), this.tvTitleSong);
         setTextSongInformation(this.songService.getPlaylistSongs().get(this.songService.getSongIndex()).getArtist(), this.tvArtistSong);
         setArtworkSong(Utility.convertByteToBitmap(this.songService.getPlaylistSongs().get(this.songService.getSongIndex()).getArtwork()), this.artwork);
@@ -103,6 +104,7 @@ public class ToolbarController extends AbstractController {
         editor.putString("current_song_artist", this.tvArtistSong.getText().toString());
         editor.putLong("current_song_id", this.songService.getPlaylistSongs().get(this.songService.getSongIndex()).getSongId());
         editor.apply();
+        Log.i("BUG", "setWidgetsValuesToolbar");
     }
 
     /**
@@ -114,7 +116,7 @@ public class ToolbarController extends AbstractController {
             this.setImagePlay(ivPlayControl, this.context);
         } else {
             this.setImagePause(ivPlayControl, this.context);
-            this.setWidgetsValues();
+            this.setWidgetsValuesToolbar();
         }
     }
 
@@ -124,7 +126,7 @@ public class ToolbarController extends AbstractController {
     private void pushNextControl() {
         this.songService.playNextSong();
         this.setImagePause(ivPlayControl, context);
-        this.setWidgetsValues();
+        this.setWidgetsValuesToolbar();
     }
 
     /**
@@ -133,7 +135,7 @@ public class ToolbarController extends AbstractController {
     private void pushPreviousControl() {
         this.songService.playPreviousSong();
         this.setImagePause(ivPlayControl, context);
-        this.setWidgetsValues();
+        this.setWidgetsValuesToolbar();
     }
 
     /**
