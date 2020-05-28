@@ -240,6 +240,10 @@ public class SongService extends Service implements MediaPlayer.OnPreparedListen
 
     @Override
     public void onCompletion(MediaPlayer mp) {
+        if (this.player.getCurrentPosition() > 0) {
+            mp.reset();
+            this.playNextSong();
+        }
     }
 
     @Override
@@ -248,17 +252,16 @@ public class SongService extends Service implements MediaPlayer.OnPreparedListen
         switch (focusState) {
             case AudioManager.AUDIOFOCUS_GAIN:
                 // resume playback
-                if (this.player == null){
+                if (this.player == null) {
                     this.initMediaPlayer();
-                }
-                else if (!this.player.isPlaying()){
+                } else if (!this.player.isPlaying()) {
                     player.start();
                 }
                 this.player.setVolume(1.0f, 1.0f);
                 break;
             case AudioManager.AUDIOFOCUS_LOSS:
                 // Lost focus for an unbounded amount of time: stop playback and release media player
-                if (this.player.isPlaying()){
+                if (this.player.isPlaying()) {
                     this.player.stop();
                 }
                 this.player.release();
@@ -285,8 +288,9 @@ public class SongService extends Service implements MediaPlayer.OnPreparedListen
 
     /**
      * Manage all potentials erros of mediaplayer
-     * @param mp mediaplayer instance
-     * @param what the type of error that has occurred
+     *
+     * @param mp    mediaplayer instance
+     * @param what  the type of error that has occurred
      * @param extra an extra code, specific to the error
      * @return True if the method handled the error, false if it didn't. Returning false,
      * or not having an OnErrorListener at all, will cause the OnCompletionListener to be called.
@@ -365,7 +369,7 @@ public class SongService extends Service implements MediaPlayer.OnPreparedListen
             return endPlayOrPauseSong(true); // music is playing
         } else if (this.player.isPlaying() && this.isToolbarPushed) {  // music is playing so user want to pause
             this.player.pause();
-            initializeSong=false;
+            //initializeSong=false;
             return endPlayOrPauseSong(false); // music is paused
         } else {
             // user click on a music on the list

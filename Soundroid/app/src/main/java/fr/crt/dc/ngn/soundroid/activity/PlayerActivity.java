@@ -192,12 +192,14 @@ public class PlayerActivity extends AppCompatActivity implements GestureDetector
             connectionEstablished = true;
             runUIThreadToSetProgressSeekBar();
             setWidgetsValues(currentTitleReceived, currentArtisteReceived, currentNoteReceived, currentArtworkReceived, currentDurationReceived, currentTagReceived);
+
             songService.getPlayer().setOnCompletionListener(mp -> {
-                if (songService.getSongIndex() + 1 < songService.getPlaylistSongs().size()) {
-                    songService.playNextSong();
+                if (SongService.getSongService().getSongIndex() + 1 < SongService.getSongService().getPlaylistSongs().size()) {
+                    SongService.getSongService().playNextSong();
                     setWidgetsValues();
                 }
             });
+
             installDisplayOfTagWithDeleteButton();
         }
 
@@ -241,7 +243,7 @@ public class PlayerActivity extends AppCompatActivity implements GestureDetector
         this.setRating(rating);
         this.ivArtworkSong.setImageBitmap(artwork);
         this.tvDuration.setText(Utility.convertDuration(duration));
-        if (songService.playerIsPlaying()) {
+        if (SongService.getSongService().playerIsPlaying()) {
             ivControlPlaySong.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_pause_white_2x));
         }
         this.tvTag.setText(tag);
@@ -257,7 +259,7 @@ public class PlayerActivity extends AppCompatActivity implements GestureDetector
      */
     public void setWidgetsValues() {
         new Thread(() -> {
-            Song currentSong = this.songService.getPlaylistSongs().get(this.songService.getSongIndex());
+            Song currentSong = SongService.getSongService().getPlaylistSongs().get(SongService.getSongService().getSongIndex());
             this.currentTagOfSong = this.songDaoInstance.findTagBySongId(currentSong.getSongId());
             int currentRating = this.songDaoInstance.findRatingBySongId(currentSong.getSongId());
             this.runOnUiThread(() -> {
@@ -339,7 +341,7 @@ public class PlayerActivity extends AppCompatActivity implements GestureDetector
         for (ImageView star : this.stars) {
             star.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_outline_star_note));
         }
-        this.songService.getPlaylistSongs().get(this.songService.getSongIndex()).setRating(0);
+        SongService.getSongService().getPlaylistSongs().get(SongService.getSongService().getSongIndex()).setRating(0);
     }
 
     private void clearRating() {
@@ -361,7 +363,7 @@ public class PlayerActivity extends AppCompatActivity implements GestureDetector
             this.stars[i].setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_outline_star_note));
         }
         new Thread(() -> {
-            this.songDaoInstance.updateSongRatingById(nbStars, this.songService.getPlaylistSongs().get(this.songService.getSongIndex()).getSongId());
+            this.songDaoInstance.updateSongRatingById(nbStars, SongService.getSongService().getPlaylistSongs().get(SongService.getSongService().getSongIndex()).getSongId());
         }).start();
     }
 
